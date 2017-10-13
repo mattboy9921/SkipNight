@@ -1,0 +1,12 @@
+name: ${project.artifactId}
+version: ${project.version}
+description: ${project.description}
+author: mattboy9921 (mattboy9921@aim.com)
+main: net.mattlabs.skipnight.SkipNight
+commands:
+  skipnight:
+    description: SkipNight command(s).
+    usage: /skipnight [yes|no]
+permissions:
+  skipnight.vote:
+    description: Allows player to vote.
