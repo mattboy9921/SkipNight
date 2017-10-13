@@ -19,7 +19,7 @@ public class Messages {
         TextComponent warn = new TextComponent("No vote in progress! ");
         warn.setColor(net.md_5.bungee.api.ChatColor.RED);
 
-        TextComponent button = new TextComponent("[Start Vote");
+        TextComponent button = new TextComponent("[Start Vote]");
         button.setColor(net.md_5.bungee.api.ChatColor.BLUE);
         button.setBold(true);
         button.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
