@@ -33,11 +33,8 @@ public class Vote implements Runnable, Listener {
     private Plugin plugin;
     private ArrayList voters;
     private Player player;
+    private World world;
     private TextComponent messageArray[] = new TextComponent[2];
-
-    public Vote() {
-
-    }
 
     public Vote(Plugin plugin) {
         timer = Timer.Complete;
@@ -153,7 +150,8 @@ public class Vote implements Runnable, Listener {
                 bar.setTitle(ChatColor.GREEN + "Vote passed!");
                 bar.setColor(BarColor.GREEN);
                 updateAll(voters, messages.votePassed());
-                player.getWorld().setTime(0);
+                world.setTime(0);
+                if (world.hasStorm()) world.setStorm(false);
             }
             else {
                 bar.setTitle(ChatColor.DARK_RED + "Vote failed!");
@@ -214,6 +212,7 @@ public class Vote implements Runnable, Listener {
                         this.messages = messages;
                         timer = Timer.Init;
                         this.player = player;
+                        world = player.getWorld();
                         player.spigot().sendMessage(messages.voteStarted());
                         player.spigot().sendMessage(messages.youVoteYes());
                         run();
