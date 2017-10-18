@@ -29,8 +29,8 @@ public class SkipNight extends JavaPlugin {
         if (strings.length == 0) {
             vote.start(player, messages);
         }
-        else if (strings[0].equalsIgnoreCase("yes")) vote.addYes(player);
-        else if (strings[0].equalsIgnoreCase("no")) vote.addNo(player);
+        else if (strings[0].equalsIgnoreCase("yes")) vote.addYes(player.getUniqueId());
+        else if (strings[0].equalsIgnoreCase("no")) vote.addNo(player.getUniqueId());
         else player.sendMessage(ChatColor.RED + "Invalid usage: /skipnight [yes/no]");
 
         return true;

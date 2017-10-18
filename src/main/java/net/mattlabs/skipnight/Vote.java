@@ -16,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Vote implements Runnable, Listener {
 
@@ -48,7 +49,7 @@ public class Vote implements Runnable, Listener {
 
         if (timer != Timer.Complete) // vote is running
             if (player.hasPermission("skipnight.vote")) { // player has permission
-                Voter voter = new Voter(player);
+                Voter voter = new Voter(player.getUniqueId());
                 if (voters.contains(voter)) { // player is in voter list
                     voter = (Voter) voters.get(voters.lastIndexOf(voter));
                     if (voter.getVote() == 1) yes--;
@@ -172,36 +173,36 @@ public class Vote implements Runnable, Listener {
         }
     }
 
-    public void addYes(Player player) {
+    public void addYes(UUID uuid) {
         if (timer != Timer.Complete) {
-            Voter voter = new Voter(player);
+            Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
                 voter = (Voter) voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
                     yes++;
                     voter.voteYes();
-                    player.spigot().sendMessage(messages.youVoteYes());
+                    Bukkit.getPlayer(uuid).spigot().sendMessage(messages.youVoteYes());
                 }
-                else player.spigot().sendMessage(messages.alreadyVoted());
+                else Bukkit.getPlayer(uuid).spigot().sendMessage(messages.alreadyVoted());
             }
         }
-        else player.spigot().sendMessage(messages.noVoteInProg());
+        else Bukkit.getPlayer(uuid).spigot().sendMessage(messages.noVoteInProg());
     }
 
-    public void addNo(Player player) {
+    public void addNo(UUID uuid) {
         if (timer != Timer.Complete) {
-            Voter voter = new Voter(player);
+            Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
                 voter = (Voter) voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
                     no++;
                     voter.voteNo();
-                    player.spigot().sendMessage(messages.youVoteNo());
+                    Bukkit.getPlayer(uuid).spigot().sendMessage(messages.youVoteNo());
                 }
-                else player.spigot().sendMessage(messages.alreadyVoted());
+                else Bukkit.getPlayer(uuid).spigot().sendMessage(messages.alreadyVoted());
             }
         }
-        else player.spigot().sendMessage(messages.noVoteInProg());
+        else Bukkit.getPlayer(uuid).spigot().sendMessage(messages.noVoteInProg());
     }
 
     // Attempts to start a vote if all conditions are met, otherwise informs player why vote can't start
@@ -232,7 +233,7 @@ public class Vote implements Runnable, Listener {
 
     private List updateAll(List voters) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            Voter voter = new Voter(player);
+            Voter voter = new Voter(player.getUniqueId());
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
                 if (!voters.contains(voter)) {
                     for (int i = 0; i < messageArray.length; i++) player.spigot().sendMessage(messageArray[i]);
@@ -255,7 +256,7 @@ public class Vote implements Runnable, Listener {
 
     private List updateAll(List voters, TextComponent message) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            Voter voter = new Voter(player);
+            Voter voter = new Voter(player.getUniqueId());
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
                 if (!voters.contains(voter)) {
                     for (int i = 0; i < messageArray.length; i++) player.spigot().sendMessage(messageArray[i]);
@@ -279,7 +280,7 @@ public class Vote implements Runnable, Listener {
 
     private List updateAll(List voters, TextComponent[] messageArray, Player sender) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            Voter voter = new Voter(player);
+            Voter voter = new Voter(player.getUniqueId());
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
                 if (player != sender)
                     for (int i = 0; i < messageArray.length; i++) player.spigot().sendMessage(messageArray[i]);

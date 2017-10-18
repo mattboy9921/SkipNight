@@ -1,19 +1,19 @@
 package net.mattlabs.skipnight;
 
-import org.bukkit.entity.Player;
+import java.util.UUID;
 
 public class Voter {
 
-    private Player player;
+    private UUID uuid;
     private int vote;
 
-    public Voter(Player player) {
-        this.player = player;
+    public Voter(UUID uuid) {
+        this.uuid = uuid;
         vote = 0;
     }
 
-    public Player getPlayer() {
-        return player;
+    public UUID getUUID() {
+        return uuid;
     }
 
     public int getVote() {
@@ -35,11 +35,11 @@ public class Voter {
 
         Voter voter = (Voter) o;
 
-        return player.equals(voter.player);
+        return uuid.equals(voter.uuid);
     }
 
     @Override
     public int hashCode() {
-        return player.hashCode();
+        return uuid.hashCode();
     }
 }
