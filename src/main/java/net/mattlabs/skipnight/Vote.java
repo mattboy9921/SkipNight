@@ -205,22 +205,23 @@ public class Vote implements Runnable, Listener {
 
     // Attempts to start a vote if all conditions are met, otherwise informs player why vote can't start
     public void start(Player player, Messages messages) {
-        if (player.hasPermission("skipnight.vote")) // has permission to vote
-            if (isInOverworld(player)) // is in correct world
-                if (player.getWorld().getTime() < 24000 && player.getWorld().getTime() > 14000) // is night
-                    if (timer == Timer.Complete) { // vote not happening
-                        this.messages = messages;
-                        timer = Timer.Init;
-                        this.player = player;
-                        world = player.getWorld();
-                        player.spigot().sendMessage(messages.voteStarted());
-                        player.spigot().sendMessage(messages.youVoteYes());
-                        run();
-                    }
-                    else player.sendMessage(ChatColor.RED + "Vote already in progress!");
-                else player.sendMessage(ChatColor.RED + "You can only start a vote at night!");
-            else player.sendMessage(ChatColor.RED + "You must be in the overworld to start a vote!");
-        else player.sendMessage(ChatColor.RED + "You don't have permission to run this!");
+        if (!player.hasPermission("skipnight.vote")) // If player doesn't have permission
+            player.sendMessage(ChatColor.RED + "You don't have permission to run this!");
+        else if (!isInOverworld(player)) // If player isn't in the overworld
+            player.sendMessage(ChatColor.RED + "You must be in the overworld to start a vote!");
+        else if (player.getWorld().getTime() < 14000) // If it's day
+            player.sendMessage(ChatColor.RED + "You can only start a vote at night!");
+        else if (!(timer == Timer.Complete)) // If there's a vote happening
+            player.sendMessage(ChatColor.RED + "Vote already in progress!");
+        else {
+            this.messages = messages;
+            timer = Timer.Init;
+            this.player = player;
+            world = player.getWorld();
+            player.spigot().sendMessage(messages.voteStarted());
+            player.spigot().sendMessage(messages.youVoteYes());
+            run();
+        }
     }
 
     // Checks whether player is in overworld
