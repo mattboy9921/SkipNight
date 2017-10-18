@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Vote implements Runnable, Listener {
 
@@ -31,7 +32,7 @@ public class Vote implements Runnable, Listener {
     private int yes, no, playerCount, countDown;
     private BossBar bar;
     private Plugin plugin;
-    private ArrayList voters;
+    private List voters;
     private Player player;
     private World world;
     private TextComponent messageArray[] = new TextComponent[2];
@@ -229,7 +230,7 @@ public class Vote implements Runnable, Listener {
         return player.getWorld().getEnvironment().equals(World.Environment.NORMAL);
     }
 
-    private ArrayList updateAll(ArrayList voters) {
+    private List updateAll(List voters) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Voter voter = new Voter(player);
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
@@ -252,7 +253,7 @@ public class Vote implements Runnable, Listener {
         return voters;
     }
 
-    private ArrayList updateAll(ArrayList voters, TextComponent message) {
+    private List updateAll(List voters, TextComponent message) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Voter voter = new Voter(player);
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
@@ -276,7 +277,7 @@ public class Vote implements Runnable, Listener {
         return voters;
     }
 
-    private ArrayList updateAll(ArrayList voters, TextComponent[] messageArray, Player sender) {
+    private List updateAll(List voters, TextComponent[] messageArray, Player sender) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Voter voter = new Voter(player);
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
