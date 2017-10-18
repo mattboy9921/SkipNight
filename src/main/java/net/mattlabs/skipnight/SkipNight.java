@@ -22,6 +22,10 @@ public class SkipNight extends JavaPlugin {
     public void onDisable() {}
 
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] strings) {
+        if (!(sender instanceof Player)) {
+            getLogger().info("Vote can't be started from console.");
+            return true;
+        }
         Player player = (Player) sender;
 
         if (strings.length == 0) {
