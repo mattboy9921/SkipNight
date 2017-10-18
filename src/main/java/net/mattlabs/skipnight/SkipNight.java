@@ -16,7 +16,7 @@ public class SkipNight extends JavaPlugin {
     public void onEnable() {
         vote = new Vote(this);
         messages = new Messages();
-        getLogger().log(Level.INFO, "SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm and, CRX VrynzX)");
+        getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm and, CRX VrynzX)");
     }
 
     public void onDisable() {}
