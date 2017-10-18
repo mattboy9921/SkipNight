@@ -288,8 +288,7 @@ public class Vote implements Runnable, Listener {
                     if (player == sender) voter.voteYes();
                     bar.addPlayer(player);
                 }
-            }
-            else {
+            } else {
                 if (voters.contains(voter)) {
                     voter = (Voter) voters.get(voters.lastIndexOf(voter));
                     if (voter.getVote() == 1) yes--;
