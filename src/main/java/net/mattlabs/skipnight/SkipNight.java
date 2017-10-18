@@ -19,14 +19,10 @@ public class SkipNight extends JavaPlugin {
         getLogger().log(Level.INFO, "SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm and, CRX VrynzX)");
     }
 
-    public void onDisable() {
-
-    }
+    public void onDisable() {}
 
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] strings) {
-
         Player player = (Player) sender;
-
 
         if (strings.length == 0) {
             vote.start(player, messages);
