@@ -15,8 +15,6 @@ public class SkipNight extends JavaPlugin {
         getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, and Scarsz)");
     }
 
-    public void onDisable() {}
-
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] strings) {
         if (!(sender instanceof Player)) {
             getLogger().info("Vote can't be started from console.");
