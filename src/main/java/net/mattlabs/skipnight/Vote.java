@@ -1,5 +1,6 @@
 package net.mattlabs.skipnight;
 
+import mkremins.fanciful.FancyMessage;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,14 +30,13 @@ public class Vote implements Runnable, Listener {
     }
 
     private Timer timer;
-    private Messages messages;
     private int yes, no, playerCount, countDown;
     private BossBar bar;
     private Plugin plugin;
     private List voters;
     private Player player;
     private World world;
-    private TextComponent messageArray[] = new TextComponent[2];
+    private FancyMessage messageArray[] = new FancyMessage[2];
 
     public Vote(Plugin plugin) {
         timer = Timer.Complete;
@@ -83,8 +83,8 @@ public class Vote implements Runnable, Listener {
         voters = new ArrayList();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
-        messageArray[0] = messages.voteStarted();
-        messageArray[1] = messages.voteButtons();
+        messageArray[0] = Messages.voteStarted();
+        messageArray[1] = Messages.voteButtons();
 
         yes = 1;
         no = 0;
@@ -134,7 +134,7 @@ public class Vote implements Runnable, Listener {
                 + ChatColor.RESET + "- " + yes
                 + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
                 + ChatColor.RESET + "- " + no);
-        if (countDown == 9) voters = updateAll(voters, messages.tenSecondsLeft());
+        if (countDown == 9) voters = updateAll(voters, Messages.tenSecondsLeft());
         else voters = updateAll(voters);
 
         if (countDown % 2 == 1) bar.setColor(BarColor.WHITE);
@@ -151,14 +151,14 @@ public class Vote implements Runnable, Listener {
             if (yes > no) {
                 bar.setTitle(ChatColor.GREEN + "Vote passed!");
                 bar.setColor(BarColor.GREEN);
-                updateAll(voters, messages.votePassed());
+                updateAll(voters, Messages.votePassed());
                 world.setTime(0);
                 if (world.hasStorm()) world.setStorm(false);
             }
             else {
                 bar.setTitle(ChatColor.DARK_RED + "Vote failed!");
                 bar.setColor(BarColor.RED);
-                updateAll(voters, messages.voteFailed());
+                updateAll(voters, Messages.voteFailed());
             }
             plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
         }
@@ -181,12 +181,12 @@ public class Vote implements Runnable, Listener {
                 if (voter.getVote() == 0) {
                     yes++;
                     voter.voteYes();
-                    Bukkit.getPlayer(uuid).spigot().sendMessage(messages.youVoteYes());
+                    Messages.youVoteYes().send(Bukkit.getPlayer(uuid));
                 }
-                else Bukkit.getPlayer(uuid).spigot().sendMessage(messages.alreadyVoted());
+                else Messages.alreadyVoted().send(Bukkit.getPlayer(uuid));
             }
         }
-        else Bukkit.getPlayer(uuid).spigot().sendMessage(messages.noVoteInProg());
+        else Messages.noVoteInProg().send(Bukkit.getPlayer(uuid));
     }
 
     public void addNo(UUID uuid) {
@@ -197,16 +197,16 @@ public class Vote implements Runnable, Listener {
                 if (voter.getVote() == 0) {
                     no++;
                     voter.voteNo();
-                    Bukkit.getPlayer(uuid).spigot().sendMessage(messages.youVoteNo());
+                    Messages.youVoteNo().send(Bukkit.getPlayer(uuid));
                 }
-                else Bukkit.getPlayer(uuid).spigot().sendMessage(messages.alreadyVoted());
+                else Messages.alreadyVoted().send(Bukkit.getPlayer(uuid));
             }
         }
-        else Bukkit.getPlayer(uuid).spigot().sendMessage(messages.noVoteInProg());
+        else Messages.noVoteInProg().send(Bukkit.getPlayer(uuid));
     }
 
     // Attempts to start a vote if all conditions are met, otherwise informs player why vote can't start
-    public void start(Player player, Messages messages) {
+    public void start(Player player) {
         if (!player.hasPermission("skipnight.vote")) // If player doesn't have permission
             player.sendMessage(ChatColor.RED + "You don't have permission to run this!");
         else if (!isInOverworld(player)) // If player isn't in the overworld
@@ -216,12 +216,11 @@ public class Vote implements Runnable, Listener {
         else if (!(timer == Timer.Complete)) // If there's a vote happening
             player.sendMessage(ChatColor.RED + "Vote already in progress!");
         else {
-            this.messages = messages;
             timer = Timer.Init;
             this.player = player;
             world = player.getWorld();
-            player.spigot().sendMessage(messages.voteStarted());
-            player.spigot().sendMessage(messages.youVoteYes());
+            Messages.voteStarted().send(player);
+            Messages.youVoteYes().send(player);
             run();
         }
     }
@@ -236,7 +235,7 @@ public class Vote implements Runnable, Listener {
             Voter voter = new Voter(player.getUniqueId());
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
                 if (!voters.contains(voter)) {
-                    for (int i = 0; i < messageArray.length; i++) player.spigot().sendMessage(messageArray[i]);
+                    for (int i = 0; i < messageArray.length; i++) messageArray[i].send(player);
                     voters.add(voter);
                     bar.addPlayer(player);
                 }
@@ -254,16 +253,16 @@ public class Vote implements Runnable, Listener {
         return voters;
     }
 
-    private List updateAll(List voters, TextComponent message) {
+    private List updateAll(List voters, FancyMessage message) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Voter voter = new Voter(player.getUniqueId());
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
                 if (!voters.contains(voter)) {
-                    for (int i = 0; i < messageArray.length; i++) player.spigot().sendMessage(messageArray[i]);
+                    for (int i = 0; i < messageArray.length; i++) messageArray[i].send(player);
                     voters.add(voter);
                     bar.addPlayer(player);
                 }
-                player.spigot().sendMessage(message);
+                message.send(player);
             } else {
                 if (voters.contains(voter)) {
                     voter = (Voter) voters.get(voters.lastIndexOf(voter));
@@ -278,12 +277,12 @@ public class Vote implements Runnable, Listener {
         return voters;
     }
 
-    private List updateAll(List voters, TextComponent[] messageArray, Player sender) {
+    private List updateAll(List voters, FancyMessage[] messageArray, Player sender) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Voter voter = new Voter(player.getUniqueId());
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
                 if (player != sender)
-                    for (int i = 0; i < messageArray.length; i++) player.spigot().sendMessage(messageArray[i]);
+                    for (int i = 0; i < messageArray.length; i++) messageArray[i].send(player);
                 if (!voters.contains(voter)) {
                     voters.add(voter);
                     if (player == sender) voter.voteYes();

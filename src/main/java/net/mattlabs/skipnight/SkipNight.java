@@ -9,11 +9,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class SkipNight extends JavaPlugin {
 
     private Vote vote;
-    private Messages messages;
 
     public void onEnable() {
         vote = new Vote(this);
-        messages = new Messages();
         getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm and, CRX VrynzX)");
     }
 
@@ -27,7 +25,7 @@ public class SkipNight extends JavaPlugin {
         Player player = (Player) sender;
 
         if (strings.length == 0) {
-            vote.start(player, messages);
+            vote.start(player);
         }
         else if (strings[0].equalsIgnoreCase("yes")) vote.addYes(player.getUniqueId());
         else if (strings[0].equalsIgnoreCase("no")) vote.addNo(player.getUniqueId());

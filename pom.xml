@@ -110,6 +110,33 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+
+                <configuration>
+                    <!-- Disable auto generation of dependency-reduced-pom.xml -->
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+
+                    <!-- Include only direct dependencies -->
+                    <artifactSet>
+                        <includes>
+                            <include>mkremins:fanciful</include>
+                        </includes>
+                    </artifactSet>
+                </configuration>
+
+                <!-- Perform shading for package phase -->
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
