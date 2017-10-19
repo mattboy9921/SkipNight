@@ -22,11 +22,11 @@ import java.util.UUID;
 public class Vote implements Runnable, Listener {
 
     private enum Timer {
-        Init,
-        Operation,
-        Interrupt,
-        Final,
-        Complete
+        INIT,
+        OPERATION,
+        INTERRUPT,
+        FINAL,
+        COMPLETE
     }
 
     private Timer timer;
@@ -39,7 +39,7 @@ public class Vote implements Runnable, Listener {
     private FancyMessage messageArray[] = new FancyMessage[2];
 
     public Vote(Plugin plugin) {
-        timer = Timer.Complete;
+        timer = Timer.COMPLETE;
         this.plugin = plugin;
     }
 
@@ -47,7 +47,7 @@ public class Vote implements Runnable, Listener {
     public void onLogoff(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        if (timer != Timer.Complete) // vote is running
+        if (timer != Timer.COMPLETE) // vote is running
             if (player.hasPermission("skipnight.vote")) { // player has permission
                 Voter voter = new Voter(player.getUniqueId());
                 if (voters.contains(voter)) { // player is in voter list
@@ -61,19 +61,19 @@ public class Vote implements Runnable, Listener {
 
     public void run() {
         switch (timer) {
-            case Init:
+            case INIT:
                 doInit();
                 break;
-            case Operation:
+            case OPERATION:
                 doOperation();
                 break;
-            case Interrupt:
+            case INTERRUPT:
                 doInterrupt();
                 break;
-            case Final:
+            case FINAL:
                 doFinal();
                 break;
-            case Complete:
+            case COMPLETE:
                 doComplete();
                 break;
         }
@@ -98,13 +98,13 @@ public class Vote implements Runnable, Listener {
 
         voters = updateAll(voters, messageArray, player);
 
-        timer = Timer.Operation;
+        timer = Timer.OPERATION;
         plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
     }
 
     private void doOperation() {
         countDown--;
-        if (yes + no == playerCount) timer = Timer.Interrupt;
+        if (yes + no == playerCount) timer = Timer.INTERRUPT;
         bar.setProgress((double) countDown / 30.0);
         bar.setTitle("Current Vote: "
                 + ChatColor.GREEN + ChatColor.BOLD + "Yes "
@@ -112,7 +112,7 @@ public class Vote implements Runnable, Listener {
                 + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
                 + ChatColor.RESET + "- " + no);
         voters = updateAll(voters);
-        if (countDown == 10) timer = Timer.Final;
+        if (countDown == 10) timer = Timer.FINAL;
         plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
     }
 
@@ -122,7 +122,7 @@ public class Vote implements Runnable, Listener {
         bar.setTitle(ChatColor.YELLOW + "All players have voted!");
         bar.setColor(BarColor.YELLOW);
 
-        timer = Timer.Complete;
+        timer = Timer.COMPLETE;
         plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
     }
 
@@ -140,7 +140,7 @@ public class Vote implements Runnable, Listener {
         if (countDown % 2 == 1) bar.setColor(BarColor.WHITE);
         else bar.setColor(BarColor.PURPLE);
 
-        if (countDown == 0) timer = Timer.Complete;
+        if (countDown == 0) timer = Timer.COMPLETE;
         plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
     }
 
@@ -174,7 +174,7 @@ public class Vote implements Runnable, Listener {
     }
 
     public void addYes(UUID uuid) {
-        if (timer != Timer.Complete) {
+        if (timer != Timer.COMPLETE) {
             Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
                 voter = (Voter) voters.get(voters.lastIndexOf(voter));
@@ -190,7 +190,7 @@ public class Vote implements Runnable, Listener {
     }
 
     public void addNo(UUID uuid) {
-        if (timer != Timer.Complete) {
+        if (timer != Timer.COMPLETE) {
             Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
                 voter = (Voter) voters.get(voters.lastIndexOf(voter));
@@ -213,10 +213,10 @@ public class Vote implements Runnable, Listener {
             player.sendMessage(ChatColor.RED + "You must be in the overworld to start a vote!");
         else if (player.getWorld().getTime() < 14000) // If it's day
             player.sendMessage(ChatColor.RED + "You can only start a vote at night!");
-        else if (!(timer == Timer.Complete)) // If there's a vote happening
+        else if (!(timer == Timer.COMPLETE)) // If there's a vote happening
             player.sendMessage(ChatColor.RED + "Vote already in progress!");
         else {
-            timer = Timer.Init;
+            timer = Timer.INIT;
             this.player = player;
             world = player.getWorld();
             Messages.voteStarted().send(player);
