@@ -210,7 +210,7 @@ public class Vote implements Runnable, Listener {
             player.sendMessage(ChatColor.RED + "You don't have permission to run this!");
         else if (!isInOverworld(player)) // If player isn't in the overworld
             player.sendMessage(ChatColor.RED + "You must be in the overworld to start a vote!");
-        else if (player.getWorld().getTime() < 14000) // If it's day
+        else if (player.getWorld().getTime() < 12516) // If it's day
             player.sendMessage(ChatColor.RED + "You can only start a vote at night!");
         else if (!(timer == Timer.COMPLETE)) // If there's a vote happening
             player.sendMessage(ChatColor.RED + "Vote already in progress!");
