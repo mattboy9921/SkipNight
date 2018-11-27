@@ -7,24 +7,20 @@ public class Voter {
     private UUID uuid;
     private int vote;
 
-    public Voter(UUID uuid) {
+    Voter(UUID uuid) {
         this.uuid = uuid;
         vote = 0;
     }
 
-    public UUID getUUID() {
-        return uuid;
-    }
-
-    public int getVote() {
+    int getVote() {
         return vote;
     }
 
-    public void voteYes() {
+    void voteYes() {
         vote = 1;
     }
 
-    public void voteNo() {
+    void voteNo() {
         vote = -1;
     }
 
