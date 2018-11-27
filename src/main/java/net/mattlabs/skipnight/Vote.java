@@ -3,6 +3,7 @@ package net.mattlabs.skipnight;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -29,15 +30,16 @@ public class Vote implements Runnable, Listener {
     }
 
     private Timer timer;
-    private int yes, no, playerCount, countDown;
+    private int yes, no, playerCount, countDown, away, idle;
     private BossBar bar;
     private Plugin plugin;
-    private List voters;
+    private List<Voter> voters;
+    private List<Voter> awayVoters;
+    private List<Voter> idleVoters;
     private Player player;
     private World world;
-    private FancyMessage messageArray[] = new FancyMessage[2];
 
-    public Vote(Plugin plugin) {
+    Vote(Plugin plugin) {
         timer = Timer.COMPLETE;
         this.plugin = plugin;
     }
@@ -50,7 +52,7 @@ public class Vote implements Runnable, Listener {
             if (player.hasPermission("skipnight.vote")) { // player has permission
                 Voter voter = new Voter(player.getUniqueId());
                 if (voters.contains(voter)) { // player is in voter list
-                    voter = (Voter) voters.get(voters.lastIndexOf(voter));
+                    voter = voters.get(voters.lastIndexOf(voter));
                     if (voter.getVote() == 1) yes--;
                     if (voter.getVote() == -1) no--;
                     voters.remove(voter);
@@ -79,23 +81,29 @@ public class Vote implements Runnable, Listener {
     }
 
     private void doInit() {
-        voters = new ArrayList();
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        voters = new ArrayList<>();
+        awayVoters = new ArrayList<>();
+        idleVoters = new ArrayList<>();
 
-        messageArray[0] = Messages.voteStarted();
-        messageArray[1] = Messages.voteButtons();
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         yes = 1;
         no = 0;
         countDown = 30;
+        away = 0;
+        idle = 0;
 
         bar = Bukkit.createBossBar("Current Vote: "
                 + ChatColor.GREEN + ChatColor.BOLD + "Yes "
                 + ChatColor.RESET + "- " + yes
                 + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
-                + ChatColor.RESET + "- " + no, BarColor.PURPLE, BarStyle.SOLID);
+                + ChatColor.RESET + "- " + no
+                + ChatColor.DARK_AQUA + ChatColor.BOLD + " Idle "
+                + ChatColor.RESET + "- " + idle
+                + ChatColor.BLUE +  ChatColor.BOLD + " Away "
+                + ChatColor.RESET + "- " + away, BarColor.PURPLE, BarStyle.SOLID);
 
-        voters = updateAll(voters, messageArray, player);
+        voters = updateAll(voters, player);
 
         timer = Timer.OPERATION;
         plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
@@ -109,13 +117,17 @@ public class Vote implements Runnable, Listener {
                 + ChatColor.GREEN + ChatColor.BOLD + "Yes "
                 + ChatColor.RESET + "- " + yes
                 + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
-                + ChatColor.RESET + "- " + no);
+                + ChatColor.RESET + "- " + no
+                + ChatColor.DARK_AQUA + ChatColor.BOLD + " Idle "
+                + ChatColor.RESET + "- " + idle
+                + ChatColor.BLUE +  ChatColor.BOLD + " Away "
+                + ChatColor.RESET + "- " + away);
         voters = updateAll(voters);
         if (countDown == 10) timer = Timer.FINAL;
         plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
     }
 
-    public void doInterrupt() {
+    private void doInterrupt() {
         countDown = 0;
         bar.setProgress(1.0);
         bar.setTitle(ChatColor.YELLOW + "All players have voted!");
@@ -132,7 +144,11 @@ public class Vote implements Runnable, Listener {
                 + ChatColor.GREEN + ChatColor.BOLD + "Yes "
                 + ChatColor.RESET + "- " + yes
                 + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
-                + ChatColor.RESET + "- " + no);
+                + ChatColor.RESET + "- " + no
+                + ChatColor.DARK_AQUA + ChatColor.BOLD + " Idle "
+                + ChatColor.RESET + "- " + idle
+                + ChatColor.BLUE +  ChatColor.BOLD + " Away "
+                + ChatColor.RESET + "- " + away);
         if (countDown == 9) voters = updateAll(voters, Messages.tenSecondsLeft());
         else voters = updateAll(voters);
 
@@ -172,15 +188,19 @@ public class Vote implements Runnable, Listener {
         }
     }
 
-    public void addYes(UUID uuid) {
+    void addYes(UUID uuid) {
         if (timer != Timer.COMPLETE) {
             Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
-                voter = (Voter) voters.get(voters.lastIndexOf(voter));
+                voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
-                    yes++;
-                    voter.voteYes();
-                    Messages.youVoteYes().send(Bukkit.getPlayer(uuid));
+                    if (Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000)
+                        Messages.mustSleep().send(Bukkit.getPlayer(uuid));
+                    else {
+                        yes++;
+                        voter.voteYes();
+                        Messages.youVoteYes().send(Bukkit.getPlayer(uuid));
+                    }
                 }
                 else Messages.alreadyVoted().send(Bukkit.getPlayer(uuid));
             }
@@ -188,15 +208,19 @@ public class Vote implements Runnable, Listener {
         else Messages.noVoteInProg().send(Bukkit.getPlayer(uuid));
     }
 
-    public void addNo(UUID uuid) {
+    void addNo(UUID uuid) {
         if (timer != Timer.COMPLETE) {
             Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
-                voter = (Voter) voters.get(voters.lastIndexOf(voter));
+                voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
-                    no++;
-                    voter.voteNo();
-                    Messages.youVoteNo().send(Bukkit.getPlayer(uuid));
+                    if (Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000)
+                        Messages.mustSleep().send(Bukkit.getPlayer(uuid));
+                    else {
+                        no++;
+                        voter.voteNo();
+                        Messages.youVoteNo().send(Bukkit.getPlayer(uuid));
+                    }
                 }
                 else Messages.alreadyVoted().send(Bukkit.getPlayer(uuid));
             }
@@ -205,21 +229,32 @@ public class Vote implements Runnable, Listener {
     }
 
     // Attempts to start a vote if all conditions are met, otherwise informs player why vote can't start
-    public void start(Player player) {
+    void start(Player player) {
+        // Read players tag, null if not there
+        String tag;
+        try {
+            tag = player.getPlayerListName().split("#")[1];
+        } catch (IndexOutOfBoundsException e) {
+            tag = "Active";
+        }
         if (!player.hasPermission("skipnight.vote")) // If player doesn't have permission
             player.sendMessage(ChatColor.RED + "You don't have permission to run this!");
         else if (!isInOverworld(player)) // If player isn't in the overworld
             player.sendMessage(ChatColor.RED + "You must be in the overworld to start a vote!");
         else if (player.getWorld().getTime() < 12516) // If it's day
             player.sendMessage(ChatColor.RED + "You can only start a vote at night!");
+        else if (tag.equalsIgnoreCase("Idle"))
+            player.sendMessage(ChatColor.RED + "You cannot start a vote while idle!");
+        else if (tag.equalsIgnoreCase("Away"))
+            player.sendMessage(ChatColor.RED + "You cannot start a vote while away!");
         else if (!(timer == Timer.COMPLETE)) // If there's a vote happening
             player.sendMessage(ChatColor.RED + "Vote already in progress!");
+        else if (player.getStatistic(Statistic.TIME_SINCE_REST) >= 72000)
+            player.sendMessage(ChatColor.RED + "You must sleep in a bed first!");
         else {
             timer = Timer.INIT;
             this.player = player;
             world = player.getWorld();
-            Messages.voteStarted().send(player);
-            Messages.youVoteYes().send(player);
             run();
         }
     }
@@ -229,75 +264,311 @@ public class Vote implements Runnable, Listener {
         return player.getWorld().getEnvironment() == World.Environment.NORMAL;
     }
 
-    private List updateAll(List voters) {
+    private List<Voter> updateAll(List<Voter> voters) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Voter voter = new Voter(player.getUniqueId());
+
+            // Read players tag, null if not there
+            String tag;
+            try {
+                tag = player.getPlayerListName().split("#")[1];
+            } catch (IndexOutOfBoundsException e) {
+                tag = "Active";
+            }
+
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
-                if (!voters.contains(voter)) {
-                    for (int i = 0; i < messageArray.length; i++) messageArray[i].send(player);
-                    voters.add(voter);
-                    bar.addPlayer(player);
+                if (voters.contains(voter)) {
+                    voter = voters.get(voters.indexOf(voter));
+                    if (tag.equalsIgnoreCase("Idle")) { // in V, idle
+                        voters.remove(voter);
+                        idleVoters.add(voter);
+                        int vote = voter.resetVote();
+                        if (vote == 1) yes--;
+                        if (vote == -1) no--;
+                        Messages.idle().send(player);
+                    }
+                    if (tag.equalsIgnoreCase("Away")) { // in V, away
+                        voters.remove(voter);
+                        awayVoters.add(voter);
+                        int vote = voter.resetVote();
+                        if (vote == 1) yes--;
+                        if (vote == -1) no--;
+                        Messages.away().send(player);
+                    }
+                } else if (awayVoters.contains(voter)) {
+                    if (tag.equalsIgnoreCase("Idle")) { // in A, idle
+                        awayVoters.remove(voter);
+                        idleVoters.add(voter);
+                        Messages.idle().send(player);
+                    }
+                    if (!tag.equalsIgnoreCase("Idle")
+                            && !tag.equalsIgnoreCase("Away")) { // in A, active
+                        awayVoters.remove(voter);
+                        voters.add(voter);
+                        Messages.back().send(player);
+                        Messages.voteButtons().send(player);
+                    }
+                } else if (idleVoters.contains(voter)) {
+                    if (tag.equalsIgnoreCase("Away")) { // in I, away
+                        idleVoters.remove(voter);
+                        awayVoters.add(voter);
+                        Messages.away().send(player);
+                    }
+                    if (!tag.equalsIgnoreCase("Idle")
+                            && !tag.equalsIgnoreCase("Away")) { // in I, active
+                        idleVoters.remove(voter);
+                        voters.add(voter);
+                        Messages.back().send(player);
+                        Messages.voteButtons().send(player);
+                    }
+                } else {
+                    if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
+                        awayVoters.add(voter);
+                        bar.addPlayer(player);
+                        Messages.away().send(player);
+                    } else if (tag.equalsIgnoreCase("Idle")) { // not in V, A, I, idle
+                        idleVoters.add(voter);
+                        bar.addPlayer(player);
+                        Messages.idle().send(player);
+                    } else { // not in V, A, I, active
+                        voters.add(voter);
+                        bar.addPlayer(player);
+                        Messages.voteStarted().send(player);
+                        Messages.voteButtons().send(player);
+                    }
                 }
             } else {
-                if (voters.contains(voter)) {
-                    voter = (Voter) voters.get(voters.lastIndexOf(voter));
-                    if (voter.getVote() == 1) yes--;
-                    if (voter.getVote() == -1) no--;
+                if (voters.contains(voter)) { // not in world, in V
                     voters.remove(voter);
+                    int vote = voter.resetVote();
+                    if (vote == 1) yes--;
+                    if (vote == -1) no--;
+                    bar.removePlayer(player);
+                    Messages.leftWorld().send(player);
                 }
-                bar.removePlayer(player);
+                if (idleVoters.contains(voter)) { // not in world, in I
+                    idleVoters.remove(voter);
+                    bar.removePlayer(player);
+                    Messages.leftWorld().send(player);
+                }
+                if (awayVoters.contains(voter)) { // not in world, in A
+                    awayVoters.remove(voter);
+                    bar.removePlayer(player);
+                    Messages.leftWorld().send(player);
+                }
             }
         }
         playerCount = voters.size();
+        away = awayVoters.size();
+        idle = idleVoters.size();
         return voters;
     }
 
-    private List updateAll(List voters, FancyMessage message) {
+    private List<Voter> updateAll(List<Voter> voters, FancyMessage message) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Voter voter = new Voter(player.getUniqueId());
+
+            // Read players tag, null if not there
+            String tag;
+            try {
+                tag = player.getPlayerListName().split("#")[1];
+            } catch (IndexOutOfBoundsException e) {
+                tag = "Active";
+            }
+
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
-                if (!voters.contains(voter)) {
-                    for (int i = 0; i < messageArray.length; i++) messageArray[i].send(player);
-                    voters.add(voter);
-                    bar.addPlayer(player);
+                if (voters.contains(voter)) {
+                    voter = voters.get(voters.indexOf(voter));
+                    if (tag.equalsIgnoreCase("Idle")) { // in V, idle
+                        voters.remove(voter);
+                        idleVoters.add(voter);
+                        int vote = voter.resetVote();
+                        if (vote == 1) yes--;
+                        if (vote == -1) no--;
+                        Messages.idle().send(player);
+                    }
+                    if (tag.equalsIgnoreCase("Away")) { // in V, away
+                        voters.remove(voter);
+                        awayVoters.add(voter);
+                        int vote = voter.resetVote();
+                        if (vote == 1) yes--;
+                        if (vote == -1) no--;
+                        Messages.away().send(player);
+                    }
+                } else if (awayVoters.contains(voter)) {
+                    if (tag.equalsIgnoreCase("Idle")) { // in A, idle
+                        awayVoters.remove(voter);
+                        idleVoters.add(voter);
+                        Messages.idle().send(player);
+                    }
+                    if (!tag.equalsIgnoreCase("Idle")
+                            && !tag.equalsIgnoreCase("Away")) { // in A, active
+                        awayVoters.remove(voter);
+                        voters.add(voter);
+                        Messages.back().send(player);
+                        Messages.voteButtons().send(player);
+                    }
+                } else if (idleVoters.contains(voter)) {
+                    if (tag.equalsIgnoreCase("Away")) { // in I, away
+                        idleVoters.remove(voter);
+                        awayVoters.add(voter);
+                        Messages.away().send(player);
+                    }
+                    if (!tag.equalsIgnoreCase("Idle")
+                            && !tag.equalsIgnoreCase("Away")) { // in I, active
+                        idleVoters.remove(voter);
+                        voters.add(voter);
+                        Messages.back().send(player);
+                        Messages.voteButtons().send(player);
+                    }
+                } else {
+                    if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
+                        awayVoters.add(voter);
+                        bar.addPlayer(player);
+                        Messages.away().send(player);
+                    } else if (tag.equalsIgnoreCase("Idle")) { // not in V, A, I, idle
+                        idleVoters.add(voter);
+                        bar.addPlayer(player);
+                        Messages.idle().send(player);
+                    } else { // not in V, A, I, active
+                        voters.add(voter);
+                        bar.addPlayer(player);
+                        Messages.voteStarted().send(player);
+                        Messages.voteButtons().send(player);
+                    }
                 }
                 message.send(player);
             } else {
-                if (voters.contains(voter)) {
-                    voter = (Voter) voters.get(voters.lastIndexOf(voter));
-                    if (voter.getVote() == 1) yes--;
-                    if (voter.getVote() == -1) no--;
+                if (voters.contains(voter)) { // not in world, in V
                     voters.remove(voter);
+                    int vote = voter.resetVote();
+                    if (vote == 1) yes--;
+                    if (vote == -1) no--;
+                    bar.removePlayer(player);
+                    Messages.leftWorld().send(player);
                 }
-                bar.removePlayer(player);
+                if (idleVoters.contains(voter)) { // not in world, in I
+                    idleVoters.remove(voter);
+                    bar.removePlayer(player);
+                    Messages.leftWorld().send(player);
+                }
+                if (awayVoters.contains(voter)) { // not in world, in A
+                    awayVoters.remove(voter);
+                    bar.removePlayer(player);
+                    Messages.leftWorld().send(player);
+                }
             }
         }
         playerCount = voters.size();
+        away = awayVoters.size();
+        idle = idleVoters.size();
         return voters;
     }
 
-    private List updateAll(List voters, FancyMessage[] messageArray, Player sender) {
+    private List<Voter> updateAll(List<Voter> voters, Player sender) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Voter voter = new Voter(player.getUniqueId());
+
+            // Read players tag, null if not there
+            String tag;
+            try {
+                tag = player.getPlayerListName().split("#")[1];
+            } catch (IndexOutOfBoundsException e) {
+                tag = "Active";
+            }
+
             if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
-                if (player != sender)
-                    for (int i = 0; i < messageArray.length; i++) messageArray[i].send(player);
-                if (!voters.contains(voter)) {
-                    voters.add(voter);
-                    if (player == sender) voter.voteYes();
-                    bar.addPlayer(player);
+                if (voters.contains(voter)) {
+                    voter = voters.get(voters.indexOf(voter));
+                    if (tag.equalsIgnoreCase("Idle")) { // in V, idle
+                        voters.remove(voter);
+                        idleVoters.add(voter);
+                        int vote = voter.resetVote();
+                        if (vote == 1) yes--;
+                        if (vote == -1) no--;
+                        Messages.idle().send(player);
+                    }
+                    if (tag.equalsIgnoreCase("Away")) { // in V, away
+                        voters.remove(voter);
+                        awayVoters.add(voter);
+                        int vote = voter.resetVote();
+                        if (vote == 1) yes--;
+                        if (vote == -1) no--;
+                        Messages.away().send(player);
+                    }
+                } else if (awayVoters.contains(voter)) {
+                    if (tag.equalsIgnoreCase("Idle")) { // in A, idle
+                        awayVoters.remove(voter);
+                        idleVoters.add(voter);
+                        Messages.idle().send(player);
+                    }
+                    if (!tag.equalsIgnoreCase("Idle")
+                            && !tag.equalsIgnoreCase("Away")) { // in A, active
+                        awayVoters.remove(voter);
+                        voters.add(voter);
+                        Messages.back().send(player);
+                        Messages.voteButtons().send(player);
+                    }
+                } else if (idleVoters.contains(voter)) {
+                    if (tag.equalsIgnoreCase("Away")) { // in I, away
+                        idleVoters.remove(voter);
+                        awayVoters.add(voter);
+                        Messages.away().send(player);
+                    }
+                    if (!tag.equalsIgnoreCase("Idle")
+                            && !tag.equalsIgnoreCase("Away")) { // in I, active
+                        idleVoters.remove(voter);
+                        voters.add(voter);
+                        Messages.back().send(player);
+                        Messages.voteButtons().send(player);
+                    }
+                } else {
+                    if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
+                        awayVoters.add(voter);
+                        bar.addPlayer(player);
+                        Messages.voteStarted().send(player);
+                        Messages.away().send(player);
+                    } else if (tag.equalsIgnoreCase("Idle")) { // not in V, A, I, idle
+                        idleVoters.add(voter);
+                        bar.addPlayer(player);
+                        Messages.voteStarted().send(player);
+                        Messages.idle().send(player);
+                    } else { // not in V, A, I, active
+                        voters.add(voter);
+                        bar.addPlayer(player);
+                        Messages.voteStarted().send(player);
+                        if (player == sender) {
+                            voter.voteYes();
+                            Messages.youVoteYes().send(player);
+                        } else {
+                            Messages.voteButtons().send(player);
+                        }
+                    }
                 }
             } else {
-                if (voters.contains(voter)) {
-                    voter = (Voter) voters.get(voters.lastIndexOf(voter));
-                    if (voter.getVote() == 1) yes--;
-                    if (voter.getVote() == -1) no--;
+                if (voters.contains(voter)) { // not in world, in V
                     voters.remove(voter);
+                    int vote = voter.resetVote();
+                    if (vote == 1) yes--;
+                    if (vote == -1) no--;
+                    bar.removePlayer(player);
+                    Messages.leftWorld().send(player);
                 }
-                bar.removePlayer(player);
+                if (idleVoters.contains(voter)) { // not in world, in I
+                    idleVoters.remove(voter);
+                    bar.removePlayer(player);
+                    Messages.leftWorld().send(player);
+                }
+                if (awayVoters.contains(voter)) { // not in world, in A
+                    awayVoters.remove(voter);
+                    bar.removePlayer(player);
+                    Messages.leftWorld().send(player);
+                }
             }
         }
         playerCount = voters.size();
+        away = awayVoters.size();
+        idle = idleVoters.size();
         return voters;
     }
 }

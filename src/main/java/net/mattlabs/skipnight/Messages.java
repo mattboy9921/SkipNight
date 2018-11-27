@@ -4,13 +4,13 @@ import mkremins.fanciful.FancyMessage;
 
 import static org.bukkit.ChatColor.*;
 
-public class Messages {
+class Messages {
 
     private Messages() {
 
     }
 
-    public static FancyMessage noVoteInProg() {
+    static FancyMessage noVoteInProg() {
         // No vote in progress! [Start Vote] (runs /skipnight)
         return new FancyMessage("No vote in progress! ")
                     .color(RED)
@@ -21,7 +21,7 @@ public class Messages {
                     .tooltip("Click here to start a vote");
     }
 
-    public static FancyMessage voteStarted() {
+    static FancyMessage voteStarted() {
         //&7[&9Vote&7] &rA vote to skip the night has started!
         return new FancyMessage("[")
                     .color(GRAY)
@@ -33,7 +33,7 @@ public class Messages {
                     .color(WHITE);
     }
 
-    public static FancyMessage voteButtons() {
+    static FancyMessage voteButtons() {
         //&9 - &rPlease vote: || &a&l[Yes]||cmd:/skipnight yes||ttp:&6&lClick &rhere to vote yes.|| &4&l[No]||cmd:/skipnight no||ttp:&6&lClick &rhere to vote no.
         return new FancyMessage(" - ")
                     .color(BLUE)
@@ -51,7 +51,7 @@ public class Messages {
                     .tooltip("Click here to vote no");
     }
 
-    public static FancyMessage youVoteYes() {
+    static FancyMessage youVoteYes() {
         // &9 - &rYou voted &5&lyes&r.
         return new FancyMessage(" - ")
                     .color(BLUE)
@@ -64,7 +64,7 @@ public class Messages {
                     .color(WHITE);
     }
 
-    public static FancyMessage youVoteNo() {
+    static FancyMessage youVoteNo() {
         // &9 - &rYou voted &5&lno&r.
         return new FancyMessage(" - ")
                     .color(BLUE)
@@ -77,7 +77,7 @@ public class Messages {
                     .color(WHITE);
     }
 
-    public static FancyMessage tenSecondsLeft() {
+    static FancyMessage tenSecondsLeft() {
         // &7[&9Vote&7] &5&l10 &rseconds left to vote!
         return new FancyMessage("[")
                     .color(GRAY)
@@ -92,7 +92,7 @@ public class Messages {
                     .color(WHITE);
     }
 
-    public static FancyMessage votePassed() {
+    static FancyMessage votePassed() {
         // &7[&9Vote&7] &rVote &5&lpassed&r! Skipping the night.
         return new FancyMessage("[")
                     .color(GRAY)
@@ -109,7 +109,7 @@ public class Messages {
                     .color(WHITE);
     }
 
-    public static FancyMessage voteFailed() {
+    static FancyMessage voteFailed() {
         // &7[&9Vote&7] &rVote &5&lfailed&r! The night will not be skipped.
         return new FancyMessage("[")
                     .color(GRAY)
@@ -126,11 +126,65 @@ public class Messages {
                     .color(WHITE);
     }
 
-    public static FancyMessage alreadyVoted() {
+    static FancyMessage alreadyVoted() {
         // &9 - &r&cYou have already voted!
         return new FancyMessage(" - ")
                     .color(BLUE)
                 .then("You have already voted!")
                     .color(RED);
+    }
+
+    static FancyMessage mustSleep() {
+        // &9 - &r&cYou must sleep in a bed first!
+        return new FancyMessage(" - ")
+                    .color(BLUE)
+                .then("You must sleep in a bed first!")
+                    .color(RED);
+    }
+
+    static FancyMessage idle() {
+        //  &9 - &rYou are &3&lidle&r, your vote will not count.
+        return new FancyMessage(" - ")
+                    .color(BLUE)
+                .then("You are ")
+                    .color(WHITE)
+                .then("idle")
+                    .color(DARK_AQUA)
+                    .style(BOLD)
+                .then(", your vote will not count.")
+                    .color(WHITE);
+    }
+
+    static FancyMessage away() {
+        //  &9 - &rYou are &1&laway&r, your vote will not count.
+        return new FancyMessage(" - ")
+                    .color(BLUE)
+                .then("You are ")
+                    .color(WHITE)
+                .then("away")
+                    .color(BLUE)
+                    .style(BOLD)
+                .then(", your vote will not count.")
+                    .color(WHITE);
+    }
+
+    static FancyMessage back() {
+        // &9 - &rWelcome back.
+        return new FancyMessage(" - ")
+                    .color(BLUE)
+                .then("Welcome back.")
+                    .color(WHITE);
+    }
+
+    static FancyMessage leftWorld() {
+        // &7[&9Vote&7] &rYou left the world, your vote will not count.
+        return new FancyMessage("[")
+                    .color(GRAY)
+                .then("Vote")
+                    .color(BLUE)
+                .then("]")
+                    .color(GRAY)
+                .then(" You left the world, your vote will not count.")
+                    .color(WHITE);
     }
 }

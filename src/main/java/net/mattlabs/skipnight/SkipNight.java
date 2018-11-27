@@ -11,6 +11,7 @@ public class SkipNight extends JavaPlugin {
     private Vote vote;
 
     public void onEnable() {
+        //getServer().getPluginManager().registerEvents(new Vote(this), this);
         vote = new Vote(this);
         getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, and Scarsz)");
     }
