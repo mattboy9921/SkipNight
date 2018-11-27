@@ -8,7 +8,7 @@
 
     <groupId>net.mattlabs.skipnight</groupId>
     <artifactId>SkipNight</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
 
     <description>
         Allows players to vote to skip the night
@@ -38,11 +38,6 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/public/</url>
         </repository>
-        <!-- Fanciful -->
-        <repository>
-            <id>stealthyone-repo</id>
-            <url>http://repo.stealthyone.com/content/groups/public</url>
-        </repository>
         <!-- PlayerActivity -->
         <repository>
             <id>mattlabs-repo</id>
@@ -57,12 +52,6 @@
             <artifactId>spigot-api</artifactId>
             <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <!-- Fanciful -->
-        <dependency>
-            <groupId>mkremins</groupId>
-            <artifactId>fanciful</artifactId>
-            <version>0.4.0-SNAPSHOT</version>
         </dependency>
         <!-- PlayerActivity -->
         <dependency>

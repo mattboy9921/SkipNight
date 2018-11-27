@@ -1,6 +1,6 @@
 package net.mattlabs.skipnight;
 
-import mkremins.fanciful.FancyMessage;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Statistic;
@@ -196,17 +196,17 @@ public class Vote implements Runnable, Listener {
                 voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
                     if (Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000)
-                        Messages.mustSleep().send(Bukkit.getPlayer(uuid));
+                        Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.mustSleep());
                     else {
                         yes++;
                         voter.voteYes();
-                        Messages.youVoteYes().send(Bukkit.getPlayer(uuid));
+                        Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.youVoteYes());
                     }
                 }
-                else Messages.alreadyVoted().send(Bukkit.getPlayer(uuid));
+                else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.alreadyVoted());
             }
         }
-        else Messages.noVoteInProg().send(Bukkit.getPlayer(uuid));
+        else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.noVoteInProg());
     }
 
     void addNo(UUID uuid) {
@@ -216,17 +216,17 @@ public class Vote implements Runnable, Listener {
                 voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
                     if (Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000)
-                        Messages.mustSleep().send(Bukkit.getPlayer(uuid));
+                        Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.mustSleep());
                     else {
                         no++;
                         voter.voteNo();
-                        Messages.youVoteNo().send(Bukkit.getPlayer(uuid));
+                        Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.youVoteNo());
                     }
                 }
-                else Messages.alreadyVoted().send(Bukkit.getPlayer(uuid));
+                else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.alreadyVoted());
             }
         }
-        else Messages.noVoteInProg().send(Bukkit.getPlayer(uuid));
+        else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.noVoteInProg());
     }
 
     // Attempts to start a vote if all conditions are met, otherwise informs player why vote can't start
@@ -286,7 +286,7 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        Messages.idle().send(player);
+                        player.spigot().sendMessage(Messages.idle());
                     }
                     if (tag.equalsIgnoreCase("Away")) { // in V, away
                         voters.remove(voter);
@@ -294,48 +294,48 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        Messages.away().send(player);
+                        player.spigot().sendMessage(Messages.away());
                     }
                 } else if (awayVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Idle")) { // in A, idle
                         awayVoters.remove(voter);
                         idleVoters.add(voter);
-                        Messages.idle().send(player);
+                        player.spigot().sendMessage(Messages.idle());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in A, active
                         awayVoters.remove(voter);
                         voters.add(voter);
-                        Messages.back().send(player);
-                        Messages.voteButtons().send(player);
+                        player.spigot().sendMessage(Messages.back());
+                        player.spigot().sendMessage(Messages.voteButtons());
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
                         idleVoters.remove(voter);
                         awayVoters.add(voter);
-                        Messages.away().send(player);
+                        player.spigot().sendMessage(Messages.away());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in I, active
                         idleVoters.remove(voter);
                         voters.add(voter);
-                        Messages.back().send(player);
-                        Messages.voteButtons().send(player);
+                        player.spigot().sendMessage(Messages.back());
+                        player.spigot().sendMessage(Messages.voteButtons());
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
                         awayVoters.add(voter);
                         bar.addPlayer(player);
-                        Messages.away().send(player);
+                        player.spigot().sendMessage(Messages.away());
                     } else if (tag.equalsIgnoreCase("Idle")) { // not in V, A, I, idle
                         idleVoters.add(voter);
                         bar.addPlayer(player);
-                        Messages.idle().send(player);
+                        player.spigot().sendMessage(Messages.idle());
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         bar.addPlayer(player);
-                        Messages.voteStarted().send(player);
-                        Messages.voteButtons().send(player);
+                        player.spigot().sendMessage(Messages.voteStarted());
+                        player.spigot().sendMessage(Messages.voteButtons());
                     }
                 }
             } else {
@@ -345,17 +345,17 @@ public class Vote implements Runnable, Listener {
                     if (vote == 1) yes--;
                     if (vote == -1) no--;
                     bar.removePlayer(player);
-                    Messages.leftWorld().send(player);
+                    player.spigot().sendMessage(Messages.leftWorld());
                 }
                 if (idleVoters.contains(voter)) { // not in world, in I
                     idleVoters.remove(voter);
                     bar.removePlayer(player);
-                    Messages.leftWorld().send(player);
+                    player.spigot().sendMessage(Messages.leftWorld());
                 }
                 if (awayVoters.contains(voter)) { // not in world, in A
                     awayVoters.remove(voter);
                     bar.removePlayer(player);
-                    Messages.leftWorld().send(player);
+                    player.spigot().sendMessage(Messages.leftWorld());
                 }
             }
         }
@@ -365,7 +365,7 @@ public class Vote implements Runnable, Listener {
         return voters;
     }
 
-    private List<Voter> updateAll(List<Voter> voters, FancyMessage message) {
+    private List<Voter> updateAll(List<Voter> voters, BaseComponent[] message) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Voter voter = new Voter(player.getUniqueId());
 
@@ -386,7 +386,7 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        Messages.idle().send(player);
+                        player.spigot().sendMessage(Messages.idle());
                     }
                     if (tag.equalsIgnoreCase("Away")) { // in V, away
                         voters.remove(voter);
@@ -394,51 +394,51 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        Messages.away().send(player);
+                        player.spigot().sendMessage(Messages.away());
                     }
                 } else if (awayVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Idle")) { // in A, idle
                         awayVoters.remove(voter);
                         idleVoters.add(voter);
-                        Messages.idle().send(player);
+                        player.spigot().sendMessage(Messages.idle());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in A, active
                         awayVoters.remove(voter);
                         voters.add(voter);
-                        Messages.back().send(player);
-                        Messages.voteButtons().send(player);
+                        player.spigot().sendMessage(Messages.back());
+                        player.spigot().sendMessage(Messages.voteButtons());
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
                         idleVoters.remove(voter);
                         awayVoters.add(voter);
-                        Messages.away().send(player);
+                        player.spigot().sendMessage(Messages.away());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in I, active
                         idleVoters.remove(voter);
                         voters.add(voter);
-                        Messages.back().send(player);
-                        Messages.voteButtons().send(player);
+                        player.spigot().sendMessage(Messages.back());
+                        player.spigot().sendMessage(Messages.voteButtons());
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
                         awayVoters.add(voter);
                         bar.addPlayer(player);
-                        Messages.away().send(player);
+                        player.spigot().sendMessage(Messages.away());
                     } else if (tag.equalsIgnoreCase("Idle")) { // not in V, A, I, idle
                         idleVoters.add(voter);
                         bar.addPlayer(player);
-                        Messages.idle().send(player);
+                        player.spigot().sendMessage(Messages.idle());
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         bar.addPlayer(player);
-                        Messages.voteStarted().send(player);
-                        Messages.voteButtons().send(player);
+                        player.spigot().sendMessage(Messages.voteStarted());
+                        player.spigot().sendMessage(Messages.voteButtons());
                     }
                 }
-                message.send(player);
+                player.spigot().sendMessage(message);
             } else {
                 if (voters.contains(voter)) { // not in world, in V
                     voters.remove(voter);
@@ -446,17 +446,17 @@ public class Vote implements Runnable, Listener {
                     if (vote == 1) yes--;
                     if (vote == -1) no--;
                     bar.removePlayer(player);
-                    Messages.leftWorld().send(player);
+                    player.spigot().sendMessage(Messages.leftWorld());
                 }
                 if (idleVoters.contains(voter)) { // not in world, in I
                     idleVoters.remove(voter);
                     bar.removePlayer(player);
-                    Messages.leftWorld().send(player);
+                    player.spigot().sendMessage(Messages.leftWorld());
                 }
                 if (awayVoters.contains(voter)) { // not in world, in A
                     awayVoters.remove(voter);
                     bar.removePlayer(player);
-                    Messages.leftWorld().send(player);
+                    player.spigot().sendMessage(Messages.leftWorld());
                 }
             }
         }
@@ -487,7 +487,7 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        Messages.idle().send(player);
+                        player.spigot().sendMessage(Messages.idle());
                     }
                     if (tag.equalsIgnoreCase("Away")) { // in V, away
                         voters.remove(voter);
@@ -495,54 +495,54 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        Messages.away().send(player);
+                        player.spigot().sendMessage(Messages.away());
                     }
                 } else if (awayVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Idle")) { // in A, idle
                         awayVoters.remove(voter);
                         idleVoters.add(voter);
-                        Messages.idle().send(player);
+                        player.spigot().sendMessage(Messages.idle());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in A, active
                         awayVoters.remove(voter);
                         voters.add(voter);
-                        Messages.back().send(player);
-                        Messages.voteButtons().send(player);
+                        player.spigot().sendMessage(Messages.back());
+                        player.spigot().sendMessage(Messages.voteButtons());
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
                         idleVoters.remove(voter);
                         awayVoters.add(voter);
-                        Messages.away().send(player);
+                        player.spigot().sendMessage(Messages.away());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in I, active
                         idleVoters.remove(voter);
                         voters.add(voter);
-                        Messages.back().send(player);
-                        Messages.voteButtons().send(player);
+                        player.spigot().sendMessage(Messages.back());
+                        player.spigot().sendMessage(Messages.voteButtons());
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
                         awayVoters.add(voter);
                         bar.addPlayer(player);
-                        Messages.voteStarted().send(player);
-                        Messages.away().send(player);
+                        player.spigot().sendMessage(Messages.voteStarted());
+                        player.spigot().sendMessage(Messages.away());
                     } else if (tag.equalsIgnoreCase("Idle")) { // not in V, A, I, idle
                         idleVoters.add(voter);
                         bar.addPlayer(player);
-                        Messages.voteStarted().send(player);
-                        Messages.idle().send(player);
+                        player.spigot().sendMessage(Messages.voteStarted());
+                        player.spigot().sendMessage(Messages.idle());
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         bar.addPlayer(player);
-                        Messages.voteStarted().send(player);
+                        player.spigot().sendMessage(Messages.voteStarted());
                         if (player == sender) {
                             voter.voteYes();
-                            Messages.youVoteYes().send(player);
+                            player.spigot().sendMessage(Messages.youVoteYes());
                         } else {
-                            Messages.voteButtons().send(player);
+                            player.spigot().sendMessage(Messages.voteButtons());
                         }
                     }
                 }
@@ -553,17 +553,17 @@ public class Vote implements Runnable, Listener {
                     if (vote == 1) yes--;
                     if (vote == -1) no--;
                     bar.removePlayer(player);
-                    Messages.leftWorld().send(player);
+                    player.spigot().sendMessage(Messages.leftWorld());
                 }
                 if (idleVoters.contains(voter)) { // not in world, in I
                     idleVoters.remove(voter);
                     bar.removePlayer(player);
-                    Messages.leftWorld().send(player);
+                    player.spigot().sendMessage(Messages.leftWorld());
                 }
                 if (awayVoters.contains(voter)) { // not in world, in A
                     awayVoters.remove(voter);
                     bar.removePlayer(player);
-                    Messages.leftWorld().send(player);
+                    player.spigot().sendMessage(Messages.leftWorld());
                 }
             }
         }
