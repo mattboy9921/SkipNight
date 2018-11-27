@@ -24,6 +24,12 @@ public class Voter {
         vote = -1;
     }
 
+    int resetVote() {
+        int vote = this.vote;
+        this.vote = 0;
+        return vote;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
