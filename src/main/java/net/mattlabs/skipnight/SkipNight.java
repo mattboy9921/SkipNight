@@ -1,34 +1,30 @@
 package net.mattlabs.skipnight;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import net.mattlabs.skipnight.commands.SkipNightCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SkipNight extends JavaPlugin {
 
+    private static SkipNight instance;
+    private SkipNightCommand skipNightCommand;
     private Vote vote;
 
     public void onEnable() {
+        instance = this;
         vote = new Vote(this);
+
+        // Register Command
+        skipNightCommand = new SkipNightCommand();
+        getCommand("skipnight").setExecutor(skipNightCommand);
+
         getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, and Scarsz)");
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String string, String[] strings) {
-        if (!(sender instanceof Player)) {
-            getLogger().info("Vote can't be started from console.");
-            return true;
-        }
-        Player player = (Player) sender;
+    public static SkipNight getInstance() {
+        return instance;
+    }
 
-        if (strings.length == 0) {
-            vote.start(player);
-        }
-        else if (strings[0].equalsIgnoreCase("yes")) vote.addYes(player.getUniqueId());
-        else if (strings[0].equalsIgnoreCase("no")) vote.addNo(player.getUniqueId());
-        else player.sendMessage(ChatColor.RED + "Invalid usage: /skipnight [yes/no]");
-
-        return true;
+    public Vote getVote() {
+        return vote;
     }
 }

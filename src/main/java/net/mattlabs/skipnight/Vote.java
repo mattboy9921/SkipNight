@@ -189,7 +189,7 @@ public class Vote implements Runnable, Listener {
         }
     }
 
-    void addYes(UUID uuid) {
+    public void addYes(UUID uuid) {
         if (timer != Timer.COMPLETE) {
             Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
@@ -209,7 +209,7 @@ public class Vote implements Runnable, Listener {
         else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.noVoteInProg());
     }
 
-    void addNo(UUID uuid) {
+    public void addNo(UUID uuid) {
         if (timer != Timer.COMPLETE) {
             Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
@@ -230,7 +230,7 @@ public class Vote implements Runnable, Listener {
     }
 
     // Attempts to start a vote if all conditions are met, otherwise informs player why vote can't start
-    void start(Player player) {
+    public void start(Player player) {
         // Read players tag, null if not there
         String tag;
         try {
