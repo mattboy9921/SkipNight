@@ -38,6 +38,11 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/public/</url>
         </repository>
+        <!-- For ACF -->
+        <repository>
+            <id>aikar</id>
+            <url>https://repo.aikar.co/content/groups/aikar/</url>
+        </repository>
         <!-- PlayerActivity -->
         <repository>
             <id>mattlabs-repo</id>
@@ -52,6 +57,12 @@
             <artifactId>spigot-api</artifactId>
             <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- For ACF -->
+        <dependency>
+            <groupId>co.aikar</groupId>
+            <artifactId>acf-paper</artifactId>
+            <version>0.5.0-SNAPSHOT</version>
         </dependency>
         <!-- PlayerActivity -->
         <dependency>
@@ -98,6 +109,9 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 
@@ -113,18 +127,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.1.1</version>
 
                 <configuration>
-                    <!-- Disable auto generation of dependency-reduced-pom.xml -->
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-
-                    <!-- Include only direct dependencies -->
-                    <artifactSet>
-                        <includes>
-                            <include>mkremins:fanciful</include>
-                        </includes>
-                    </artifactSet>
+                    <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+                    <!-- ACF -->
+                    <relocations>
+                        <relocation>
+                            <pattern>co.aikar.commands</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.acf</shadedPattern>
+                        </relocation>
+                    </relocations>
+                    <!-- End ACF -->
                 </configuration>
 
                 <!-- Perform shading for package phase -->
