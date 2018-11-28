@@ -33,10 +33,10 @@
     <!-- Project dependencies -->
 
     <repositories>
-        <!-- For Spigot + Bukkit API -->
+        <!-- For Paper API -->
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/public/</url>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
         <!-- For ACF -->
         <repository>
@@ -51,10 +51,10 @@
     </repositories>
 
     <dependencies>
-        <!-- Spigot + Bukkit API -->
+        <!-- For Paper API -->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
             <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
