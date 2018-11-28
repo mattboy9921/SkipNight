@@ -1,5 +1,6 @@
 package net.mattlabs.skipnight;
 
+import net.mattlabs.skipnight.util.FastForward;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,6 +39,7 @@ public class Vote implements Runnable, Listener {
     private List<Voter> idleVoters;
     private Player player;
     private World world;
+    private FastForward fastForward;
 
     Vote(Plugin plugin) {
         timer = Timer.COMPLETE;
@@ -168,7 +170,8 @@ public class Vote implements Runnable, Listener {
                 bar.setTitle(ChatColor.GREEN + "Vote passed!");
                 bar.setColor(BarColor.GREEN);
                 updateAll(voters, Messages.votePassed());
-                world.setTime(0);
+                fastForward = new FastForward(world, plugin);
+                plugin.getServer().getScheduler().runTaskLater(plugin, fastForward, 10);
                 if (world.hasStorm()) world.setStorm(false);
             }
             else {
@@ -186,6 +189,7 @@ public class Vote implements Runnable, Listener {
             bar.removeAll();
             bar = null;
             voters = null;
+            fastForward = null;
         }
     }
 
