@@ -1,6 +1,8 @@
 package net.mattlabs.skipnight;
 
 import static net.md_5.bungee.api.ChatColor.*;
+
+import co.aikar.commands.BaseCommand;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -223,4 +225,36 @@ class Messages {
                     .color(WHITE)
                 .create();
     }
+
+    static BaseComponent[] inBedVotedYes() {
+        // &9 - &rYou are now in bed, automatically voting yes.
+        return new ComponentBuilder(" - ")
+                    .color(BLUE)
+                .append("You are now in bed, automatically voting yes.")
+                    .color(WHITE)
+                .create();
+    }
+
+    static BaseComponent[] inBedNoVoteInProg() {
+        //&7[&9Vote&7] &rStart a vote to skip the night? || &5&l[Vote]||cmd:/skipnight||ttp:&6&lClick &rhere to start a vote.
+        return new ComponentBuilder("[")
+                    .color(GRAY)
+                .append("Vote")
+                    .color(BLUE)
+                .append("]")
+                    .color(GRAY)
+                .append(" Start a vote to skip the night?")
+                    .color(WHITE)
+                .append("[Start Vote]")
+                    .color(BLUE)
+                    .bold(true)
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/skipnight"))
+                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                            new ComponentBuilder("Click here to start a vote")
+                                    .color(GOLD)
+                                    .bold(true)
+                                    .create()))
+                .create();
+    }
 }
+

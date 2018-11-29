@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -60,6 +61,29 @@ public class Vote implements Runnable, Listener {
                     voters.remove(voter);
                 }
             }
+    }
+
+    @EventHandler
+    public void onBedEnter(PlayerBedEnterEvent event) {
+        Player player = event.getPlayer();
+
+        if (timer != Timer.COMPLETE) { // vote is running
+            if (player.hasPermission("skipnight.vote")) { // player has permission
+                Voter voter = new Voter(player.getUniqueId());
+                if (!voters.contains(voter)) { // player is not in voter list
+                    voters.add(voter);
+                    voter.voteYes();
+                    yes++;
+                    player.spigot().sendMessage(Messages.inBedVotedYes());
+                }
+            }
+        }
+        else {
+            if (player.hasPermission("skipnight.vote")) { // player has permission
+                if (world.getPlayerCount() > 1) // if player isn't only one in the world
+                    player.spigot().sendMessage(Messages.inBedNoVoteInProg());
+            }
+        }
     }
 
     public void run() {

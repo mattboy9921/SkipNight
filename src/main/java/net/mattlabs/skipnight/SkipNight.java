@@ -12,6 +12,9 @@ public class SkipNight extends JavaPlugin {
     public void onEnable() {
         vote = new Vote(this);
 
+        // Register Listeners
+        getServer().getPluginManager().registerEvents(vote, this);
+
         // Register Commands with ACF
         manager = new PaperCommandManager(this);
         manager.registerCommand(new SkipNightCommand(this));
