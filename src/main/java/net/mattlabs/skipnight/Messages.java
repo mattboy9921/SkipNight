@@ -1,12 +1,11 @@
 package net.mattlabs.skipnight;
 
-import static net.md_5.bungee.api.ChatColor.*;
-
-import co.aikar.commands.BaseCommand;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+
+import static net.md_5.bungee.api.ChatColor.*;
 
 class Messages {
 
