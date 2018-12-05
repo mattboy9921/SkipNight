@@ -80,7 +80,7 @@ public class Vote implements Runnable, Listener {
         }
         else {
             if (player.hasPermission("skipnight.vote")) { // player has permission
-                if (world.getPlayerCount() > 1) // if player isn't only one in the world
+                if (player.getWorld().getPlayerCount() > 1) // if player isn't only one in the world
                     player.spigot().sendMessage(Messages.inBedNoVoteInProg());
             }
         }
