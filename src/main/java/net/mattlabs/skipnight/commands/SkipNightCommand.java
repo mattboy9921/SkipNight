@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import static org.bukkit.Bukkit.getLogger;
 
 @CommandAlias("skipnight|sn")
+@CommandPermission("skipnight.vote")
 public class SkipNightCommand extends BaseCommand {
 
     Vote vote;
@@ -21,19 +22,38 @@ public class SkipNightCommand extends BaseCommand {
                 Lists.newArrayList("yes", "no"));
     }
 
-    @Default
     @Description("Starts a vote to skip the night.")
-    @CommandPermission("skipnight.vote")
-    @CommandCompletion("@skipnightOptions")
-    public void onDefault(CommandSender sender, @Optional@Values("@skipnightOptions") String vote) {
+    public void onSkipNight(CommandSender sender) {
         if (!(sender instanceof Player)) {
             getLogger().info("Vote can't be started from console.");
         }
         else {
             Player player = (Player) sender;
-            if (vote == null) this.vote.start(player);
-            else if (vote.equalsIgnoreCase("yes")) this.vote.addYes(player.getUniqueId());
-            else if (vote.equalsIgnoreCase("no")) this.vote.addNo(player.getUniqueId());
+            this.vote.start(player);
+        }
+    }
+
+    @Subcommand("yes")
+    @Description("Votes yes for current vote.")
+    public void onYes(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            getLogger().info("Vote not allowed from console.");
+        }
+        else {
+            Player player = (Player) sender;
+            this.vote.addYes(player.getUniqueId());
+        }
+    }
+
+    @Subcommand("no")
+    @Description("Votes no for current vote.")
+    public void onNo(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            getLogger().info("Vote not allowed from console.");
+        }
+        else {
+            Player player = (Player) sender;
+            this.vote.addNo(player.getUniqueId());
         }
     }
 }
