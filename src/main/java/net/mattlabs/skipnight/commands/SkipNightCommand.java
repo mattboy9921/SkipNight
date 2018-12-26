@@ -18,8 +18,6 @@ public class SkipNightCommand extends BaseCommand {
 
     public SkipNightCommand(SkipNight plugin) {
         vote = plugin.vote;
-        plugin.manager.getCommandCompletions().registerStaticCompletion("skipnightOptions",
-                Lists.newArrayList("yes", "no"));
     }
 
     @Description("Starts a vote to skip the night.")
