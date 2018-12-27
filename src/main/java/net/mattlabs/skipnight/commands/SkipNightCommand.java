@@ -20,6 +20,7 @@ public class SkipNightCommand extends BaseCommand {
         vote = plugin.vote;
     }
 
+    @Default
     @Description("Starts a vote to skip the night.")
     public void onSkipNight(CommandSender sender) {
         if (!(sender instanceof Player)) {
