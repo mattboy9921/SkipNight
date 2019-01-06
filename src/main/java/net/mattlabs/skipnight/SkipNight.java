@@ -16,7 +16,7 @@ public class SkipNight extends JavaPlugin {
         getServer().getPluginManager().registerEvents(vote, this);
 
         // Register ACF
-        manager = new PaperCommandManager(this);
+        manager = new BukkitCommandManager(this);
         // Register Commands with ACF
         manager.registerCommand(new SkipNightCommand(this));
 
