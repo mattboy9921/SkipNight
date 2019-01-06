@@ -7,7 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class SkipNight extends JavaPlugin {
 
     public Vote vote;
-    public PaperCommandManager manager;
+    private BukkitCommandManager manager;
 
     public void onEnable() {
         vote = new Vote(this);
