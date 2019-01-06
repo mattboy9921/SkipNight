@@ -1,6 +1,6 @@
 package net.mattlabs.skipnight;
 
-import co.aikar.commands.PaperCommandManager;
+import co.aikar.commands.BukkitCommandManager;
 import net.mattlabs.skipnight.commands.SkipNightCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
