@@ -1,13 +1,13 @@
 package net.mattlabs.skipnight;
 
-import co.aikar.commands.BukkitCommandManager;
+import co.aikar.commands.PaperCommandManager;
 import net.mattlabs.skipnight.commands.SkipNightCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SkipNight extends JavaPlugin {
 
     public Vote vote;
-    private BukkitCommandManager manager;
+    private PaperCommandManager manager;
 
     public void onEnable() {
         vote = new Vote(this);
@@ -16,7 +16,7 @@ public class SkipNight extends JavaPlugin {
         getServer().getPluginManager().registerEvents(vote, this);
 
         // Register ACF
-        manager = new BukkitCommandManager(this);
+        manager = new PaperCommandManager(this);
         // Register Commands with ACF
         manager.registerCommand(new SkipNightCommand(this));
 
