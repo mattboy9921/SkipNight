@@ -151,30 +151,40 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>package</phase>
-                        <configuration>
-                            <target>
-                                <delete>
-                                    <fileset dir="${basedir}\..\..\Test Server\plugins" includes="${artifactId}-*.jar" />
-                                </delete>
-                                <echo>Copying ${artifactId}-${version}.jar to test server...</echo>
-                                <copy todir="${basedir}\..\..\Test Server\plugins" overwrite="true" flatten="true">
-                                    <fileset dir="${basedir}/target" includes="${artifactId}-${version}.jar" />
-                                </copy>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
+    <profiles>
+        <!-- Profile to copy JAR to test server -->
+        <profile>
+            <id>testServer</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <id>copy</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <delete>
+                                            <fileset dir="${basedir}\..\..\Test Server\plugins" includes="${project.artifactId}-*.jar" />
+                                        </delete>
+                                        <echo>Copying ${project.artifactId}-${project.version}.jar to test server...</echo>
+                                        <copy todir="${basedir}\..\..\Test Server\plugins" overwrite="true" flatten="true">
+                                            <fileset dir="${basedir}/target" includes="${project.artifactId}-${project.version}.jar" />
+                                        </copy>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
