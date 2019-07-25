@@ -2,6 +2,8 @@ SkipNight is a simple plugin that allows players to skip the night via a vote.
 
 SpigotMC link: https://www.spigotmc.org/resources/skipnight.48334/
 
+[![Build Status](https://travis-ci.org/mattboy9921/SkipNight.svg?branch=master)](https://travis-ci.org/mattboy9921/SkipNight)
+
 **Commands**
  - `/skipnight` - Starts vote to skip the night.
  
