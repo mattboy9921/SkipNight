@@ -2,7 +2,6 @@ package net.mattlabs.skipnight.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
-import com.google.common.collect.Lists;
 import net.mattlabs.skipnight.SkipNight;
 import net.mattlabs.skipnight.Vote;
 import net.mattlabs.skipnight.util.VoteType;
