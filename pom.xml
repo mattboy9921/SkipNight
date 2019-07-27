@@ -48,6 +48,11 @@
             <id>mattlabs-repo</id>
             <url>http://repo.mattlabs.net/repository/maven-releases/</url>
         </repository>
+        <!-- For ConfigManager -->
+        <repository>
+            <id>configmanager-repo</id>
+            <url>http://repo.mattlabs.net/repository/maven-public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -69,6 +74,12 @@
             <groupId>edgruberman.bukkit.playeractivity</groupId>
             <artifactId>PlayerActivity</artifactId>
             <version>4.3.1</version>
+        </dependency>
+        <!-- For ConfigManager -->
+        <dependency>
+            <groupId>net.mattlabs.configmanager</groupId>
+            <artifactId>ConfigManager</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
