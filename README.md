@@ -1,4 +1,5 @@
 SkipNight is a simple plugin that allows players to skip the night via a vote.
+Once a vote is started, click the **yes** and **no** interactive text in chat to vote.
 
 SpigotMC link: https://www.spigotmc.org/resources/skipnight.48334/
 
@@ -6,10 +7,15 @@ SpigotMC link: https://www.spigotmc.org/resources/skipnight.48334/
 
 **Commands**
  - `/skipnight` - Starts vote to skip the night.
+ - `/skipday` - Starts a vote to skip the day.
  
 **Permissions**
  - `skipnight.vote` - Allows player to start vote, vote and be counted in vote.
  
-Tested working on Paper 1.13.2.
+ **Configuration**
+ - `skipnight` - Set to `true` to allow skipping the night.
+ - `skipday` - Set to `true` to allow skipping the day.
+ 
+Tested working on Paper 1.13.2 - 1.14.4.
 
 Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, and Aikar! 
