@@ -1,6 +1,7 @@
 package net.mattlabs.skipnight;
 
 import net.mattlabs.skipnight.util.FastForward;
+import net.mattlabs.skipnight.util.VoteType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,6 +33,7 @@ public class Vote implements Runnable, Listener {
     }
 
     private Timer timer;
+    private VoteType voteType;
     private int yes, no, playerCount, countDown, away, idle;
     private BossBar bar;
     private Plugin plugin;
@@ -67,7 +69,7 @@ public class Vote implements Runnable, Listener {
     public void onBedEnter(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
 
-        if (timer != Timer.COMPLETE) { // vote is running
+        if (timer != Timer.COMPLETE && voteType == VoteType.NIGHT) { // vote is running at night
             if (player.hasPermission("skipnight.vote")) { // player has permission
                 Voter voter = new Voter(player.getUniqueId());
                 if (!voters.contains(voter)) { // player is not in voter list
@@ -193,15 +195,15 @@ public class Vote implements Runnable, Listener {
             if (yes > no) {
                 bar.setTitle(ChatColor.GREEN + "Vote passed!");
                 bar.setColor(BarColor.GREEN);
-                updateAll(voters, Messages.votePassed());
-                fastForward = new FastForward(world, plugin);
+                updateAll(voters, Messages.votePassed(voteTypeString()));
+                fastForward = new FastForward(world, plugin, voteType);
                 plugin.getServer().getScheduler().runTaskLater(plugin, fastForward, 10);
                 if (world.hasStorm()) world.setStorm(false);
             }
             else {
                 bar.setTitle(ChatColor.DARK_RED + "Vote failed!");
                 bar.setColor(BarColor.RED);
-                updateAll(voters, Messages.voteFailed());
+                updateAll(voters, Messages.voteFailed(voteTypeString()));
             }
             plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
         }
@@ -223,7 +225,7 @@ public class Vote implements Runnable, Listener {
             if (voters.contains(voter)) {
                 voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
-                    if (Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000)
+                    if (voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000)
                         Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.mustSleep());
                     else {
                         yes++;
@@ -234,7 +236,7 @@ public class Vote implements Runnable, Listener {
                 else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.alreadyVoted());
             }
         }
-        else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.noVoteInProg());
+        else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.noVoteInProg(voteTypeString()));
     }
 
     public void addNo(UUID uuid) {
@@ -243,7 +245,7 @@ public class Vote implements Runnable, Listener {
             if (voters.contains(voter)) {
                 voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
-                    if (Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000)
+                    if (voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000)
                         Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.mustSleep());
                     else {
                         no++;
@@ -254,11 +256,11 @@ public class Vote implements Runnable, Listener {
                 else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.alreadyVoted());
             }
         }
-        else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.noVoteInProg());
+        else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.noVoteInProg(voteTypeString()));
     }
 
     // Attempts to start a vote if all conditions are met, otherwise informs player why vote can't start
-    public void start(Player player) {
+    public void start(Player player, VoteType voteType) {
         // Read players tag, null if not there
         String tag;
         try {
@@ -266,22 +268,26 @@ public class Vote implements Runnable, Listener {
         } catch (IndexOutOfBoundsException e) {
             tag = "Active";
         }
+
         if (!player.hasPermission("skipnight.vote")) // If player doesn't have permission
             player.sendMessage(ChatColor.RED + "You don't have permission to run this!");
         else if (!isInOverworld(player)) // If player isn't in the overworld
             player.sendMessage(ChatColor.RED + "You must be in the overworld to start a vote!");
-        else if (player.getWorld().getTime() < 12516) // If it's day
+        else if (voteType == VoteType.NIGHT && player.getWorld().getTime() < 12516) // If it's day, trying to skip night
             player.sendMessage(ChatColor.RED + "You can only start a vote at night!");
+        else if (voteType == VoteType.DAY && player.getWorld().getTime() >= 12516) // If it's night, trying to skip day
+            player.sendMessage(ChatColor.RED + "You can only start a vote during the day!");
         else if (tag.equalsIgnoreCase("Idle"))
             player.sendMessage(ChatColor.RED + "You cannot start a vote while idle!");
         else if (tag.equalsIgnoreCase("Away"))
             player.sendMessage(ChatColor.RED + "You cannot start a vote while away!");
         else if (!(timer == Timer.COMPLETE)) // If there's a vote happening
             player.sendMessage(ChatColor.RED + "Vote already in progress!");
-        else if (player.getStatistic(Statistic.TIME_SINCE_REST) >= 72000)
+        else if (voteType == VoteType.NIGHT && player.getStatistic(Statistic.TIME_SINCE_REST) >= 72000) // If it's night, player hasn't slept in 3 days
             player.sendMessage(ChatColor.RED + "You must sleep in a bed first!");
         else {
             timer = Timer.INIT;
+            this.voteType = voteType;
             this.player = player;
             world = player.getWorld();
             run();
@@ -291,6 +297,19 @@ public class Vote implements Runnable, Listener {
     // Checks whether player is in overworld
     private boolean isInOverworld(Player player) {
         return player.getWorld().getEnvironment() == World.Environment.NORMAL;
+    }
+
+    public String voteTypeString() {
+        String voteType = "null";
+        switch (this.voteType) {
+            case DAY:
+                voteType = "day";
+                break;
+            case NIGHT:
+                voteType = "night";
+                break;
+        }
+        return voteType;
     }
 
     private List<Voter> updateAll(List<Voter> voters) {
@@ -335,7 +354,7 @@ public class Vote implements Runnable, Listener {
                         awayVoters.remove(voter);
                         voters.add(voter);
                         player.spigot().sendMessage(Messages.back());
-                        player.spigot().sendMessage(Messages.voteButtons());
+                        player.spigot().sendMessage(Messages.voteButtons(voteTypeString()));
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
@@ -348,7 +367,7 @@ public class Vote implements Runnable, Listener {
                         idleVoters.remove(voter);
                         voters.add(voter);
                         player.spigot().sendMessage(Messages.back());
-                        player.spigot().sendMessage(Messages.voteButtons());
+                        player.spigot().sendMessage(Messages.voteButtons(voteTypeString()));
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
@@ -362,8 +381,8 @@ public class Vote implements Runnable, Listener {
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         bar.addPlayer(player);
-                        player.spigot().sendMessage(Messages.voteStarted());
-                        player.spigot().sendMessage(Messages.voteButtons());
+                        player.spigot().sendMessage(Messages.voteStarted(voteTypeString()));
+                        player.spigot().sendMessage(Messages.voteButtons(voteTypeString()));
                     }
                 }
             } else {
@@ -435,7 +454,7 @@ public class Vote implements Runnable, Listener {
                         awayVoters.remove(voter);
                         voters.add(voter);
                         player.spigot().sendMessage(Messages.back());
-                        player.spigot().sendMessage(Messages.voteButtons());
+                        player.spigot().sendMessage(Messages.voteButtons(voteTypeString()));
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
@@ -448,7 +467,7 @@ public class Vote implements Runnable, Listener {
                         idleVoters.remove(voter);
                         voters.add(voter);
                         player.spigot().sendMessage(Messages.back());
-                        player.spigot().sendMessage(Messages.voteButtons());
+                        player.spigot().sendMessage(Messages.voteButtons(voteTypeString()));
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
@@ -462,8 +481,8 @@ public class Vote implements Runnable, Listener {
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         bar.addPlayer(player);
-                        player.spigot().sendMessage(Messages.voteStarted());
-                        player.spigot().sendMessage(Messages.voteButtons());
+                        player.spigot().sendMessage(Messages.voteStarted(voteTypeString()));
+                        player.spigot().sendMessage(Messages.voteButtons(voteTypeString()));
                     }
                 }
                 player.spigot().sendMessage(message);
@@ -536,7 +555,7 @@ public class Vote implements Runnable, Listener {
                         awayVoters.remove(voter);
                         voters.add(voter);
                         player.spigot().sendMessage(Messages.back());
-                        player.spigot().sendMessage(Messages.voteButtons());
+                        player.spigot().sendMessage(Messages.voteButtons(voteTypeString()));
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
@@ -549,28 +568,28 @@ public class Vote implements Runnable, Listener {
                         idleVoters.remove(voter);
                         voters.add(voter);
                         player.spigot().sendMessage(Messages.back());
-                        player.spigot().sendMessage(Messages.voteButtons());
+                        player.spigot().sendMessage(Messages.voteButtons(voteTypeString()));
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
                         awayVoters.add(voter);
                         bar.addPlayer(player);
-                        player.spigot().sendMessage(Messages.voteStarted());
+                        player.spigot().sendMessage(Messages.voteStarted(voteTypeString()));
                         player.spigot().sendMessage(Messages.away());
                     } else if (tag.equalsIgnoreCase("Idle")) { // not in V, A, I, idle
                         idleVoters.add(voter);
                         bar.addPlayer(player);
-                        player.spigot().sendMessage(Messages.voteStarted());
+                        player.spigot().sendMessage(Messages.voteStarted(voteTypeString()));
                         player.spigot().sendMessage(Messages.idle());
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         bar.addPlayer(player);
-                        player.spigot().sendMessage(Messages.voteStarted());
+                        player.spigot().sendMessage(Messages.voteStarted(voteTypeString()));
                         if (player == sender) {
                             voter.voteYes();
                             player.spigot().sendMessage(Messages.youVoteYes());
                         } else {
-                            player.spigot().sendMessage(Messages.voteButtons());
+                            player.spigot().sendMessage(Messages.voteButtons(voteTypeString()));
                         }
                     }
                 }
