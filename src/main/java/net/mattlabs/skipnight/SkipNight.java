@@ -31,7 +31,10 @@ public class SkipNight extends JavaPlugin {
         // Register ACF
         manager = new PaperCommandManager(this);
         // Register Commands with ACF
-        manager.registerCommand(new SkipNightCommand(this));
+        if (configManager.getFileConfig("config.yml").getBoolean("skipnight"))
+            manager.registerCommand(new SkipNightCommand(this));
+        if (configManager.getFileConfig("config.yml").getBoolean("skipday"))
+            manager.registerCommand(new SkipDayCommand(this));
 
         getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar and Foodyling)");
     }
