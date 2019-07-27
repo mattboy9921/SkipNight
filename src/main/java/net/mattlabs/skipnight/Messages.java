@@ -13,14 +13,14 @@ class Messages {
 
     }
 
-    static BaseComponent[] noVoteInProg() {
-        // No vote in progress! [Start Vote] (runs /skipnight)
+    static BaseComponent[] noVoteInProg(String voteType) {
+        // No vote in progress! [Start Vote] (runs /skipday|night)
         return new ComponentBuilder("No vote in progress! ")
                     .color(RED)
                 .append("[Start Vote]")
                     .color(BLUE)
                     .bold(true)
-                    .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/skipnight"))
+                    .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/skip" + voteType))
                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                             new ComponentBuilder("Click here to start a vote")
                                         .color(GOLD)
@@ -29,21 +29,21 @@ class Messages {
                 .create();
     }
 
-    static BaseComponent[] voteStarted() {
-        //&7[&9Vote&7] &rA vote to skip the night has started!
+    static BaseComponent[] voteStarted(String voteType) {
+        //&7[&9Vote&7] &rA vote to skip the day|night has started!
         return new ComponentBuilder("[")
                     .color(GRAY)
                 .append("Vote")
                     .color(BLUE)
                 .append("] ")
                     .color(GRAY)
-                .append("A vote to skip the night has started!")
+                .append("A vote to skip the " + voteType + " has started!")
                     .color(WHITE)
                 .create();
     }
 
-    static BaseComponent[] voteButtons() {
-        //&9 - &rPlease vote: || &a&l[Yes]||cmd:/skipnight yes||ttp:&6&lClick &rhere to vote yes.|| &4&l[No]||cmd:/skipnight no||ttp:&6&lClick &rhere to vote no.
+    static BaseComponent[] voteButtons(String voteType) {
+        //&9 - &rPlease vote: || &a&l[Yes]||cmd:/skipday|night yes||ttp:&6&lClick &rhere to vote yes.|| &4&l[No]||cmd:/skipday|night no||ttp:&6&lClick &rhere to vote no.
         return new ComponentBuilder(" - ")
                     .color(BLUE)
                 .append("Please vote: ")
@@ -51,7 +51,7 @@ class Messages {
                 .append("[Yes]")
                     .color(GREEN)
                     .bold(true)
-                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/skipnight yes"))
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/skip" + voteType + " yes"))
                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                             new ComponentBuilder("Click here to vote yes")
                                         .color(GOLD)
@@ -61,7 +61,7 @@ class Messages {
                 .append("[No]")
                     .color(DARK_RED)
                     .bold(true)
-                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/skipnight no"))
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/skip" + voteType + " no"))
                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                             new ComponentBuilder("Click here to vote no")
                                         .color(GOLD)
@@ -117,8 +117,8 @@ class Messages {
                 .create();
     }
 
-    static BaseComponent[] votePassed() {
-        // &7[&9Vote&7] &rVote &5&lpassed&r! Skipping the night.
+    static BaseComponent[] votePassed(String voteType) {
+        // &7[&9Vote&7] &rVote &5&lpassed&r! Skipping the day|night.
         return new ComponentBuilder("[")
                     .color(GRAY)
                 .append("Vote")
@@ -130,14 +130,14 @@ class Messages {
                 .append("passed")
                     .color(BLUE)
                     .bold(true)
-                .append("! Skipping the night.")
+                .append("! Skipping the " + voteType + ".")
                     .reset()
                     .color(WHITE)
                 .create();
     }
 
-    static BaseComponent[] voteFailed() {
-        // &7[&9Vote&7] &rVote &5&lfailed&r! The night will not be skipped.
+    static BaseComponent[] voteFailed(String voteType) {
+        // &7[&9Vote&7] &rVote &5&lfailed&r! The day|night will not be skipped.
         return new ComponentBuilder("[")
                     .color(GRAY)
                 .append("Vote")
@@ -149,7 +149,7 @@ class Messages {
                 .append("failed")
                     .color(BLUE)
                     .bold(true)
-                .append("! The night will not be skipped.")
+                .append("! The " + voteType + " will not be skipped.")
                     .reset()
                     .color(WHITE)
                 .create();
