@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.*;
 import com.google.common.collect.Lists;
 import net.mattlabs.skipnight.SkipNight;
 import net.mattlabs.skipnight.Vote;
+import net.mattlabs.skipnight.util.VoteType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -28,7 +29,7 @@ public class SkipNightCommand extends BaseCommand {
         }
         else {
             Player player = (Player) sender;
-            this.vote.start(player);
+            this.vote.start(player, VoteType.NIGHT);
         }
     }
 
