@@ -1,0 +1,6 @@
+# Skipnight Configuration
+# By mattboy9921
+# Configuration option descriptions can be found here: https://github.com/mattboy9921/SkipNight
+skipnight: true
+skipday: false
+
