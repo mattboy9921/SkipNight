@@ -68,7 +68,7 @@ public class Vote implements Runnable, Listener {
     @EventHandler
     public void onBedEnter(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
-
+        plugin.getLogger().info("Player has entered bed.");
         if (timer != Timer.COMPLETE && voteType == VoteType.NIGHT) { // vote is running at night
             if (player.hasPermission("skipnight.vote")) { // player has permission
                 Voter voter = new Voter(player.getUniqueId());
@@ -81,7 +81,7 @@ public class Vote implements Runnable, Listener {
             }
         }
         else {
-            if (player.hasPermission("skipnight.vote")) { // player has permission
+            if (player.hasPermission("skipnight.vote") && player.getWorld().getTime() >= 12516) { // player has permission
                 if (player.getWorld().getPlayerCount() > 1) // if player isn't only one in the world
                     player.spigot().sendMessage(Messages.inBedNoVoteInProg());
             }
@@ -113,7 +113,8 @@ public class Vote implements Runnable, Listener {
         awayVoters = new ArrayList<>();
         idleVoters = new ArrayList<>();
 
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        // TODO Put bed listener in its own class
+        //plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         yes = 1;
         no = 0;
@@ -211,7 +212,8 @@ public class Vote implements Runnable, Listener {
         if (countDown == -2) plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
 
         if (countDown == -3) {
-            HandlerList.unregisterAll(this);
+            // TODO Put bed listener in its own class
+            //HandlerList.unregisterAll(this);
             bar.removeAll();
             bar = null;
             voters = null;
