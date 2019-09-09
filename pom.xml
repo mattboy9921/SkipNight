@@ -142,14 +142,19 @@
 
                 <configuration>
                     <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
-                    <!-- ACF -->
                     <relocations>
+                        <!-- ACF -->
                         <relocation>
                             <pattern>co.aikar.commands</pattern>
                             <shadedPattern>net.mattlabs.skipnight.acf</shadedPattern>
                         </relocation>
+
+                        <!-- ConfigManager -->
+                        <relocation>
+                            <pattern>net.mattlabs.configmanager</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.configmanager</shadedPattern>
+                        </relocation>
                     </relocations>
-                    <!-- End ACF -->
                 </configuration>
 
                 <!-- Perform shading for package phase -->
