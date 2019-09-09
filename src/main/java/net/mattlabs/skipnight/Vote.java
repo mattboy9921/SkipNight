@@ -68,7 +68,7 @@ public class Vote implements Runnable, Listener {
     @EventHandler
     public void onBedEnter(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
-        plugin.getLogger().info("Player has entered bed.");
+
         if (timer != Timer.COMPLETE && voteType == VoteType.NIGHT) { // vote is running at night
             if (player.hasPermission("skipnight.vote")) { // player has permission
                 Voter voter = new Voter(player.getUniqueId());
