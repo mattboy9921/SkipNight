@@ -113,9 +113,6 @@ public class Vote implements Runnable, Listener {
         awayVoters = new ArrayList<>();
         idleVoters = new ArrayList<>();
 
-        // TODO Put bed listener in its own class
-        //plugin.getServer().getPluginManager().registerEvents(this, plugin);
-
         yes = 1;
         no = 0;
         countDown = 30;
@@ -212,8 +209,6 @@ public class Vote implements Runnable, Listener {
         if (countDown == -2) plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
 
         if (countDown == -3) {
-            // TODO Put bed listener in its own class
-            //HandlerList.unregisterAll(this);
             bar.removeAll();
             bar = null;
             voters = null;
