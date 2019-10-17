@@ -72,12 +72,10 @@ public class Vote implements Runnable, Listener {
         if (timer != Timer.COMPLETE && voteType == VoteType.NIGHT) { // vote is running at night
             if (player.hasPermission("skipnight.vote")) { // player has permission
                 Voter voter = new Voter(player.getUniqueId());
-                if (!voters.contains(voter)) { // player is not in voter list
-                    voters.add(voter);
-                    voter.voteYes();
-                    yes++;
-                    player.spigot().sendMessage(Messages.inBedVotedYes());
-                }
+                voters.add(voter);
+                voter.voteYes();
+                yes++;
+                player.spigot().sendMessage(Messages.inBedVotedYes());
             }
         }
         else {
