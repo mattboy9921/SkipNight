@@ -18,7 +18,7 @@ public class FastForward implements Runnable {
     @Override
     public void run() {
         world.setTime(world.getTime() + 80);
-        if (voteType == VoteType.NIGHT && world.getTime() < 23900) plugin.getServer().getScheduler().runTaskLater(plugin, this, 1);
-        if (voteType == VoteType.DAY && world.getTime() < 13900) plugin.getServer().getScheduler().runTaskLater(plugin, this, 1);
+        if (voteType == VoteType.NIGHT && world.getTime() > 12516 && world.getTime() < 23900) plugin.getServer().getScheduler().runTaskLater(plugin, this, 1);
+        if (voteType == VoteType.DAY && world.getTime() > 23900 && world.getTime() < 12516) plugin.getServer().getScheduler().runTaskLater(plugin, this, 1);
     }
 }
