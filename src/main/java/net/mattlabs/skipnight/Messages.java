@@ -255,5 +255,14 @@ class Messages {
                                     .create()))
                 .create();
     }
+
+    static BaseComponent[] playerHasNotSlept(String name) {
+        // &9%name% needs to sleep in a bed before voting!
+        return new ComponentBuilder(name)
+                    .color(BLUE)
+                .append(" must sleep in a bed before voting!")
+                    .color(BLUE)
+                .create();
+    }
 }
 

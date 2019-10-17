@@ -2,6 +2,7 @@ package net.mattlabs.skipnight;
 
 import net.mattlabs.skipnight.util.FastForward;
 import net.mattlabs.skipnight.util.VoteType;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -220,8 +221,10 @@ public class Vote implements Runnable, Listener {
             if (voters.contains(voter)) {
                 voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
-                    if (voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000)
+                    if (voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000) {
                         Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.mustSleep());
+                        actionBarMessage(Messages.playerHasNotSlept(Bukkit.getPlayer(uuid).getName()));
+                    }
                     else {
                         yes++;
                         voter.voteYes();
@@ -240,8 +243,10 @@ public class Vote implements Runnable, Listener {
             if (voters.contains(voter)) {
                 voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
-                    if (voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000)
+                    if (voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000) {
                         Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.mustSleep());
+                        actionBarMessage(Messages.playerHasNotSlept(Bukkit.getPlayer(uuid).getName()));
+                    }
                     else {
                         no++;
                         voter.voteNo();
@@ -613,5 +618,17 @@ public class Vote implements Runnable, Listener {
         away = awayVoters.size();
         idle = idleVoters.size();
         return voters;
+    }
+
+    private void actionBarMessage(BaseComponent[] message) {
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            Voter voter = new Voter(player.getUniqueId());
+
+            if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
+                if (voters.contains(voter)) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, message);
+                }
+            }
+        }
     }
 }
