@@ -151,7 +151,7 @@ public class Vote implements Runnable, Listener {
 
     private void doOperation() {
         countDown--;
-        if (yes + no == playerCount + 1) timer = Timer.INTERRUPT;
+        if (yes + no == playerCount) timer = Timer.INTERRUPT;
         bar.setProgress((double) countDown / 30.0);
         bar.setTitle("Current Vote: "
                 + ChatColor.GREEN + ChatColor.BOLD + "Yes "
@@ -179,7 +179,7 @@ public class Vote implements Runnable, Listener {
 
     private void doFinal() {
         countDown--;
-        if (yes + no == playerCount + 1) timer = Timer.INTERRUPT;
+        if (yes + no == playerCount) timer = Timer.INTERRUPT;
         bar.setProgress((double) countDown / 30.0);
         bar.setTitle("Current Vote: "
                 + ChatColor.GREEN + ChatColor.BOLD + "Yes "

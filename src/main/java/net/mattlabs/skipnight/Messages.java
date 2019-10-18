@@ -29,15 +29,17 @@ class Messages {
                 .create();
     }
 
-    static BaseComponent[] voteStarted(String voteType) {
-        //&7[&9Vote&7] &rA vote to skip the day|night has started!
+    static BaseComponent[] voteStarted(String name, String voteType) {
+        //&7[&9Vote&7] &r%name has started a vote to skip the day|night!
         return new ComponentBuilder("[")
                     .color(GRAY)
                 .append("Vote")
                     .color(BLUE)
                 .append("] ")
                     .color(GRAY)
-                .append("A vote to skip the " + voteType + " has started!")
+                .append(name)
+                    .color(WHITE)
+                .append(" has started a vote to skip the " + voteType + "!")
                     .color(WHITE)
                 .create();
     }
