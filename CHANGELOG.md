@@ -6,3 +6,5 @@ This changelog is mainly for my own benefit to keep track of things.
 - Added action bar messages for voting yes/no or when player can't vote before sleeping
 - Added bStats metrics
 - Fixed second vote starting while transitioning to day/night
+- Fixed sleeping in bed counting vote repeatedly
+- Added player name in vote started message
