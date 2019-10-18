@@ -74,10 +74,22 @@ public class Vote implements Runnable, Listener {
         if (timer != Timer.OFF && voteType == VoteType.NIGHT) { // vote is running at night
             if (player.hasPermission("skipnight.vote")) { // player has permission
                 Voter voter = new Voter(player.getUniqueId());
-                voters.add(voter);
-                voter.voteYes();
-                yes++;
-                player.spigot().sendMessage(Messages.inBedVotedYes());
+                if (voters.contains(voter)) { // Voter exists but hasn't voted
+                    voter = voters.get(voters.indexOf(voter));
+                    if (voter.getVote() == 0) {
+                        voter.voteYes();
+                        yes++;
+                        player.spigot().sendMessage(Messages.inBedVotedYes());
+                        plugin.getLogger().info("Voter exists but hasn't voted");
+                    }
+                }
+                else { // Voter doesn't exist but hasn't voted
+                    voters.add(voter);
+                    voter.voteYes();
+                    yes++;
+                    player.spigot().sendMessage(Messages.inBedVotedYes());
+                    plugin.getLogger().info("Voter doesn't exist but hasn't voted");
+                }
             }
         }
         else {
@@ -139,7 +151,7 @@ public class Vote implements Runnable, Listener {
 
     private void doOperation() {
         countDown--;
-        if (yes + no == playerCount) timer = Timer.INTERRUPT;
+        if (yes + no == playerCount + 1) timer = Timer.INTERRUPT;
         bar.setProgress((double) countDown / 30.0);
         bar.setTitle("Current Vote: "
                 + ChatColor.GREEN + ChatColor.BOLD + "Yes "
@@ -167,7 +179,7 @@ public class Vote implements Runnable, Listener {
 
     private void doFinal() {
         countDown--;
-        if (yes + no == playerCount) timer = Timer.INTERRUPT;
+        if (yes + no == playerCount + 1) timer = Timer.INTERRUPT;
         bar.setProgress((double) countDown / 30.0);
         bar.setTitle("Current Vote: "
                 + ChatColor.GREEN + ChatColor.BOLD + "Yes "
