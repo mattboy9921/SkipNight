@@ -53,6 +53,11 @@
             <id>configmanager-repo</id>
             <url>http://repo.mattlabs.net/repository/maven-public/</url>
         </repository>
+        <!-- For bStats -->
+        <repository>
+            <id>CodeMC</id>
+            <url>https://repo.codemc.org/repository/maven-public</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -80,6 +85,13 @@
             <groupId>net.mattlabs.configmanager</groupId>
             <artifactId>ConfigManager</artifactId>
             <version>1.1.0</version>
+        </dependency>
+        <!-- For bStats -->
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>1.5</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -148,11 +160,15 @@
                             <pattern>co.aikar.commands</pattern>
                             <shadedPattern>net.mattlabs.skipnight.acf</shadedPattern>
                         </relocation>
-
                         <!-- ConfigManager -->
                         <relocation>
                             <pattern>net.mattlabs.configmanager</pattern>
                             <shadedPattern>net.mattlabs.skipnight.configmanager</shadedPattern>
+                        </relocation>
+                        <!-- bStats -->
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>net.mattlabs.skipnight</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

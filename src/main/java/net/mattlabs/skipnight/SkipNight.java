@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager;
 import net.mattlabs.configmanager.ConfigManager;
 import net.mattlabs.skipnight.commands.SkipDayCommand;
 import net.mattlabs.skipnight.commands.SkipNightCommand;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SkipNight extends JavaPlugin {
@@ -36,6 +37,9 @@ public class SkipNight extends JavaPlugin {
             manager.registerCommand(new SkipNightCommand(this));
         if (configManager.getFileConfig("config.yml").getBoolean("skipday"))
             manager.registerCommand(new SkipDayCommand(this));
+
+        // bStats
+        Metrics metrics = new Metrics(this);
 
         getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar and Foodyling)");
     }
