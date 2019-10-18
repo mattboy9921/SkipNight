@@ -229,6 +229,7 @@ public class Vote implements Runnable, Listener {
                         yes++;
                         voter.voteYes();
                         Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.youVoteYes());
+                        actionBarMessage(Messages.playerHasVotedYes(Bukkit.getPlayer(uuid).getName()));
                     }
                 }
                 else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.alreadyVoted());
@@ -251,6 +252,7 @@ public class Vote implements Runnable, Listener {
                         no++;
                         voter.voteNo();
                         Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.youVoteNo());
+                        actionBarMessage(Messages.playerHasVotedNo(Bukkit.getPlayer(uuid).getName()));
                     }
                 }
                 else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.alreadyVoted());

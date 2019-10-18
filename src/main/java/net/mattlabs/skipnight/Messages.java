@@ -264,5 +264,23 @@ class Messages {
                     .color(BLUE)
                 .create();
     }
+
+    static BaseComponent[] playerHasVotedYes(String name) {
+        // &9%name% needs to sleep in a bed before voting!
+        return new ComponentBuilder(name)
+                .color(BLUE)
+                .append(" has voted yes.")
+                .color(BLUE)
+                .create();
+    }
+
+    static BaseComponent[] playerHasVotedNo(String name) {
+        // &9%name% needs to sleep in a bed before voting!
+        return new ComponentBuilder(name)
+                .color(BLUE)
+                .append(" has voted no.")
+                .color(BLUE)
+                .create();
+    }
 }
 
