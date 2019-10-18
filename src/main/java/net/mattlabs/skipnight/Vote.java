@@ -399,7 +399,7 @@ public class Vote implements Runnable, Listener {
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         bar.addPlayer(player);
-                        player.spigot().sendMessage(Messages.voteStarted(voteTypeString()));
+                        player.spigot().sendMessage(Messages.voteStarted(player.getName(), voteTypeString()));
                         player.spigot().sendMessage(Messages.voteButtons(voteTypeString()));
                     }
                 }
@@ -499,7 +499,7 @@ public class Vote implements Runnable, Listener {
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         bar.addPlayer(player);
-                        player.spigot().sendMessage(Messages.voteStarted(voteTypeString()));
+                        player.spigot().sendMessage(Messages.voteStarted(player.getName(), voteTypeString()));
                         player.spigot().sendMessage(Messages.voteButtons(voteTypeString()));
                     }
                 }
@@ -592,17 +592,17 @@ public class Vote implements Runnable, Listener {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
                         awayVoters.add(voter);
                         bar.addPlayer(player);
-                        player.spigot().sendMessage(Messages.voteStarted(voteTypeString()));
+                        player.spigot().sendMessage(Messages.voteStarted(player.getName(), voteTypeString()));
                         player.spigot().sendMessage(Messages.away());
                     } else if (tag.equalsIgnoreCase("Idle")) { // not in V, A, I, idle
                         idleVoters.add(voter);
                         bar.addPlayer(player);
-                        player.spigot().sendMessage(Messages.voteStarted(voteTypeString()));
+                        player.spigot().sendMessage(Messages.voteStarted(player.getName(), voteTypeString()));
                         player.spigot().sendMessage(Messages.idle());
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         bar.addPlayer(player);
-                        player.spigot().sendMessage(Messages.voteStarted(voteTypeString()));
+                        player.spigot().sendMessage(Messages.voteStarted(player.getName(), voteTypeString()));
                         if (player == sender) {
                             voter.voteYes();
                             player.spigot().sendMessage(Messages.youVoteYes());
