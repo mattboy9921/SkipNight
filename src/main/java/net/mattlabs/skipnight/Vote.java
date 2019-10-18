@@ -30,7 +30,8 @@ public class Vote implements Runnable, Listener {
         OPERATION,
         INTERRUPT,
         FINAL,
-        COMPLETE
+        COMPLETE,
+        OFF
     }
 
     private Timer timer;
@@ -46,7 +47,7 @@ public class Vote implements Runnable, Listener {
     private FastForward fastForward;
 
     Vote(Plugin plugin) {
-        timer = Timer.COMPLETE;
+        timer = Timer.OFF;
         this.plugin = plugin;
     }
 
@@ -54,7 +55,7 @@ public class Vote implements Runnable, Listener {
     public void onLogoff(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        if (timer != Timer.COMPLETE) // vote is running
+        if (timer != Timer.OFF) // vote is running
             if (player.hasPermission("skipnight.vote")) { // player has permission
                 Voter voter = new Voter(player.getUniqueId());
                 if (voters.contains(voter)) { // player is in voter list
@@ -70,7 +71,7 @@ public class Vote implements Runnable, Listener {
     public void onBedEnter(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
 
-        if (timer != Timer.COMPLETE && voteType == VoteType.NIGHT) { // vote is running at night
+        if (timer != Timer.OFF && voteType == VoteType.NIGHT) { // vote is running at night
             if (player.hasPermission("skipnight.vote")) { // player has permission
                 Voter voter = new Voter(player.getUniqueId());
                 voters.add(voter);
@@ -103,6 +104,8 @@ public class Vote implements Runnable, Listener {
                 break;
             case COMPLETE:
                 doComplete();
+                break;
+            default:
                 break;
         }
     }
@@ -205,18 +208,19 @@ public class Vote implements Runnable, Listener {
             plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
         }
 
-        if (countDown == -2) plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
+        if (countDown <= -2) plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
 
-        if (countDown == -3) {
+        if (countDown == -9) {
             bar.removeAll();
             bar = null;
             voters = null;
             fastForward = null;
+            timer = Timer.OFF;
         }
     }
 
     public void addYes(UUID uuid) {
-        if (timer != Timer.COMPLETE) {
+        if (timer != Timer.OFF) {
             Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
                 voter = voters.get(voters.lastIndexOf(voter));
@@ -239,7 +243,7 @@ public class Vote implements Runnable, Listener {
     }
 
     public void addNo(UUID uuid) {
-        if (timer != Timer.COMPLETE) {
+        if (timer != Timer.OFF) {
             Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
                 voter = voters.get(voters.lastIndexOf(voter));
@@ -283,7 +287,7 @@ public class Vote implements Runnable, Listener {
             player.sendMessage(ChatColor.RED + "You cannot start a vote while idle!");
         else if (tag.equalsIgnoreCase("Away"))
             player.sendMessage(ChatColor.RED + "You cannot start a vote while away!");
-        else if (!(timer == Timer.COMPLETE)) // If there's a vote happening
+        else if (!(timer == Timer.OFF)) // If there's a vote happening
             player.sendMessage(ChatColor.RED + "Vote already in progress!");
         else if (voteType == VoteType.NIGHT && player.getStatistic(Statistic.TIME_SINCE_REST) >= 72000) // If it's night, player hasn't slept in 3 days
             player.sendMessage(ChatColor.RED + "You must sleep in a bed first!");
