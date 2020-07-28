@@ -48,10 +48,10 @@
             <id>mattlabs-repo</id>
             <url>http://repo.mattlabs.net/repository/maven-releases/</url>
         </repository>
-        <!-- For ConfigManager -->
+        <!-- For Configurate -->
         <repository>
-            <id>configmanager-repo</id>
-            <url>http://repo.mattlabs.net/repository/maven-public/</url>
+            <id>sponge</id>
+            <url>https://repo.spongepowered.org/maven</url>
         </repository>
         <!-- For bStats -->
         <repository>
@@ -80,11 +80,16 @@
             <artifactId>PlayerActivity</artifactId>
             <version>4.3.3</version>
         </dependency>
-        <!-- For ConfigManager -->
+        <!-- For Configurate -->
         <dependency>
-            <groupId>net.mattlabs.configmanager</groupId>
-            <artifactId>ConfigManager</artifactId>
-            <version>1.1.0</version>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>configurate-hocon</artifactId>
+            <version>3.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>configurate-yaml</artifactId>
+            <version>3.7</version>
         </dependency>
         <!-- For bStats -->
         <dependency>
