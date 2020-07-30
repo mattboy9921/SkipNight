@@ -227,17 +227,18 @@ public class Vote implements Runnable, Listener {
             bar = null;
             voters = null;
             fastForward = null;
+            voteType = null;
             timer = Timer.OFF;
         }
     }
 
-    public void addYes(UUID uuid) {
+    public void addYes(UUID uuid, VoteType voteType) {
         if (timer != Timer.OFF) {
             Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
                 voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
-                    if (voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000) {
+                    if (this.voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000) {
                         Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.mustSleep());
                         actionBarMessage(Messages.playerHasNotSlept(Bukkit.getPlayer(uuid).getName()));
                     }
@@ -251,16 +252,16 @@ public class Vote implements Runnable, Listener {
                 else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.alreadyVoted());
             }
         }
-        else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.noVoteInProg(voteTypeString()));
+        else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.noVoteInProg(voteTypeString(voteType)));
     }
 
-    public void addNo(UUID uuid) {
+    public void addNo(UUID uuid, VoteType voteType) {
         if (timer != Timer.OFF) {
             Voter voter = new Voter(uuid);
             if (voters.contains(voter)) {
                 voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
-                    if (voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000) {
+                    if (this.voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000) {
                         Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.mustSleep());
                         actionBarMessage(Messages.playerHasNotSlept(Bukkit.getPlayer(uuid).getName()));
                     }
@@ -274,7 +275,7 @@ public class Vote implements Runnable, Listener {
                 else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.alreadyVoted());
             }
         }
-        else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.noVoteInProg(voteTypeString()));
+        else Bukkit.getPlayer(uuid).spigot().sendMessage(Messages.noVoteInProg(voteTypeString(voteType)));
     }
 
     // Attempts to start a vote if all conditions are met, otherwise informs player why vote can't start
@@ -318,16 +319,20 @@ public class Vote implements Runnable, Listener {
     }
 
     public String voteTypeString() {
-        String voteType = "null";
-        switch (this.voteType) {
+        return voteTypeString(this.voteType);
+    }
+
+    public String voteTypeString(VoteType voteType) {
+        String voteTypeString = "null";
+        switch (voteType) {
             case DAY:
-                voteType = "day";
+                voteTypeString = "day";
                 break;
             case NIGHT:
-                voteType = "night";
+                voteTypeString = "night";
                 break;
         }
-        return voteType;
+        return voteTypeString;
     }
 
     private List<Voter> updateAll(List<Voter> voters) {
