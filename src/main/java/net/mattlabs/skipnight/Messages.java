@@ -16,7 +16,12 @@ public class Messages {
     // Header fields
     @Setting(comment = "Skipnight Messages Configuration\n" +
             "By Mattboy9921\n" +
-            "https://github.com/mattboy9921/SkipNight")
+            "https://github.com/mattboy9921/SkipNight\n\n" +
+            "This configuration contains every string of text found in this plugin.\n" +
+            "For values that contain variables, they are shown as \"{0}\"\n" +
+            "and their value is shown in the comment above the line.\n" +
+            "Please note, some values cannot use color codes (\"&f\") as denoted in the comment above the value.\n" +
+            "It is not necessary to include every variable, but certain strings won't make sense otherwise.")
     private boolean __mattIsAwesome = true;
 
     @Setting(value = "_format-code", comment = "\n")
