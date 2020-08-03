@@ -616,6 +616,9 @@ public class Vote implements Runnable, Listener {
                         if (player == sender) {
                             voter.voteYes();
                             platform.player(player).sendMessage(messages.youVoteYes());
+                        } else if (player.isSleeping()) {
+                            voter.voteYes();
+                            platform.player(player).sendMessage(messages.youVoteYes());
                         } else {
                             platform.player(player).sendMessage(messages.voteButtons(voteTypeString()));
                         }
