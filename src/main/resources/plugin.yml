@@ -3,6 +3,8 @@ version: ${project.version}
 api-version: 1.13
 description: ${project.description}
 author: mattboy9921 (mattboy9921@aim.com)
+website: https://www.spigotmc.org/resources/skipnight.48334/
+softdepend: [PlayerActivity]
 main: net.mattlabs.skipnight.SkipNight
 commands:
   skipnight:
