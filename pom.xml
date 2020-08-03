@@ -191,11 +191,6 @@
                             <pattern>co.aikar.commands</pattern>
                             <shadedPattern>net.mattlabs.skipnight.acf</shadedPattern>
                         </relocation>
-                        <!-- ConfigManager -->
-                        <relocation>
-                            <pattern>net.mattlabs.configmanager</pattern>
-                            <shadedPattern>net.mattlabs.skipnight.configmanager</shadedPattern>
-                        </relocation>
                         <!-- bStats -->
                         <relocation>
                             <pattern>org.bstats</pattern>
