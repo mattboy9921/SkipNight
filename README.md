@@ -10,12 +10,19 @@ SpigotMC link: https://www.spigotmc.org/resources/skipnight.48334/
  - `/skipday` - Starts a vote to skip the day.
  
 **Permissions**
- - `skipnight.vote` - Allows player to start vote, vote and be counted in vote.
+ - `skipnight.vote.day` - Allows player to start vote to skip day, vote and be counted in vote.
+ - `skipnight.vote.night` - Allows player to start vote to skip night, vote and be counted in vote.
  
- **Configuration**
+ **Configuration (`config.conf`)**
  - `skipnight` - Set to `true` to allow skipping the night.
  - `skipday` - Set to `true` to allow skipping the day.
+ - `phantom-support` - Set to `true` to prevent players from voting if phantoms are attacking them.
  
-Tested working on Paper 1.13.2 - 1.14.4.
+ **Messages Configuration (`messages.conf`)**
+ 
+ The messages configuration contains every string of text found in the plugin. 
+ Follow the instructions in the messages configuration to modify these for your needs.
+ 
+Tested working on Paper 1.9.0 - 1.16.1.
 
-Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, and Aikar! 
+Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar, and mbaxter! 
