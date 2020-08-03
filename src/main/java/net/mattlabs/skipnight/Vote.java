@@ -64,7 +64,7 @@ public class Vote implements Runnable, Listener {
         Player player = event.getPlayer();
 
         if (timer != Timer.OFF) // vote is running
-            if (player.hasPermission("skipnight.vote")) { // player has permission
+            if (player.hasPermission("skipnight.vote." + voteTypeStringCommand(voteType))) { // player has permission
                 Voter voter = new Voter(player.getUniqueId());
                 if (voters.contains(voter)) { // player is in voter list
                     voter = voters.get(voters.lastIndexOf(voter));
@@ -80,7 +80,7 @@ public class Vote implements Runnable, Listener {
         Player player = event.getPlayer();
 
         if (timer != Timer.OFF && voteType == VoteType.NIGHT) { // vote is running at night
-            if (player.hasPermission("skipnight.vote")) { // player has permission
+            if (player.hasPermission("skipnight.vote." + voteTypeStringCommand(voteType))) { // player has permission
                 Voter voter = new Voter(player.getUniqueId());
                 if (voters.contains(voter)) { // Voter exists but hasn't voted
                     voter = voters.get(voters.indexOf(voter));
@@ -101,7 +101,7 @@ public class Vote implements Runnable, Listener {
             }
         }
         else {
-            if (player.hasPermission("skipnight.vote") && player.getWorld().getTime() >= 12516) { // player has permission
+            if (player.hasPermission("skipnight.vote." + voteTypeStringCommand(voteType)) && player.getWorld().getTime() >= 12516) { // player has permission
                 if (player.getWorld().getPlayerCount() > 1) // if player isn't only one in the world
                     platform.player(player).sendMessage(messages.inBedNoVoteInProg());
             }
@@ -324,7 +324,7 @@ public class Vote implements Runnable, Listener {
             playerMustSleep = player.getStatistic(Statistic.TIME_SINCE_REST) >= 72000;
         } else playerMustSleep = false;
 
-        if (!player.hasPermission("skipnight.vote")) // If player doesn't have permission
+        if (!player.hasPermission("skipnight.vote." + voteTypeStringCommand(voteType))) // If player doesn't have permission
             platform.player(player).sendMessage(messages.noPerm());
         else if (!isInOverworld(player)) // If player isn't in the overworld
             platform.player(player).sendMessage(messages.wrongWorld());
@@ -370,6 +370,19 @@ public class Vote implements Runnable, Listener {
         }
         return voteTypeString;
     }
+    
+    public String voteTypeStringCommand(VoteType voteType) {
+        String voteTypeString = "null";
+        switch (voteType) {
+            case DAY:
+                voteTypeString = "day";
+                break;
+            case NIGHT:
+                voteTypeString = "night";
+                break;
+        }
+        return voteTypeString;
+    }
 
     private List<Voter> updateAll(List<Voter> voters) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
@@ -383,7 +396,7 @@ public class Vote implements Runnable, Listener {
                 tag = "Active";
             }
 
-            if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
+            if (isInOverworld(player) && player.hasPermission("skipnight.vote." + voteTypeStringCommand(voteType))) {
                 if (voters.contains(voter)) {
                     voter = voters.get(voters.indexOf(voter));
                     if (tag.equalsIgnoreCase("Idle")) { // in V, idle
@@ -483,7 +496,7 @@ public class Vote implements Runnable, Listener {
                 tag = "Active";
             }
 
-            if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
+            if (isInOverworld(player) && player.hasPermission("skipnight.vote." + voteTypeStringCommand(voteType))) {
                 if (voters.contains(voter)) {
                     voter = voters.get(voters.indexOf(voter));
                     if (tag.equalsIgnoreCase("Idle")) { // in V, idle
@@ -584,7 +597,7 @@ public class Vote implements Runnable, Listener {
                 tag = "Active";
             }
 
-            if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
+            if (isInOverworld(player) && player.hasPermission("skipnight.vote." + voteTypeStringCommand(voteType))) {
                 if (voters.contains(voter)) {
                     voter = voters.get(voters.indexOf(voter));
                     if (tag.equalsIgnoreCase("Idle")) { // in V, idle
@@ -686,7 +699,7 @@ public class Vote implements Runnable, Listener {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Voter voter = new Voter(player.getUniqueId());
 
-            if (isInOverworld(player) && player.hasPermission("skipnight.vote")) {
+            if (isInOverworld(player) && player.hasPermission("skipnight.vote." + voteTypeStringCommand(voteType))) {
                 if (voters.contains(voter)) {
                     platform.player(player).sendActionBar(message);
                 }

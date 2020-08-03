@@ -11,5 +11,7 @@ commands:
     description: SkipNight command(s).
     usage: /skipnight [yes|no]
 permissions:
-  skipnight.vote:
-    description: Allows player to vote.
+  skipnight.vote.night:
+    description: Allows player to vote to skip the night.
+  skipnight.vote.day:
+    description: Allows player to vote to skip the day.

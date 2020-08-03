@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import static org.bukkit.Bukkit.getLogger;
 
 @CommandAlias("skipnight|sn")
-@CommandPermission("skipnight.vote")
+@CommandPermission("skipnight.vote.night")
 public class SkipNightCommand extends BaseCommand {
 
     Vote vote;

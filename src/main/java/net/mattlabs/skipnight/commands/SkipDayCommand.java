@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import static org.bukkit.Bukkit.getLogger;
 
 @CommandAlias("skipday|sd")
-@CommandPermission("skipnight.vote")
+@CommandPermission("skipnight.vote.day")
 public class SkipDayCommand extends BaseCommand {
 
     Vote vote;
