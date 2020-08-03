@@ -2,6 +2,7 @@ package net.mattlabs.skipnight;
 
 import co.aikar.commands.PaperCommandManager;
 import com.google.common.reflect.TypeToken;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.mattlabs.skipnight.commands.SkipDayCommand;
 import net.mattlabs.skipnight.commands.SkipNightCommand;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -15,42 +16,71 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 
 public class SkipNight extends JavaPlugin {
 
     public Vote vote;
     private PaperCommandManager manager;
     private Config config;
+    private Messages messages;
+    private static SkipNight instance;
+    private BukkitAudiences platform;
 
     public void onEnable() {
-        vote = new Vote(this);
+        instance = this;
 
         // Configuration Section
         File configFile = new File(this.getDataFolder(), "config.conf");
+        File messasgesFile = new File(this.getDataFolder(), "messages.conf");
 
-        Path potentialFile = configFile.toPath();
-        ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setPath(potentialFile).build();
+        ConfigurationLoader<CommentedConfigurationNode> configLoader =
+                HoconConfigurationLoader.builder().setPath(configFile.toPath()).build();
+        ConfigurationLoader<CommentedConfigurationNode> messagesLoader =
+                HoconConfigurationLoader.builder().setPath(messasgesFile.toPath()).build();
 
-        convertConfigFormat(new File(this.getDataFolder(), "config.yml"), loader);
+        // Convert old YAML file if it exists still
+        convertConfigFormat(new File(this.getDataFolder(), "config.yml"), configLoader);
 
         config = null;
+        messages = null;
 
         // Load config from file location, otherwise use values from Config class
         try {
-            config = loader.load().<Config>getValue(TypeToken.of(Config.class), Config::new);
+            config = configLoader.load().<Config>getValue(TypeToken.of(Config.class), Config::new);
         }
-        catch (ObjectMappingException | IOException e){
+        catch (ObjectMappingException | IOException e) {
             getLogger().severe("Failed to load the config - Using a default!");
+        }
+
+        // Load Messages from file location, otherwise use values from Messages class
+        try {
+            messages = messagesLoader.load().<Messages>getValue(TypeToken.of(Messages.class), Messages::new);
+        }
+        catch (ObjectMappingException | IOException e) {
+            getLogger().severe("Failed to load the messages config - Using a default!");
         }
 
         // Save config to file
         try {
-            loader.save(loader.createEmptyNode().setValue(TypeToken.of(Config.class), config));
+            configLoader.save(configLoader.createEmptyNode().setValue(TypeToken.of(Config.class), config));
         }
         catch (ObjectMappingException | IOException e){
             getLogger().severe("Failed to save the config!");
         }
+
+        // Save Messages to file
+        try {
+            messagesLoader.save(messagesLoader.createEmptyNode().setValue(TypeToken.of(Messages.class), messages));
+        }
+        catch (ObjectMappingException | IOException e){
+            getLogger().severe("Failed to save the messages config!");
+        }
+
+        // Register Audience (Messages)
+        platform = BukkitAudiences.create(this);
+
+        // Register vote
+        vote = new Vote(this);
 
         // Register Listeners
         getServer().getPluginManager().registerEvents(vote, this);
@@ -68,6 +98,18 @@ public class SkipNight extends JavaPlugin {
         Metrics metrics = new Metrics(this);
 
         getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar and Foodyling)");
+    }
+
+    public static SkipNight getInstance() {
+        return instance;
+    }
+
+    public Messages getMessages() {
+        return messages;
+    }
+
+    public BukkitAudiences getPlatform() {
+        return platform;
     }
 
     /**
