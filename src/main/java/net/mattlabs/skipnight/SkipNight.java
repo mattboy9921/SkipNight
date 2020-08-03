@@ -112,6 +112,9 @@ public class SkipNight extends JavaPlugin {
         // bStats
         Metrics metrics = new Metrics(this,  	5796);
 
+        // PlayerActivity Integration
+        if (!hasPlayerActivity()) getLogger().info("PlayerActivity not found, disabling Idle/Away features");
+
         getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar and mbaxter)");
     }
 
@@ -129,6 +132,10 @@ public class SkipNight extends JavaPlugin {
 
     public String getVersion() {
         return version;
+    }
+
+    public boolean hasPlayerActivity() {
+        return getServer().getPluginManager().getPlugin("PlayerActivity") != null;
     }
 
     /**

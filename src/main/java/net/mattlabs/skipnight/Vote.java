@@ -48,6 +48,7 @@ public class Vote implements Runnable, Listener {
     private Messages messages;
     private BukkitAudiences platform;
     private String version;
+    private boolean playerActivity;
 
     Vote(Plugin plugin) {
         timer = Timer.OFF;
@@ -55,6 +56,7 @@ public class Vote implements Runnable, Listener {
         messages = SkipNight.getInstance().getMessages();
         platform = SkipNight.getInstance().getPlatform();
         version = SkipNight.getInstance().getVersion();
+        playerActivity = SkipNight.getInstance().hasPlayerActivity();
     }
 
     @EventHandler
@@ -139,15 +141,22 @@ public class Vote implements Runnable, Listener {
         away = 0;
         idle = 0;
 
-        bar = Bukkit.createBossBar("Current Vote: "
-                + ChatColor.GREEN + ChatColor.BOLD + "Yes "
-                + ChatColor.RESET + "- " + yes
-                + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
-                + ChatColor.RESET + "- " + no
-                + ChatColor.DARK_AQUA + ChatColor.BOLD + " Idle "
-                + ChatColor.RESET + "- " + idle
-                + ChatColor.BLUE +  ChatColor.BOLD + " Away "
-                + ChatColor.RESET + "- " + away, BarColor.PURPLE, BarStyle.SOLID);
+        if (playerActivity)
+            bar = Bukkit.createBossBar("Current Vote: "
+                    + ChatColor.GREEN + ChatColor.BOLD + "Yes "
+                    + ChatColor.RESET + "- " + yes
+                    + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
+                    + ChatColor.RESET + "- " + no
+                    + ChatColor.DARK_AQUA + ChatColor.BOLD + " Idle "
+                    + ChatColor.RESET + "- " + idle
+                    + ChatColor.BLUE +  ChatColor.BOLD + " Away "
+                    + ChatColor.RESET + "- " + away, BarColor.PURPLE, BarStyle.SOLID);
+        else
+            bar = Bukkit.createBossBar("Current Vote: "
+                    + ChatColor.GREEN + ChatColor.BOLD + "Yes "
+                    + ChatColor.RESET + "- " + yes
+                    + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
+                    + ChatColor.RESET + "- " + no, BarColor.PURPLE, BarStyle.SOLID);
 
         voters = updateAll(voters, player);
 
@@ -159,15 +168,22 @@ public class Vote implements Runnable, Listener {
         countDown--;
         if (yes + no == playerCount) timer = Timer.INTERRUPT;
         bar.setProgress((double) countDown / 30.0);
-        bar.setTitle("Current Vote: "
-                + ChatColor.GREEN + ChatColor.BOLD + "Yes "
-                + ChatColor.RESET + "- " + yes
-                + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
-                + ChatColor.RESET + "- " + no
-                + ChatColor.DARK_AQUA + ChatColor.BOLD + " Idle "
-                + ChatColor.RESET + "- " + idle
-                + ChatColor.BLUE +  ChatColor.BOLD + " Away "
-                + ChatColor.RESET + "- " + away);
+        if (playerActivity)
+            bar.setTitle("Current Vote: "
+                    + ChatColor.GREEN + ChatColor.BOLD + "Yes "
+                    + ChatColor.RESET + "- " + yes
+                    + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
+                    + ChatColor.RESET + "- " + no
+                    + ChatColor.DARK_AQUA + ChatColor.BOLD + " Idle "
+                    + ChatColor.RESET + "- " + idle
+                    + ChatColor.BLUE +  ChatColor.BOLD + " Away "
+                    + ChatColor.RESET + "- " + away);
+        else
+            bar.setTitle("Current Vote: "
+                    + ChatColor.GREEN + ChatColor.BOLD + "Yes "
+                    + ChatColor.RESET + "- " + yes
+                    + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
+                    + ChatColor.RESET + "- " + no);
         voters = updateAll(voters);
         if (countDown == 10) timer = Timer.FINAL;
         plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
@@ -187,15 +203,22 @@ public class Vote implements Runnable, Listener {
         countDown--;
         if (yes + no == playerCount) timer = Timer.INTERRUPT;
         bar.setProgress((double) countDown / 30.0);
-        bar.setTitle("Current Vote: "
-                + ChatColor.GREEN + ChatColor.BOLD + "Yes "
-                + ChatColor.RESET + "- " + yes
-                + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
-                + ChatColor.RESET + "- " + no
-                + ChatColor.DARK_AQUA + ChatColor.BOLD + " Idle "
-                + ChatColor.RESET + "- " + idle
-                + ChatColor.BLUE +  ChatColor.BOLD + " Away "
-                + ChatColor.RESET + "- " + away);
+        if (playerActivity)
+            bar.setTitle("Current Vote: "
+                    + ChatColor.GREEN + ChatColor.BOLD + "Yes "
+                    + ChatColor.RESET + "- " + yes
+                    + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
+                    + ChatColor.RESET + "- " + no
+                    + ChatColor.DARK_AQUA + ChatColor.BOLD + " Idle "
+                    + ChatColor.RESET + "- " + idle
+                    + ChatColor.BLUE +  ChatColor.BOLD + " Away "
+                    + ChatColor.RESET + "- " + away);
+        else
+            bar.setTitle("Current Vote: "
+                    + ChatColor.GREEN + ChatColor.BOLD + "Yes "
+                    + ChatColor.RESET + "- " + yes
+                    + ChatColor.DARK_RED + ChatColor.BOLD +  " No "
+                    + ChatColor.RESET + "- " + no);
         if (countDown == 9) voters = updateAll(voters, messages.tenSecondsLeft());
         else voters = updateAll(voters);
 
