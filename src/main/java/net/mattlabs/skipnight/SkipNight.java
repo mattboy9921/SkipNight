@@ -134,6 +134,10 @@ public class SkipNight extends JavaPlugin {
         return version;
     }
 
+    public Config getConfiguration() {
+        return config;
+    }
+
     public boolean hasPlayerActivity() {
         return getServer().getPluginManager().getPlugin("PlayerActivity") != null;
     }

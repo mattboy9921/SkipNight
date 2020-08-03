@@ -49,6 +49,7 @@ public class Vote implements Runnable, Listener {
     private BukkitAudiences platform;
     private String version;
     private boolean playerActivity;
+    private Config config;
 
     Vote(Plugin plugin) {
         timer = Timer.OFF;
@@ -57,6 +58,7 @@ public class Vote implements Runnable, Listener {
         platform = SkipNight.getInstance().getPlatform();
         version = SkipNight.getInstance().getVersion();
         playerActivity = SkipNight.getInstance().hasPlayerActivity();
+        config = SkipNight.getInstance().getConfiguration();
     }
 
     @EventHandler
@@ -338,7 +340,7 @@ public class Vote implements Runnable, Listener {
             platform.player(player).sendMessage(messages.noVoteWhileAway());
         else if (!(timer == Timer.OFF)) // If there's a vote happening
             platform.player(player).sendMessage(messages.voteInProg());
-        else if (voteType == VoteType.NIGHT && playerMustSleep) // If it's night, player hasn't slept in 3 days
+        else if (voteType == VoteType.NIGHT && playerMustSleep && config.isPhantomSupport()) // If it's night, player hasn't slept in 3 days
             platform.player(player).sendMessage(messages.mustSleepNewVote());
         else {
             timer = Timer.INIT;
