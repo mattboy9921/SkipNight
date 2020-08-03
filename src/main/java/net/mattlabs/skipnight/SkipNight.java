@@ -97,7 +97,7 @@ public class SkipNight extends JavaPlugin {
         // bStats
         Metrics metrics = new Metrics(this);
 
-        getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar and Foodyling)");
+        getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar and mbaxter)");
     }
 
     public static SkipNight getInstance() {
