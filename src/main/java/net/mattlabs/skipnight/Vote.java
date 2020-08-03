@@ -3,6 +3,7 @@ package net.mattlabs.skipnight;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.mattlabs.skipnight.util.FastForward;
+import net.mattlabs.skipnight.util.Versions;
 import net.mattlabs.skipnight.util.VoteType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,12 +47,14 @@ public class Vote implements Runnable, Listener {
     private FastForward fastForward;
     private Messages messages;
     private BukkitAudiences platform;
+    private String version;
 
     Vote(Plugin plugin) {
         timer = Timer.OFF;
         this.plugin = plugin;
         messages = SkipNight.getInstance().getMessages();
         platform = SkipNight.getInstance().getPlatform();
+        version = SkipNight.getInstance().getVersion();
     }
 
     @EventHandler
@@ -286,11 +289,17 @@ public class Vote implements Runnable, Listener {
     public void start(Player player, VoteType voteType) {
         // Read players tag, null if not there
         String tag;
+        boolean playerMustSleep;
         try {
             tag = player.getPlayerListName().split("#")[1];
         } catch (IndexOutOfBoundsException e) {
             tag = "Active";
         }
+
+        // Check version for TIME_SINCE_REST added in 1.13
+        if (Versions.versionCompare("1.13.0", version) <= 0) {
+            playerMustSleep = player.getStatistic(Statistic.TIME_SINCE_REST) >= 72000;
+        } else playerMustSleep = false;
 
         if (!player.hasPermission("skipnight.vote")) // If player doesn't have permission
             platform.player(player).sendMessage(messages.noPerm());
@@ -306,7 +315,7 @@ public class Vote implements Runnable, Listener {
             platform.player(player).sendMessage(messages.noVoteWhileAway());
         else if (!(timer == Timer.OFF)) // If there's a vote happening
             platform.player(player).sendMessage(messages.voteInProg());
-        else if (voteType == VoteType.NIGHT && player.getStatistic(Statistic.TIME_SINCE_REST) >= 72000) // If it's night, player hasn't slept in 3 days
+        else if (voteType == VoteType.NIGHT && playerMustSleep) // If it's night, player hasn't slept in 3 days
             platform.player(player).sendMessage(messages.mustSleepNewVote());
         else {
             timer = Timer.INIT;

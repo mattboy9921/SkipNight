@@ -5,6 +5,7 @@ import com.google.common.reflect.TypeToken;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.mattlabs.skipnight.commands.SkipDayCommand;
 import net.mattlabs.skipnight.commands.SkipNightCommand;
+import net.mattlabs.skipnight.util.Versions;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -12,6 +13,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -25,9 +27,22 @@ public class SkipNight extends JavaPlugin {
     private Messages messages;
     private static SkipNight instance;
     private BukkitAudiences platform;
+    private String version;
 
     public void onEnable() {
         instance = this;
+
+        // Determine version
+        version = Bukkit.getVersion();
+        int start = version.indexOf("MC: ") + 4;
+        int end = version.length() - 1;
+        version = version.substring(start, end);
+
+        if (Versions.versionCompare("1.9.0", version) >= 0) {
+            getLogger().severe("You are running MC " + version + ". This plugin requires MC 1.9.0 or higher, disabling plugin...");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Configuration Section
         File configFile = new File(this.getDataFolder(), "config.conf");
@@ -110,6 +125,10 @@ public class SkipNight extends JavaPlugin {
 
     public BukkitAudiences getPlatform() {
         return platform;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     /**
