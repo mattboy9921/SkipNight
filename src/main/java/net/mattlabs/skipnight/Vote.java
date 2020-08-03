@@ -512,7 +512,6 @@ public class Vote implements Runnable, Listener {
                         platform.player(player).sendMessage(messages.voteButtons(voteTypeString()));
                     }
                 }
-                //player.spigot().sendMessage(message);
                 platform.player(player).sendMessage(message);
             } else {
                 if (voters.contains(voter)) { // not in world, in V
