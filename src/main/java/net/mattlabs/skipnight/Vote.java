@@ -284,7 +284,7 @@ public class Vote implements Runnable, Listener {
                 else platform.player(uuid).sendMessage(messages.alreadyVoted());
             }
         }
-        platform.player(uuid).sendMessage(messages.noVoteInProg(voteTypeString(voteType)));
+        else platform.player(uuid).sendMessage(messages.noVoteInProg(voteTypeString(voteType)));
     }
 
     public void addNo(UUID uuid, VoteType voteType) {
