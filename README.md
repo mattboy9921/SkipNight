@@ -4,6 +4,7 @@ Once a vote is started, click the **yes** and **no** interactive text in chat to
 SpigotMC link: https://www.spigotmc.org/resources/skipnight.48334/
 
 [![Build Status](https://travis-ci.org/mattboy9921/SkipNight.svg?branch=master)](https://travis-ci.org/mattboy9921/SkipNight)
+[![Servers Using SkipNight](https://img.shields.io/bstats/servers/5796)](https://bstats.org/plugin/bukkit/SkipNight/5796)
 
 **Commands**
  - `/skipnight` - Starts vote to skip the night.
