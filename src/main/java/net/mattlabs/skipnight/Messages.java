@@ -82,7 +82,7 @@ public class Messages {
 
     // 10 Seconds Left
     @Setting(value = "ten-seconds-left", comment = "\nAppears when there's 10 seconds left in a vote.")
-    private String tenSecondsLeft = "&5&l10 &rseconds left to vote!";
+    private String tenSecondsLeft = "&9&l10 &rseconds left to vote!";
 
     // Vote Passed
     @Setting(value = "vote-passed", comment = "\nAppears when the vote passes.\n" +
@@ -194,27 +194,27 @@ public class Messages {
     }
 
     public Component youVoteYes() {
-        // &9 - &rYou voted &5&lyes&r.
+        // &9 - &rYou voted &9&lyes&r.
         return MiniMessage.get().parse(hyphenHeader + serialize(MessageFormat.format(youVote, yes)));
     }
     
     public Component youVoteNo() {
-        // &9 - &rYou voted &5&lno&r.
+        // &9 - &rYou voted &9&lno&r.
         return MiniMessage.get().parse(hyphenHeader + serialize(MessageFormat.format(youVote, no)));
     }
 
     public Component tenSecondsLeft() {
-        // &7[&9Vote&7] &5&l10 &rseconds left to vote!
+        // &7[&9Vote&7] &9&l10 &rseconds left to vote!
         return MiniMessage.get().parse(voteHeader + serialize(tenSecondsLeft));
     }
 
     public Component votePassed(String voteType) {
-        // &7[&9Vote&7] &rVote &5&lpassed&r! Skipping the day|night.
+        // &7[&9Vote&7] &rVote &9&lpassed&r! Skipping the day|night.
         return MiniMessage.get().parse(voteHeader + serialize(MessageFormat.format(votePassed, voteType)));
     }
 
     public Component voteFailed(String voteType) {
-        // &7[&9Vote&7] &rVote &5&lfailed&r! The day|night will not be skipped.
+        // &7[&9Vote&7] &rVote &9&lfailed&r! The day|night will not be skipped.
         return MiniMessage.get().parse(voteHeader + serialize(MessageFormat.format(voteFailed, voteType)));
     }
 
@@ -254,7 +254,7 @@ public class Messages {
     }
 
     public Component inBedNoVoteInProg() {
-        // &7[&9Vote&7] &rStart a vote to skip the night? || &5&l[Vote]||cmd:/skipnight||ttp:&6&lClick &rhere to start a vote.
+        // &7[&9Vote&7] &rStart a vote to skip the night? || &9&l[Vote]||cmd:/skipnight||ttp:&6&lClick &rhere to start a vote.
         return MiniMessage.get().parse(voteHeader + MessageFormat.format(serialize(inBedNoVoteInProg),
                         "<click:suggest_command:/skipnight>" +
                         "<hover:show_text:'" + serialize(clickToStartVote) + "'>" +
