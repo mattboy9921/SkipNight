@@ -45,6 +45,7 @@ public class SkipNight extends JavaPlugin {
         }
 
         // Configuration Section
+        this.getDataFolder().mkdir();
         File configFile = new File(this.getDataFolder(), "config.conf");
         File messasgesFile = new File(this.getDataFolder(), "messages.conf");
 
