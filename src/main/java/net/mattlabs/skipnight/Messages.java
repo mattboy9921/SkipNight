@@ -4,8 +4,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.text.MessageFormat;
 
@@ -14,7 +15,7 @@ import java.text.MessageFormat;
 public class Messages {
 
     // Header fields
-    @Setting(comment = "Skipnight Messages Configuration\n" +
+    @Comment("Skipnight Messages Configuration\n" +
             "By Mattboy9921\n" +
             "https://github.com/mattboy9921/SkipNight\n\n" +
             "This configuration contains every string of text found in this plugin.\n" +
@@ -24,150 +25,175 @@ public class Messages {
             "It is not necessary to include every variable, but certain strings won't make sense otherwise.")
     private boolean __mattIsAwesome = true;
 
-    @Setting(value = "_format-code", comment = "\n")
+    @Setting(value = "_format-code")
+    @Comment("\n")
     char _formatCode = '&';
 
     // General fields used in many strings
-    @Setting(comment = "\nVote text that appears before certain messages.\n" +
+    @Comment("\nVote text that appears before certain messages.\n" +
             "(Does not accept color codes)")
     private String vote = "Vote";
 
-    @Setting(comment = "\nValue for the word \"day\".\n" +
+    @Comment("\nValue for the word \"day\".\n" +
             "(Does not accept color codes)")
     private String day = "day";
 
-    @Setting(comment = "\nValue for the word \"night\".\n" +
+    @Comment("\nValue for the word \"night\".\n" +
             "(Does not accept color codes)")
     private String night = "night";
 
-    @Setting(comment = "\nValue for the word \"yes\".\n" +
+    @Comment("\nValue for the word \"yes\".\n" +
             "(Does not accept color codes)")
     private String yes = "yes";
 
-    @Setting(comment = "\nValue for the word \"no\".\n" +
+    @Comment("\nValue for the word \"no\".\n" +
             "(Does not accept color codes)")
     private String no = "no";
 
-    @Setting(value = "start-vote", comment = "\nButton text for \"Start Vote\" button.\n" +
+    @Setting(value = "start-vote")
+    @Comment("\nButton text for \"Start Vote\" button.\n" +
             "(Does not accept color codes)")
     private String startVote = "Start Vote";
 
-    @Setting(value = "click-to-start-vote", comment = "\nHover text for \"Start Vote\" button.")
+    @Setting(value = "click-to-start-vote")
+    @Comment("\nHover text for \"Start Vote\" button.")
     private String clickToStartVote = "&6&lClick here to start a vote";
 
     // You Must Sleep First
-    @Setting(value = "must-sleep", comment = "\nAppears if player attempts to vote after 3 days without sleep.")
+    @Setting(value = "must-sleep")
+    @Comment("\nAppears if player attempts to vote after 3 days without sleep.")
     private String mustSleep = "&r&cYou must sleep in a bed first!";
 
     // No Vote In Progress
-    @Setting(value = "no-vote-in-prog", comment = "\nAppears if a vote isn't in progress.\n" +
+    @Setting(value = "no-vote-in-prog")
+    @Comment("\nAppears if a vote isn't in progress.\n" +
             "0 = \"Start Vote\" button")
     private String noVoteInProg = "&cNo vote in progress! &9{0}";
 
     // Player Started A Vote
-    @Setting(value = "player-started-vote", comment = "\nAppears once a player has started a vote.\n" +
+    @Setting(value = "player-started-vote")
+    @Comment("\nAppears once a player has started a vote.\n" +
             "0 = Player's name, 1 = Vote type (Day/Night)")
     private String playerStartedVote = "&r{0} has started a vote to skip the {1}!";
 
-    @Setting(value = "please-vote", comment = "\nAppears before the \"Yes/No\" buttons.")
+    @Setting(value = "please-vote")
+    @Comment("\nAppears before the \"Yes/No\" buttons.")
     private String pleaseVote = "Please vote: ";
 
-    @Setting(value = "click-here-to-vote", comment = "\nAppears in hover text for \"Yes/No\" buttons.\n" +
+    @Setting(value = "click-here-to-vote")
+    @Comment("\nAppears in hover text for \"Yes/No\" buttons.\n" +
             "0 = yes/no")
     private String clickHereToVote = "&6&lClick here to vote {0}";
 
     // You Voted
-    @Setting(value = "you-voted", comment = "\nAppears when the player votes yes/no.")
+    @Setting(value = "you-voted")
+    @Comment("\nAppears when the player votes yes/no.")
     private String youVote = "&rYou voted &9&l{0}&r.";
 
     // 10 Seconds Left
-    @Setting(value = "ten-seconds-left", comment = "\nAppears when there's 10 seconds left in a vote.")
+    @Setting(value = "ten-seconds-left")
+    @Comment("\nAppears when there's 10 seconds left in a vote.")
     private String tenSecondsLeft = "&9&l10 &rseconds left to vote!";
 
     // Vote Passed
-    @Setting(value = "vote-passed", comment = "\nAppears when the vote passes.\n" +
+    @Setting(value = "vote-passed")
+    @Comment("\nAppears when the vote passes.\n" +
             "0 = Day/Night")
     private String votePassed = "&rVote &9&lpassed&r! Skipping the {0}.";
 
     // Vote Failed
-    @Setting(value = "vote-failed", comment = "\nAppears when the vote fails.\n" +
+    @Setting(value = "vote-failed")
+    @Comment("\nAppears when the vote fails.\n" +
             "0 = Day/Night")
     private String voteFailed = "&rVote &9&lfailed&r! The {0} will not be skipped.";
 
     // You Have Already Voted
-    @Setting(value = "already-voted", comment = "\nAppears if player attempts to vote more than once.")
+    @Setting(value = "already-voted")
+    @Comment("\nAppears if player attempts to vote more than once.")
     private String alreadyVoted = "&r&cYou have already voted!";
 
     // Idle
-    @Setting(comment = "\nAppears if player attempts to vote while idle.")
+    @Comment("\nAppears if player attempts to vote while idle.")
     private String idle = "&rYou are &3&lidle&r, your vote will not count.";
 
     // Away
-    @Setting(comment = "\nAppears if player attempts to vote while away.")
+    @Comment("\nAppears if player attempts to vote while away.")
     private String away = "&rYou are &1&laway&r, your vote will not count.";
 
     // Back
-    @Setting(comment = "\nAppears if player returns during a vote.")
+    @Comment("\nAppears if player returns during a vote.")
     private String back = "&rWelcome back.";
 
     // Left World
-    @Setting(value = "left-world", comment = "\nAppears if player leaves the world during a vote.")
+    @Setting(value = "left-world")
+    @Comment("\nAppears if player leaves the world during a vote.")
     private String leftWorld = "&rYou left the world, your vote will not count.";
 
     // In Bed Vote Yes
-    @Setting(value = "in-bed-voted-yes", comment = "\nAppears if player sleeps during a vote to skip the night.")
+    @Setting(value = "in-bed-voted-yes")
+    @Comment("\nAppears if player sleeps during a vote to skip the night.")
     private String inBedVotedYes = "&rYou are now in bed, automatically voting yes.";
 
     // In Bed No Vote In Progress
-    @Setting(value = "in-bed-no-vote-in-prog", comment = "\nAppears if player sleeps with no vote in progress.\n" +
+    @Setting(value = "in-bed-no-vote-in-prog")
+    @Comment("\nAppears if player sleeps with no vote in progress.\n" +
             "0 = \"Start Vote\" button")
     private String inBedNoVoteInProg = "&rStart a vote to skip the night? &9{0}";
 
     // No Permission
-    @Setting(value = "no-perm", comment = "\nAppears if player doesn't have permission to vote.")
+    @Setting(value = "no-perm")
+    @Comment("\nAppears if player doesn't have permission to vote.")
     private String noPerm = "&cYou don't have permission to run this!";
 
     // Must Be In Overworld
-    @Setting(value = "wrong-world", comment = "\nAppears if player tries to vote outside of the overworld.")
+    @Setting(value = "wrong-world")
+    @Comment("\nAppears if player tries to vote outside of the overworld.")
     private String wrongWorld = "&cYou must be in the overworld to start a vote!";
 
     // Can Only Vote At Night
-    @Setting(value = "can-only-vote-at-night", comment = "\nAppears if player tries to start a vote to skip the night during the day.")
+    @Setting(value = "can-only-vote-at-night")
+    @Comment("\nAppears if player tries to start a vote to skip the night during the day.")
     private String canOnlyVoteAtNight = "&cYou can only start a vote at night!";
 
     // Can Only Vote At Day
-    @Setting(value = "can-only-vote-at-day", comment = "\nAppears if player tries to start a vote to skip the day during the night.")
+    @Setting(value = "can-only-vote-at-day")
+    @Comment("\nAppears if player tries to start a vote to skip the day during the night.")
     private String canOnlyVoteAtDay = "&cYou can only start a vote during the day!";
 
     // No Vote While Idle
-    @Setting(value = "no-vote-while-idle", comment = "\nAppears if player tries to start a vote while idle.")
+    @Setting(value = "no-vote-while-idle")
+    @Comment("\nAppears if player tries to start a vote while idle.")
     private String noVoteWhileIdle = "&cYou cannot start a vote while idle!";
 
     // No Vote While Away
-    @Setting(value = "no-vote-while-away", comment = "\nAppears if player tries to start a vote while away.")
+    @Setting(value = "no-vote-while-away")
+    @Comment("\nAppears if player tries to start a vote while away.")
     private String noVoteWhileAway = "&cYou cannot start a vote while away!";
 
     // Vote In Progress
-    @Setting(value = "vote-in-prog", comment = "\nAppears if a vote is already in progress.")
+    @Setting(value = "vote-in-prog")
+    @Comment("\nAppears if a vote is already in progress.")
     private String voteInProg = "&cVote already in progress!";
 
     // Action Bar Messages
     // Player Has Not Slept
-    @Setting(value = "player-has-not-slept", comment = "\nAppears in all players' action bar if player tries to vote but hasn't slept in 3 days.\n" +
+    @Setting(value = "player-has-not-slept")
+    @Comment("\nAppears in all players' action bar if player tries to vote but hasn't slept in 3 days.\n" +
             "0 = Player's name")
     private String playerHasNotSlept = "&9{0} needs to sleep in a bed before voting!";
 
     // Player Has Voted
-    @Setting(value = "player-has-voted", comment = "\nAppears in all player's action bar when a player votes yes/no.\n" +
+    @Setting(value = "player-has-voted")
+    @Comment("\nAppears in all player's action bar when a player votes yes/no.\n" +
             "0 = Player's name, 1 = yes/no")
     private String playerHasVoted = "&9{0} has voted {1}!";
 
     // Headers
     // [Vote]
-    private String voteHeader = "<gray>[<blue>" + vote + "<gray>]<reset> ";
+    private transient String voteHeader = "<gray>[<blue>" + vote + "<gray>]<reset> ";
 
     // -
-    private String hyphenHeader = " <blue>-<reset> ";
+    private transient String hyphenHeader = " <blue>-<reset> ";
 
     public Component noVoteInProg(String voteType) {
         // No vote in progress! [Start Vote] (runs /skipday|night)
@@ -197,7 +223,7 @@ public class Messages {
         // &9 - &rYou voted &9&lyes&r.
         return MiniMessage.get().parse(hyphenHeader + serialize(MessageFormat.format(youVote, yes)));
     }
-    
+
     public Component youVoteNo() {
         // &9 - &rYou voted &9&lno&r.
         return MiniMessage.get().parse(hyphenHeader + serialize(MessageFormat.format(youVote, no)));

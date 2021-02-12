@@ -1,20 +1,19 @@
 package net.mattlabs.skipnight;
 
 import co.aikar.commands.PaperCommandManager;
-import com.google.common.reflect.TypeToken;
+import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.mattlabs.skipnight.commands.SkipDayCommand;
 import net.mattlabs.skipnight.commands.SkipNightCommand;
 import net.mattlabs.skipnight.util.Versions;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
+import org.spongepowered.configurate.loader.ConfigurationLoader;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,9 +49,9 @@ public class SkipNight extends JavaPlugin {
         File messasgesFile = new File(this.getDataFolder(), "messages.conf");
 
         ConfigurationLoader<CommentedConfigurationNode> configLoader =
-                HoconConfigurationLoader.builder().setPath(configFile.toPath()).build();
+                HoconConfigurationLoader.builder().path(configFile.toPath()).build();
         ConfigurationLoader<CommentedConfigurationNode> messagesLoader =
-                HoconConfigurationLoader.builder().setPath(messasgesFile.toPath()).build();
+                HoconConfigurationLoader.builder().path(messasgesFile.toPath()).build();
 
         // Convert old YAML file if it exists still
         convertConfigFormat(new File(this.getDataFolder(), "config.yml"), configLoader);
@@ -60,36 +59,45 @@ public class SkipNight extends JavaPlugin {
         config = null;
         messages = null;
 
+        boolean failLoadConfig = false, failLoadMessages = false;
+
         // Load config from file location, otherwise use values from Config class
         try {
-            config = configLoader.load().<Config>getValue(TypeToken.of(Config.class), Config::new);
+            config = configLoader.load().<Config>get(TypeToken.get(Config.class), Config::new);
         }
-        catch (ObjectMappingException | IOException e) {
+        catch (IOException e) {
             getLogger().severe("Failed to load the config - Using a default!");
+            config = new Config();
+            failLoadConfig = true;
         }
 
         // Load Messages from file location, otherwise use values from Messages class
         try {
-            messages = messagesLoader.load().<Messages>getValue(TypeToken.of(Messages.class), Messages::new);
+            messages = messagesLoader.load().<Messages>get(TypeToken.get(Messages.class), Messages::new);
         }
-        catch (ObjectMappingException | IOException e) {
+        catch (IOException e) {
             getLogger().severe("Failed to load the messages config - Using a default!");
+            messages = new Messages();
+            failLoadMessages = true;
         }
 
         // Save config to file
-        try {
-            configLoader.save(configLoader.createEmptyNode().setValue(TypeToken.of(Config.class), config));
-        }
-        catch (ObjectMappingException | IOException e){
-            getLogger().severe("Failed to save the config!");
+        if (!failLoadConfig) {
+            try {
+                configLoader.save(configLoader.createNode().set(TypeToken.get(Config.class), config));
+            } catch (IOException e) {
+                getLogger().severe("Failed to save the config!");
+            }
         }
 
         // Save Messages to file
-        try {
-            messagesLoader.save(messagesLoader.createEmptyNode().setValue(TypeToken.of(Messages.class), messages));
-        }
-        catch (ObjectMappingException | IOException e){
-            getLogger().severe("Failed to save the messages config!");
+        if (!failLoadMessages) {
+            try {
+                messagesLoader.save(messagesLoader.createNode().set(TypeToken.get(Messages.class), messages));
+            }
+            catch (IOException e){
+                getLogger().severe("Failed to save the messages config!");
+            }
         }
 
         // Register Audience (Messages)
@@ -155,7 +163,7 @@ public class SkipNight extends JavaPlugin {
             getLogger().info("Old config format found, converting...");
 
             // Build YAML loader
-            YAMLConfigurationLoader yamlLoader = YAMLConfigurationLoader.builder().setPath(yamlConfigFile.toPath()).build();
+            YamlConfigurationLoader yamlLoader = YamlConfigurationLoader.builder().path(yamlConfigFile.toPath()).build();
 
             // Read YAML file
             ConfigurationNode yamlNode;

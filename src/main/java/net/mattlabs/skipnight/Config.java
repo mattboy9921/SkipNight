@@ -1,24 +1,29 @@
 package net.mattlabs.skipnight;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Comment;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
 @ConfigSerializable
 public class Config {
 
-    @Setting(comment = "Skipnight Configuration\n" +
+    @Setting(value = "_mattIsAwesome")
+    @Comment("Skipnight Configuration\n" +
             "By Mattboy9921\n" +
             "https://github.com/mattboy9921/SkipNight")
     private boolean _mattIsAwesome = true;
 
-    @Setting(value = "skipnight", comment = "\nEnables voting to skip the night.")
+    @Setting(value = "skipnight")
+    @Comment("\nEnables voting to skip the night.")
     private boolean skipNight = true;
 
-    @Setting(value = "skipday", comment = "\nEnables voting to skip the day.")
+    @Setting(value = "skipday")
+    @Comment("\nEnables voting to skip the day.")
     private boolean skipDay = false;
 
-    @Setting(value = "phantom-support", comment = "\nPrevents players from voting if they haven't slept in 3 days.\n" +
+    @Setting(value = "phantom-support")
+    @Comment("\nPrevents players from voting if they haven't slept in 3 days.\n" +
             "Basically, if a player will be attacked by phantoms, they cannot vote.")
     private boolean phantomSupport = true;
 

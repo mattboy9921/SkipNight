@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- For ACF -->
@@ -93,25 +93,25 @@
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>configurate-hocon</artifactId>
-            <version>3.7</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>configurate-yaml</artifactId>
-            <version>3.7</version>
+            <version>4.0.0</version>
         </dependency>
         <!-- For bStats -->
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.7</version>
+            <version>1.8</version>
             <scope>compile</scope>
         </dependency>
         <!-- For Adventure -->
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
@@ -201,6 +201,16 @@
                             <shadedPattern>net.mattlabs.skipnight</shadedPattern>
                         </relocation>
                     </relocations>
+                    <!-- Fix signed dependency JARs -->
+                    <filters>
+                        <filter>
+                            <artifact>*:*:*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.RSA</exclude>
+                                <exclude>META-INF/*.SF</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
 
                 <!-- Perform shading for package phase -->
