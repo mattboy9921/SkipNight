@@ -47,6 +47,8 @@ public class SkipNight extends JavaPlugin {
         this.getDataFolder().mkdir();
         File configFile = new File(this.getDataFolder(), "config.conf");
         File messasgesFile = new File(this.getDataFolder(), "messages.conf");
+        boolean configExists = configFile.exists();
+        boolean messagesExists = messasgesFile.exists();
 
         ConfigurationLoader<CommentedConfigurationNode> configLoader =
                 HoconConfigurationLoader.builder().path(configFile.toPath()).build();
@@ -82,7 +84,7 @@ public class SkipNight extends JavaPlugin {
         }
 
         // Save config to file
-        if (!failLoadConfig) {
+        if (!failLoadConfig || !configExists) {
             try {
                 configLoader.save(configLoader.createNode().set(TypeToken.get(Config.class), config));
             } catch (IOException e) {
@@ -91,7 +93,7 @@ public class SkipNight extends JavaPlugin {
         }
 
         // Save Messages to file
-        if (!failLoadMessages) {
+        if (!failLoadMessages || !messagesExists) {
             try {
                 messagesLoader.save(messagesLoader.createNode().set(TypeToken.get(Messages.class), messages));
             }
