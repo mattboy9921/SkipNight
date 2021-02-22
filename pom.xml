@@ -198,9 +198,31 @@
                             <pattern>co.aikar.commands</pattern>
                             <shadedPattern>net.mattlabs.skipnight.acf</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>co.aikar.locales</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.locales</shadedPattern>
+                        </relocation>
                         <!-- bStats -->
                         <relocation>
                             <pattern>org.bstats</pattern>
+                            <shadedPattern>net.mattlabs.skipnight</shadedPattern>
+                        </relocation>
+                        <!-- Configurate -->
+                        <relocation>
+                            <pattern>org.spongepowered</pattern>
+                            <shadedPattern>net.mattlabs.skipnight</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>io.leangen.geantyref</pattern>
+                            <shadedPattern>net.mattlabs.skipnight</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.typesafe</pattern>
+                            <shadedPattern>net.mattlabs.skipnight</shadedPattern>
+                        </relocation>
+                        <!-- Adventure -->
+                        <relocation>
+                            <pattern>net.kyori</pattern>
                             <shadedPattern>net.mattlabs.skipnight</shadedPattern>
                         </relocation>
                     </relocations>
