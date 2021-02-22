@@ -145,7 +145,10 @@
 
     <!-- Enforce Unicode when compiling Java -->
     <properties>
+        <!-- Enforce Unicode when compiling Java -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Minecraft Version -->
+        <mcver>1.13</mcver>
     </properties>
 
     <build>
@@ -241,10 +244,10 @@
                                 <configuration>
                                     <target>
                                         <delete>
-                                            <fileset dir="${basedir}\..\..\Test Server\plugins" includes="${project.artifactId}-*.jar" />
+                                            <fileset dir="${basedir}\..\..\Test Server\${mcver}\plugins" includes="${project.artifactId}-*.jar" />
                                         </delete>
                                         <echo>Copying ${project.artifactId}-${project.version}.jar to test server...</echo>
-                                        <copy todir="${basedir}\..\..\Test Server\plugins" overwrite="true" flatten="true">
+                                        <copy todir="${basedir}\..\..\Test Server\${mcver}\plugins" overwrite="true" flatten="true">
                                             <fileset dir="${basedir}/target" includes="${project.artifactId}-${project.version}.jar" />
                                         </copy>
                                     </target>
