@@ -26,4 +26,4 @@ SpigotMC link: https://www.spigotmc.org/resources/skipnight.48334/
  
 Tested working on Paper 1.9.0 - 1.16.1.
 
-Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar, and mbaxter! 
+Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar, mbaxter, zml and Selida! 

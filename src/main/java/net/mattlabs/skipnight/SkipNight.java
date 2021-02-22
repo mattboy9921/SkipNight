@@ -126,7 +126,7 @@ public class SkipNight extends JavaPlugin {
         // PlayerActivity Integration
         if (!hasPlayerActivity()) getLogger().info("PlayerActivity not found, disabling Idle/Away features");
 
-        getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar, mbaxter and zml)");
+        getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar, mbaxter, zml and Selida)");
     }
 
     public static SkipNight getInstance() {
