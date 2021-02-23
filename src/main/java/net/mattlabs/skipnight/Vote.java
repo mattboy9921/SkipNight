@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -241,6 +242,19 @@ public class Vote implements Runnable, Listener {
                 updateAll(voters, messages.votePassed(voteTypeString()));
                 fastForward = new FastForward(world, plugin, voteType);
                 plugin.getServer().getScheduler().runTaskLater(plugin, fastForward, 10);
+
+                // Set boss bar progress to fast forward progress
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        plugin.getLogger().info(String.valueOf(world.getTime()));
+                        double time = (double) world.getTime();
+                        if (time > 12000.0) time-=12000.0;
+                        plugin.getLogger().info(String.valueOf(time / 12000));
+                        bar.setProgress(time / 12000.0);
+                        if (bar.getProgress() > 0.99) this.cancel();
+                    }
+                }.runTaskTimer(plugin, 0, 1);
                 if (world.hasStorm()) world.setStorm(false);
             }
             else {
