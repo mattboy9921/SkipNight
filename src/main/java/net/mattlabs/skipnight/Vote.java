@@ -247,10 +247,8 @@ public class Vote implements Runnable, Listener {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        plugin.getLogger().info(String.valueOf(world.getTime()));
                         double time = (double) world.getTime();
                         if (time > 12000.0) time-=12000.0;
-                        plugin.getLogger().info(String.valueOf(time / 12000));
                         bar.setProgress(time / 12000.0);
                         if (bar.getProgress() > 0.99) this.cancel();
                     }
