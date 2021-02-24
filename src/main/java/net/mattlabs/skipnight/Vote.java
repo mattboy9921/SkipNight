@@ -244,15 +244,23 @@ public class Vote implements Runnable, Listener {
                 plugin.getServer().getScheduler().runTaskLater(plugin, fastForward, 10);
 
                 // Set boss bar progress to fast forward progress
+                bar.setProgress(0.0);
                 new BukkitRunnable() {
+
                     @Override
                     public void run() {
+                        double prevProg = bar.getProgress();
                         double time = (double) world.getTime();
                         if (time > 12000.0) time-=12000.0;
                         bar.setProgress(time / 12000.0);
                         if (bar.getProgress() > 0.99) this.cancel();
+                        if (bar.getProgress() < prevProg) {
+                            bar.setProgress(1.0);
+                            this.cancel();
+                        }
                     }
                 }.runTaskTimer(plugin, 0, 1);
+
                 if (world.hasStorm()) world.setStorm(false);
             }
             else {
