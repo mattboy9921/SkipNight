@@ -30,6 +30,7 @@ public class Vote implements Runnable, Listener {
         INIT,
         OPERATION,
         INTERRUPT,
+        CANCEL,
         FINAL,
         COMPLETE,
         OFF
@@ -122,6 +123,9 @@ public class Vote implements Runnable, Listener {
             case INTERRUPT:
                 doInterrupt();
                 break;
+            case CANCEL:
+                doCancel();
+                break;
             case FINAL:
                 doFinal();
                 break;
@@ -170,6 +174,7 @@ public class Vote implements Runnable, Listener {
     private void doOperation() {
         countDown--;
         if (yes + no == playerCount) timer = Timer.INTERRUPT;
+        if (voteCancel()) timer = Timer.CANCEL;
         bar.setProgress((double) countDown / 30.0);
         if (playerActivity)
             bar.setTitle("Current Vote: "
@@ -205,6 +210,7 @@ public class Vote implements Runnable, Listener {
     private void doFinal() {
         countDown--;
         if (yes + no == playerCount) timer = Timer.INTERRUPT;
+        if (voteCancel()) timer = Timer.CANCEL;
         bar.setProgress((double) countDown / 30.0);
         if (playerActivity)
             bar.setTitle("Current Vote: "
@@ -274,6 +280,29 @@ public class Vote implements Runnable, Listener {
         if (countDown <= -2) plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
 
         if (countDown == -9) {
+            bar.removeAll();
+            bar = null;
+            voters = null;
+            fastForward = null;
+            voteType = null;
+            timer = Timer.OFF;
+        }
+    }
+
+    private void doCancel() {
+        if (countDown > 0) countDown = 0;
+        if (countDown == 0) {
+            bar.setProgress(1.0);
+            bar.setColor(BarColor.BLUE);
+            if (voteType == VoteType.NIGHT) bar.setTitle(ChatColor.BLUE + "It is already day!");
+            else bar.setTitle(ChatColor.BLUE + "It is already night!");
+        }
+
+        countDown--;
+
+        if (countDown > -4) plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
+
+        if (countDown == -4) {
             bar.removeAll();
             bar = null;
             voters = null;
@@ -727,5 +756,10 @@ public class Vote implements Runnable, Listener {
                 }
             }
         }
+    }
+
+    private boolean voteCancel() {
+        return (voteType == VoteType.NIGHT && (world.getTime() > 23900 || world.getTime() < 12516)) ||
+                (voteType == VoteType.DAY && world.getTime() > 12516 && world.getTime() < 23900);
     }
 }
