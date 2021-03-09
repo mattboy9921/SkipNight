@@ -5,11 +5,13 @@ import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.mattlabs.skipnight.commands.SkipDayCommand;
 import net.mattlabs.skipnight.commands.SkipNightCommand;
+import net.mattlabs.skipnight.util.Transformations;
 import net.mattlabs.skipnight.util.Versions;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
@@ -71,6 +73,14 @@ public class SkipNight extends JavaPlugin {
             getLogger().severe("Failed to load the config - Using a default!");
             config = new Config();
             failLoadConfig = true;
+        }
+
+        // Transform Messages
+        try {
+            messagesLoader.save(Transformations.updateNode(messagesLoader.load()));
+        }
+        catch (final ConfigurateException e) {
+            getLogger().severe("Failed to fully update the message config: " + org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(e));
         }
 
         // Load Messages from file location, otherwise use values from Messages class
