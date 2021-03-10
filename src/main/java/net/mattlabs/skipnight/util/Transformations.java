@@ -37,15 +37,8 @@ public class Transformations {
                 .addAction(NodePath.path(ConfigurationTransformation.WILDCARD_OBJECT), ((path, value) -> {
                     final @Nullable String string = value.getString();
                     if (string != null) {
-                        switch (string) {
-                            case "_mattIsAwesome":
-                            case "_formatCode":
-                                break;
-                            default:
-                                TextComponent component = LegacyComponentSerializer.legacy(_formatCode).deserialize(string);
-                                value.set(MiniMessage.get().serialize(component));
-                                break;
-                        }
+                        TextComponent component = LegacyComponentSerializer.legacy(_formatCode).deserialize(string);
+                        value.set(MiniMessage.get().serialize(component));
                     }
                     return null;
                 }))
