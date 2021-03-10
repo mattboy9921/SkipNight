@@ -20,6 +20,7 @@ public class Transformations {
 
     public static ConfigurationTransformation.Versioned create() {
         return ConfigurationTransformation.versionedBuilder()
+                .versionKey("_schema-version")
                 .addVersion(VERSION_LATEST, initialTransform())
                 .build();
     }
