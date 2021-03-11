@@ -167,6 +167,33 @@ public class Messages {
             "0 = Player's name, 1 = yes/no")
     private String playerHasVoted = "<blue>{0} has voted {1}!";
 
+    // Boss Bar Messages
+    // Vote Progress
+    @Comment("\nAppears on the boss bar before the tally of votes.\n" +
+            "(Does not accept color codes)")
+    private String currentVote = "Current Vote:";
+
+    // All Players Have Voted
+    @Comment("\nAppears on the boss bar after all players have voted.\n" +
+            "(Does not accept color codes)")
+    private String allPlayersHaveVoted = "All players have voted!";
+
+    // Vote Passed Boss Bar
+    @Comment("\nAppears on the boss bar when the vote passes.\n" +
+            "(Does not accept color codes)")
+    private String votePassedBossBar = "Vote passed!";
+
+    // Vote Failed Boss Bar
+    @Comment("\nAppears on the boss bar when the vote fails.\n" +
+            "(Does not accept color codes)")
+    private String voteFailedBossBar = "Vote failed!";
+
+    // It is already day/night
+    @Comment("\nAppears on the boss bar if it becomes day/night during opposite vote.\n" +
+            "0 = Day/Night\n" +
+            "(Does not accept color codes)")
+    private String itIsAlready = "It is already {0}!";
+
     // Headers
     // [Vote]
     private transient String voteHeader = "<gray>[<blue>" + vote + "<gray>]<reset> ";
@@ -213,12 +240,12 @@ public class Messages {
         return MiniMessage.get().parse(voteHeader + tenSecondsLeft);
     }
 
-    public Component votePassed(String voteType) {
+    public Component votePassedBossBar(String voteType) {
         // <gray>[<blue>Vote<gray>] <reset>Vote <blue><bold>passed<reset>! Skipping the day|night.
         return MiniMessage.get().parse(voteHeader + MessageFormat.format(votePassed, voteType));
     }
 
-    public Component voteFailed(String voteType) {
+    public Component voteFailedBossBar(String voteType) {
         // <gray>[<blue>Vote<gray>] <reset>Vote <blue><bold>failed<reset>! The day|night will not be skipped.
         return MiniMessage.get().parse(voteHeader + MessageFormat.format(voteFailed, voteType));
     }
@@ -319,6 +346,47 @@ public class Messages {
     public Component mustSleepNewVote() {
         // <red>You must sleep in a bed first!
         return MiniMessage.get().parse(mustSleep);
+    }
+
+    public Component currentVotePA(int yes, int no, int idle, int away) {
+        // Current Vote: Yes - X No - X Idle - X Away - X
+        return MiniMessage.get().parse(currentVote +
+                " <bold><green>" + this.yes.substring(0, 1).toUpperCase() + this.yes.substring(1) + "<reset> - " + yes +
+                " <bold><dark_red>" + this.no.substring(0, 1).toUpperCase() + this.no.substring(1) + "<reset> - " + no +
+                " <bold><dark_aqua>Idle<reset> - " + idle +
+                " <bold><blue>Away<reset> - " + away);
+    }
+
+    public Component currentVote(int yes, int no) {
+        // Current Vote: Yes - X No - X
+        return MiniMessage.get().parse(currentVote +
+                " <bold><green>" + this.yes.substring(0, 1).toUpperCase() + this.yes.substring(1) + "<reset> - " + yes +
+                " <bold><dark_red>" + this.no.substring(0, 1).toUpperCase() + this.no.substring(1) + "<reset> - " + no);
+    }
+
+    public Component allPlayersHaveVoted() {
+        // All players have voted!
+        return MiniMessage.get().parse("<gold>" +  allPlayersHaveVoted);
+    }
+
+    public Component votePassedBossBar() {
+        // Vote passed!
+        return MiniMessage.get().parse("<green>" + votePassedBossBar);
+    }
+
+    public Component voteFailedBossBar() {
+        // Vote failed!
+        return MiniMessage.get().parse("<dark_red>" + voteFailedBossBar);
+    }
+
+    public Component itIsAlreadyDay() {
+        // It is already day!
+        return MiniMessage.get().parse(MessageFormat.format("<blue>" + itIsAlready, day));
+    }
+
+    public Component itIsAlreadyNight() {
+        // It is already night!
+        return MiniMessage.get().parse(MessageFormat.format("<blue>" + itIsAlready, night));
     }
 
     public String getDayString() {
