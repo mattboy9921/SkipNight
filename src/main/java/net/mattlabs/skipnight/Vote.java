@@ -139,7 +139,7 @@ public class Vote implements Runnable, Listener {
         awayVoters = new ArrayList<>();
         idleVoters = new ArrayList<>();
 
-        bar = BossBar.bossBar(Component.text(), 0, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
+        bar = BossBar.bossBar(Component.text(), 1.0f, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
 
         yes = 1;
         no = 0;
