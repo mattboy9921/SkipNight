@@ -222,8 +222,7 @@ public class Vote implements Runnable, Listener {
                         float time = (float) world.getTime();
                         if (time > 12000.0f) time-=12000.0f;
                         bar.progress(time / 12000.0f);
-                        if (bar.progress() > 0.99f) this.cancel();
-                        if (bar.progress() < prevProg) {
+                        if (bar.progress() > 0.98f || bar.progress() < prevProg) {
                             bar.progress(1.0f);
                             this.cancel();
                         }
