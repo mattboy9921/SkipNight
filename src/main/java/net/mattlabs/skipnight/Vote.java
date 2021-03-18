@@ -218,11 +218,10 @@ public class Vote implements Runnable, Listener {
 
                     @Override
                     public void run() {
-                        float prevProg = bar.progress();
                         float time = (float) world.getTime();
                         if (time > 12000.0f) time-=12000.0f;
                         bar.progress(time / 12000.0f);
-                        if (bar.progress() > 0.98f || bar.progress() < prevProg) {
+                        if (countDown <= -8) {
                             bar.progress(1.0f);
                             this.cancel();
                         }
