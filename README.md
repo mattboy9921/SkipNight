@@ -24,6 +24,6 @@ SpigotMC link: https://www.spigotmc.org/resources/skipnight.48334/
  The messages configuration contains every string of text found in the plugin. 
  Follow the instructions in the messages configuration to modify these for your needs.
  
-Tested working on Paper 1.9.0 - 1.16.5.
+Tested working on Paper 1.8.0 - 1.16.5.
 
 Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar, mbaxter, zml and Selida! 

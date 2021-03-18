@@ -39,8 +39,8 @@ public class SkipNight extends JavaPlugin {
         int end = version.length() - 1;
         version = version.substring(start, end);
 
-        if (Versions.versionCompare("1.9.0", version) >= 0) {
-            getLogger().severe("You are running MC " + version + ". This plugin requires MC 1.9.0 or higher, disabling plugin...");
+        if (Versions.versionCompare("1.8.0", version) >= 0) {
+            getLogger().severe("You are running MC " + version + ". This plugin requires MC 1.8.0 or higher, disabling plugin...");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
