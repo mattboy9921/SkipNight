@@ -103,7 +103,7 @@ public class Vote implements Runnable, Listener {
         }
         else {
             if (player.hasPermission("skipnight.vote.night") && player.getWorld().getTime() >= 12516) { // player has permission
-                if (player.getWorld().getPlayerCount() > 1) // if player isn't only one in the world
+                if (player.getWorld().getPlayers().size() > 1) // if player isn't only one in the world
                     platform.player(player).sendMessage(messages.inBedNoVoteInProg());
             }
         }
