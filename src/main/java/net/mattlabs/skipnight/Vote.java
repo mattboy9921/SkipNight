@@ -282,7 +282,7 @@ public class Vote implements Runnable, Listener {
                     boolean playerMustSleep;
                     // Check version for TIME_SINCE_REST added in 1.13
                     if (Versions.versionCompare("1.13.0", version) <= 0) {
-                        playerMustSleep = player.getStatistic(Statistic.TIME_SINCE_REST) >= 72000;
+                        playerMustSleep = Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) >= 72000;
                     } else playerMustSleep = false;
                     
                     if (this.voteType == VoteType.NIGHT && playerMustSleep && config.isPhantomSupport()) {
@@ -312,7 +312,7 @@ public class Vote implements Runnable, Listener {
                     boolean playerMustSleep;
                     // Check version for TIME_SINCE_REST added in 1.13
                     if (Versions.versionCompare("1.13.0", version) <= 0) {
-                        playerMustSleep = player.getStatistic(Statistic.TIME_SINCE_REST) >= 72000;
+                        playerMustSleep = Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) >= 72000;
                     } else playerMustSleep = false;
                     
                     if (this.voteType == VoteType.NIGHT && playerMustSleep && config.isPhantomSupport()) {
