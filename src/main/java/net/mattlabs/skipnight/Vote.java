@@ -279,7 +279,13 @@ public class Vote implements Runnable, Listener {
             if (voters.contains(voter)) {
                 voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
-                    if (this.voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000) {
+                    boolean playerMustSleep;
+                    // Check version for TIME_SINCE_REST added in 1.13
+                    if (Versions.versionCompare("1.13.0", version) <= 0) {
+                        playerMustSleep = Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) >= 72000;
+                    } else playerMustSleep = false;
+                    
+                    if (this.voteType == VoteType.NIGHT && playerMustSleep && config.isPhantomSupport()) {
                         platform.player(uuid).sendMessage(messages.mustSleep());
                         actionBarMessage(messages.playerHasNotSlept(Bukkit.getPlayer(uuid).getName()));
 
@@ -303,7 +309,13 @@ public class Vote implements Runnable, Listener {
             if (voters.contains(voter)) {
                 voter = voters.get(voters.lastIndexOf(voter));
                 if (voter.getVote() == 0) {
-                    if (this.voteType == VoteType.NIGHT && Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) > 72000) {
+                    boolean playerMustSleep;
+                    // Check version for TIME_SINCE_REST added in 1.13
+                    if (Versions.versionCompare("1.13.0", version) <= 0) {
+                        playerMustSleep = Bukkit.getPlayer(uuid).getStatistic(Statistic.TIME_SINCE_REST) >= 72000;
+                    } else playerMustSleep = false;
+                    
+                    if (this.voteType == VoteType.NIGHT && playerMustSleep && config.isPhantomSupport()) {
                         platform.player(uuid).sendMessage(messages.mustSleep());
                         actionBarMessage(messages.playerHasNotSlept(Bukkit.getPlayer(uuid).getName()));
                     }
