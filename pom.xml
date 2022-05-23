@@ -49,9 +49,9 @@
             <url>https://repo.spongepowered.org/maven</url>
         </repository>
         <!-- For Adventure-Text-Minimessage -->
-        <repository> <!-- for development builds -->
-            <id>sonatype-oss</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        <repository>
+            <id>sonatype-oss-snapshots1</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
         <repository>
             <id>viaversion-repo</id>
@@ -95,22 +95,22 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
-            <version>4.9.3</version>
+            <version>4.10.1</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-platform-bukkit</artifactId>
-            <version>4.0.1</version>
+            <version>4.1.0</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-legacy</artifactId>
-            <version>4.9.3</version>
+            <version>4.10.1</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
-            <version>4.2.0-SNAPSHOT</version>
+            <version>4.10.1</version>
         </dependency>
         <!-- For Nullable -->
         <dependency>

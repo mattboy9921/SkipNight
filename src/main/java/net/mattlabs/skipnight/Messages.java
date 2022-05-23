@@ -203,7 +203,7 @@ public class Messages {
 
     public Component noVoteInProg(String voteType) {
         // No vote in progress! [Start Vote] (runs /skipday|night)
-        return MiniMessage.get().parse(MessageFormat.format(noVoteInProg,
+        return MiniMessage.miniMessage().deserialize(MessageFormat.format(noVoteInProg,
                 "<click:suggest_command:/skip" + voteType + ">" +
                 "<hover:show_text:'" + clickToStartVote + "'>" +
                         "<bold>[" + startVote + "]"));
@@ -211,12 +211,12 @@ public class Messages {
 
     public Component voteStarted(String name, String voteType) {
         // <gray>[<blue>Vote<gray>] <reset>%name has started a vote to skip the day|night!
-        return MiniMessage.get().parse(voteHeader + MessageFormat.format(playerStartedVote, name, voteType));
+        return MiniMessage.miniMessage().deserialize(voteHeader + MessageFormat.format(playerStartedVote, name, voteType));
     }
 
     public Component voteButtons(String voteType) {
         // <blue> - <reset>Please vote: || <green><bold>[Yes]||cmd:/skipday|night yes||ttp:<gold><bold>Click <reset>here to vote yes.|| <dark_red><bold>[No]||cmd:/skipday|night no||ttp:<gold><bold>Click <reset>here to vote no.
-        return MiniMessage.get().parse(hyphenHeader + pleaseVote +
+        return MiniMessage.miniMessage().deserialize(hyphenHeader + pleaseVote +
                 "<green><bold><click:run_command:/skip" + voteType + " yes>" +
                 "<hover:show_text:'" + MessageFormat.format(clickHereToVote, yes) + "'>" +
                 "[" + yes.substring(0, 1).toUpperCase() + yes.substring(1) + "]</hover></click> " +
@@ -227,67 +227,67 @@ public class Messages {
 
     public Component youVoteYes() {
         // <blue> - <reset>You voted <blue><bold>yes<reset>.
-        return MiniMessage.get().parse(hyphenHeader + MessageFormat.format(youVote, yes));
+        return MiniMessage.miniMessage().deserialize(hyphenHeader + MessageFormat.format(youVote, yes));
     }
 
     public Component youVoteNo() {
         // <blue> - <reset>You voted <blue><bold>no<reset>.
-        return MiniMessage.get().parse(hyphenHeader + MessageFormat.format(youVote, no));
+        return MiniMessage.miniMessage().deserialize(hyphenHeader + MessageFormat.format(youVote, no));
     }
 
     public Component tenSecondsLeft() {
         // <gray>[<blue>Vote<gray>] <blue><bold>10 <reset>seconds left to vote!
-        return MiniMessage.get().parse(voteHeader + tenSecondsLeft);
+        return MiniMessage.miniMessage().deserialize(voteHeader + tenSecondsLeft);
     }
 
     public Component votePassedBossBar(String voteType) {
         // <gray>[<blue>Vote<gray>] <reset>Vote <blue><bold>passed<reset>! Skipping the day|night.
-        return MiniMessage.get().parse(voteHeader + MessageFormat.format(votePassed, voteType));
+        return MiniMessage.miniMessage().deserialize(voteHeader + MessageFormat.format(votePassed, voteType));
     }
 
     public Component voteFailedBossBar(String voteType) {
         // <gray>[<blue>Vote<gray>] <reset>Vote <blue><bold>failed<reset>! The day|night will not be skipped.
-        return MiniMessage.get().parse(voteHeader + MessageFormat.format(voteFailed, voteType));
+        return MiniMessage.miniMessage().deserialize(voteHeader + MessageFormat.format(voteFailed, voteType));
     }
 
     public Component alreadyVoted() {
         // <blue> - <reset><red>You have already voted!
-        return MiniMessage.get().parse(hyphenHeader + alreadyVoted);
+        return MiniMessage.miniMessage().deserialize(hyphenHeader + alreadyVoted);
     }
 
     public Component mustSleep() {
         // <blue> - <reset><red>You must sleep in a bed first!
-        return MiniMessage.get().parse(hyphenHeader + mustSleep);
+        return MiniMessage.miniMessage().deserialize(hyphenHeader + mustSleep);
     }
 
     public Component idle() {
         // <blue> - <reset>You are <dark_aqua><bold>idle<reset>, your vote will not count.
-        return MiniMessage.get().parse(hyphenHeader + idle);
+        return MiniMessage.miniMessage().deserialize(hyphenHeader + idle);
     }
 
     public Component away() {
         // <blue> - <reset>You are <dark_blue><bold>away<reset>, your vote will not count.
-        return MiniMessage.get().parse(hyphenHeader + away);
+        return MiniMessage.miniMessage().deserialize(hyphenHeader + away);
     }
 
     public Component back() {
         // <blue> - <reset>Welcome back.
-        return MiniMessage.get().parse(hyphenHeader + back);
+        return MiniMessage.miniMessage().deserialize(hyphenHeader + back);
     }
 
     public Component leftWorld() {
         // <gray>[<blue>Vote<gray>] <reset>You left the world, your vote will not count.
-        return MiniMessage.get().parse(voteHeader + leftWorld);
+        return MiniMessage.miniMessage().deserialize(voteHeader + leftWorld);
     }
 
     public Component inBedVotedYes() {
         // <blue> - <reset>You are now in bed, automatically voting yes.
-        return MiniMessage.get().parse(hyphenHeader + inBedVotedYes);
+        return MiniMessage.miniMessage().deserialize(hyphenHeader + inBedVotedYes);
     }
 
     public Component inBedNoVoteInProg() {
         // <gray>[<blue>Vote<gray>] <reset>Start a vote to skip the night? || <blue><bold>[Vote]||cmd:/skipnight||ttp:<gold><bold>Click <reset>here to start a vote.
-        return MiniMessage.get().parse(voteHeader + MessageFormat.format(inBedNoVoteInProg,
+        return MiniMessage.miniMessage().deserialize(voteHeader + MessageFormat.format(inBedNoVoteInProg,
                         "<click:suggest_command:/skipnight>" +
                         "<hover:show_text:'" + clickToStartVote + "'>" +
                         "<bold>[" + startVote + "]"));
@@ -295,62 +295,62 @@ public class Messages {
 
     public Component playerHasNotSlept(String name) {
         // <blue>%name% needs to sleep in a bed before voting!
-        return MiniMessage.get().parse(MessageFormat.format(playerHasNotSlept, name));
+        return MiniMessage.miniMessage().deserialize(MessageFormat.format(playerHasNotSlept, name));
     }
 
     public Component playerHasVotedYes(String name) {
         // <blue>%name% has voted yes!
-        return MiniMessage.get().parse(MessageFormat.format(playerHasVoted, name, yes));
+        return MiniMessage.miniMessage().deserialize(MessageFormat.format(playerHasVoted, name, yes));
     }
 
     public Component playerHasVotedNo(String name) {
         // <blue>%name% has voted no!
-        return MiniMessage.get().parse(MessageFormat.format(playerHasVoted, name, no));
+        return MiniMessage.miniMessage().deserialize(MessageFormat.format(playerHasVoted, name, no));
     }
 
     public Component noPerm() {
         // <red>You don't have permission to run this!
-        return MiniMessage.get().parse(noPerm);
+        return MiniMessage.miniMessage().deserialize(noPerm);
     }
 
     public Component wrongWorld() {
         // <red>You must be in the overworld to start a vote!
-        return MiniMessage.get().parse(wrongWorld);
+        return MiniMessage.miniMessage().deserialize(wrongWorld);
     }
 
     public Component canOnlyVoteAtNight() {
         // <red>You can only start a vote at night!
-        return MiniMessage.get().parse(canOnlyVoteAtNight);
+        return MiniMessage.miniMessage().deserialize(canOnlyVoteAtNight);
     }
 
     public Component canOnlyVoteAtDay() {
         // <red>You can only start a vote during the day!
-        return MiniMessage.get().parse(canOnlyVoteAtDay);
+        return MiniMessage.miniMessage().deserialize(canOnlyVoteAtDay);
     }
 
     public Component noVoteWhileIdle() {
         // <red>You cannot start a vote while idle!
-        return MiniMessage.get().parse(noVoteWhileIdle);
+        return MiniMessage.miniMessage().deserialize(noVoteWhileIdle);
     }
 
     public Component noVoteWhileAway() {
         // <red>You cannot start a vote while away!
-        return MiniMessage.get().parse(noVoteWhileAway);
+        return MiniMessage.miniMessage().deserialize(noVoteWhileAway);
     }
 
     public Component voteInProg() {
         // <red>Vote already in progress!
-        return MiniMessage.get().parse(voteInProg);
+        return MiniMessage.miniMessage().deserialize(voteInProg);
     }
 
     public Component mustSleepNewVote() {
         // <red>You must sleep in a bed first!
-        return MiniMessage.get().parse(mustSleep);
+        return MiniMessage.miniMessage().deserialize(mustSleep);
     }
 
     public Component currentVotePA(int yes, int no, int idle, int away) {
         // Current Vote: Yes - X No - X Idle - X Away - X
-        return MiniMessage.get().parse(currentVote +
+        return MiniMessage.miniMessage().deserialize(currentVote +
                 " <bold><green>" + this.yes.substring(0, 1).toUpperCase() + this.yes.substring(1) + "<reset> - " + yes +
                 " <bold><dark_red>" + this.no.substring(0, 1).toUpperCase() + this.no.substring(1) + "<reset> - " + no +
                 " <bold><dark_aqua>Idle<reset> - " + idle +
@@ -359,34 +359,34 @@ public class Messages {
 
     public Component currentVote(int yes, int no) {
         // Current Vote: Yes - X No - X
-        return MiniMessage.get().parse(currentVote +
+        return MiniMessage.miniMessage().deserialize(currentVote +
                 " <bold><green>" + this.yes.substring(0, 1).toUpperCase() + this.yes.substring(1) + "<reset> - " + yes +
                 " <bold><dark_red>" + this.no.substring(0, 1).toUpperCase() + this.no.substring(1) + "<reset> - " + no);
     }
 
     public Component allPlayersHaveVoted() {
         // All players have voted!
-        return MiniMessage.get().parse("<gold>" +  allPlayersHaveVoted);
+        return MiniMessage.miniMessage().deserialize("<gold>" +  allPlayersHaveVoted);
     }
 
     public Component votePassedBossBar() {
         // Vote passed!
-        return MiniMessage.get().parse("<green>" + votePassedBossBar);
+        return MiniMessage.miniMessage().deserialize("<green>" + votePassedBossBar);
     }
 
     public Component voteFailedBossBar() {
         // Vote failed!
-        return MiniMessage.get().parse("<dark_red>" + voteFailedBossBar);
+        return MiniMessage.miniMessage().deserialize("<dark_red>" + voteFailedBossBar);
     }
 
     public Component itIsAlreadyDay() {
         // It is already day!
-        return MiniMessage.get().parse(MessageFormat.format("<blue>" + itIsAlready, day));
+        return MiniMessage.miniMessage().deserialize(MessageFormat.format("<blue>" + itIsAlready, day));
     }
 
     public Component itIsAlreadyNight() {
         // It is already night!
-        return MiniMessage.get().parse(MessageFormat.format("<blue>" + itIsAlready, night));
+        return MiniMessage.miniMessage().deserialize(MessageFormat.format("<blue>" + itIsAlready, night));
     }
 
     public String getDayString() {

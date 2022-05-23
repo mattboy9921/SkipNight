@@ -38,7 +38,7 @@ public class Transformations {
                     final @Nullable String string = value.getString();
                     if (string != null) {
                         TextComponent component = LegacyComponentSerializer.legacy(_formatCode).deserialize(string);
-                        value.set(MiniMessage.get().serialize(component));
+                        value.set(MiniMessage.miniMessage().serialize(component));
                     }
                     return null;
                 }))
