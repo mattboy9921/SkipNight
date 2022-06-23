@@ -7,6 +7,7 @@ import net.mattlabs.skipnight.commands.SkipDayCommand;
 import net.mattlabs.skipnight.commands.SkipNightCommand;
 import net.mattlabs.skipnight.util.Transformations;
 import net.mattlabs.skipnight.util.Versions;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -80,7 +81,7 @@ public class SkipNight extends JavaPlugin {
             messagesLoader.save(Transformations.updateNode(messagesLoader.load()));
         }
         catch (final ConfigurateException e) {
-            getLogger().severe("Failed to fully update the message config: " + org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(e));
+            getLogger().severe("Failed to fully update the message config: " + ExceptionUtils.getStackTrace(e));
         }
 
         // Load Messages from file location, otherwise use values from Messages class
