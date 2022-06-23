@@ -350,8 +350,10 @@ public class Vote implements Runnable, Listener {
 
         if (!player.hasPermission("skipnight.vote." + voteTypeStringCommand(voteType))) // If player doesn't have permission
             platform.player(player).sendMessage(messages.noPerm());
+        else if (config.getWorldBlacklist().contains(player.getWorld().getName())) // If world is blacklisted
+            platform.player(player).sendMessage(messages.worldIsBlacklisted());
         else if (!isInOverworld(player)) // If player isn't in the overworld
-            platform.player(player).sendMessage(messages.wrongWorld());
+            platform.player(player).sendMessage(messages.worldNotOverworld());
         else if (voteType == VoteType.NIGHT && player.getWorld().getTime() < 12516) // If it's day, trying to skip night
             platform.player(player).sendMessage(messages.canOnlyVoteAtNight());
         else if (voteType == VoteType.DAY && player.getWorld().getTime() >= 12516) // If it's night, trying to skip day

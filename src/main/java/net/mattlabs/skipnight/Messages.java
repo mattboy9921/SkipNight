@@ -132,9 +132,13 @@ public class Messages {
     @Comment("\nAppears if player doesn't have permission to vote.")
     private String noPerm = "<red>You don't have permission to run this!";
 
+    // World Is Blacklisted
+    @Comment("\nAppears if player tries to vote in a blacklisted world.")
+    private String worldIsBlacklisted = "<red>You cannot start a vote in this world!";
+
     // Must Be In Overworld
     @Comment("\nAppears if player tries to vote outside of the overworld.")
-    private String wrongWorld = "<red>You must be in the overworld to start a vote!";
+    private String worldNotOverworld = "<red>You must be in the overworld to start a vote!";
 
     // Can Only Vote At Night
     @Comment("\nAppears if player tries to start a vote to skip the night during the day.")
@@ -313,9 +317,14 @@ public class Messages {
         return MiniMessage.miniMessage().deserialize(noPerm);
     }
 
-    public Component wrongWorld() {
+    public Component worldIsBlacklisted() {
+        // <red>You cannot start a vote in this world!
+        return MiniMessage.miniMessage().deserialize(worldIsBlacklisted);
+    }
+
+    public Component worldNotOverworld() {
         // <red>You must be in the overworld to start a vote!
-        return MiniMessage.miniMessage().deserialize(wrongWorld);
+        return MiniMessage.miniMessage().deserialize(worldNotOverworld);
     }
 
     public Component canOnlyVoteAtNight() {

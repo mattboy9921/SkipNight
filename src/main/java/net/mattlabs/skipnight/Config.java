@@ -4,6 +4,9 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
 @ConfigSerializable
 public class Config {
@@ -27,6 +30,11 @@ public class Config {
             "Basically, if a player will be attacked by phantoms, they cannot vote.")
     private boolean phantomSupport = true;
 
+    @Setting(value = "world-blacklist")
+    @Comment("\nBlacklist of worlds that votes should not happen in.\n" +
+            "Any world listed here will not allow voting to ship the night/day.")
+    private ArrayList<String> worldBlacklist = new ArrayList<>(Collections.singletonList("example-world-1"));
+
     public boolean isSkipNight() {
         return skipNight;
     }
@@ -37,5 +45,9 @@ public class Config {
 
     public boolean isPhantomSupport() {
         return phantomSupport;
+    }
+
+    public ArrayList<String> getWorldBlacklist() {
+        return worldBlacklist;
     }
 }
