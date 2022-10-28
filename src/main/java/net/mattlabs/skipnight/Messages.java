@@ -36,9 +36,6 @@ public class Messages {
     @Comment("\nVote text that appears before certain messages.\n" +
             "(Does not accept color codes)")
     private String vote = "Vote";
-    public String getVote() {
-        return vote;
-    }
 
     @Comment("\nValue for the word \"day\".\n" +
             "(Does not accept color codes)")
