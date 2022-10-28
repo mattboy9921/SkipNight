@@ -5,6 +5,7 @@ import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.mattlabs.skipnight.commands.SkipDayCommand;
 import net.mattlabs.skipnight.commands.SkipNightCommand;
+import net.mattlabs.skipnight.util.ConfigurateManager;
 import net.mattlabs.skipnight.util.Transformations;
 import net.mattlabs.skipnight.util.Versions;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -24,7 +25,8 @@ import java.io.IOException;
 public class SkipNight extends JavaPlugin {
 
     public Vote vote;
-    private PaperCommandManager manager;
+    private PaperCommandManager paperCommandManager;
+    private ConfigurateManager configurateManager;
     private Config config;
     private Messages messages;
     private static SkipNight instance;
@@ -47,36 +49,18 @@ public class SkipNight extends JavaPlugin {
         }
 
         // Configuration Section
-        this.getDataFolder().mkdir();
-        File configFile = new File(this.getDataFolder(), "config.conf");
-        File messasgesFile = new File(this.getDataFolder(), "messages.conf");
-        boolean configExists = configFile.exists();
-        boolean messagesExists = messasgesFile.exists();
-
-        ConfigurationLoader<CommentedConfigurationNode> configLoader =
-                HoconConfigurationLoader.builder().path(configFile.toPath()).build();
-        ConfigurationLoader<CommentedConfigurationNode> messagesLoader =
-                HoconConfigurationLoader.builder().path(messasgesFile.toPath()).build();
 
         // Convert old YAML file if it exists still
+        this.getDataFolder().mkdir();
+        File configFile = new File(this.getDataFolder(), "config.conf");
+        ConfigurationLoader<CommentedConfigurationNode> configLoader =
+                HoconConfigurationLoader.builder().path(configFile.toPath()).build();
         convertConfigFormat(new File(this.getDataFolder(), "config.yml"), configLoader);
 
-        config = null;
-        messages = null;
-
-        boolean failLoadConfig = false, failLoadMessages = false;
-
-        // Load config from file location, otherwise use values from Config class
-        try {
-            config = configLoader.load().<Config>get(TypeToken.get(Config.class), Config::new);
-        }
-        catch (IOException e) {
-            getLogger().severe("Failed to load the config - Using a default!");
-            config = new Config();
-            failLoadConfig = true;
-        }
-
         // Transform Messages
+        File messasgesFile = new File(this.getDataFolder(), "messages.conf");
+        ConfigurationLoader<CommentedConfigurationNode> messagesLoader =
+                HoconConfigurationLoader.builder().path(messasgesFile.toPath()).build();
         try {
             messagesLoader.save(Transformations.updateNode(messagesLoader.load()));
         }
@@ -84,34 +68,26 @@ public class SkipNight extends JavaPlugin {
             getLogger().severe("Failed to fully update the message config: " + ExceptionUtils.getStackTrace(e));
         }
 
-        // Load Messages from file location, otherwise use values from Messages class
-        try {
-            messages = messagesLoader.load().<Messages>get(TypeToken.get(Messages.class), Messages::new);
-        }
-        catch (IOException e) {
-            getLogger().severe("Failed to load the messages config - Using a default!");
-            messages = new Messages();
-            failLoadMessages = true;
-        }
+        config = null;
+        messages = null;
 
-        // Save config to file
-        if (!failLoadConfig || !configExists) {
-            try {
-                configLoader.save(configLoader.createNode().set(TypeToken.get(Config.class), config));
-            } catch (IOException e) {
-                getLogger().severe("Failed to save the config!");
-            }
-        }
+        // Configurate
+        configurateManager = new ConfigurateManager(this);
 
-        // Save Messages to file
-        if (!failLoadMessages || !messagesExists) {
-            try {
-                messagesLoader.save(messagesLoader.createNode().set(TypeToken.get(Messages.class), messages));
-            }
-            catch (IOException e){
-                getLogger().severe("Failed to save the messages config!");
-            }
-        }
+        configurateManager.add("config.conf", TypeToken.get(Config.class), new Config(), Config::new);
+        configurateManager.add("messages.conf", TypeToken.get(Messages.class), new Messages(), Messages::new);
+
+        configurateManager.saveDefaults("config.conf");
+        configurateManager.saveDefaults("messages.conf");
+
+        configurateManager.load("config.conf");
+        configurateManager.load("messages.conf");
+
+        configurateManager.save("config.conf");
+        configurateManager.save("messages.conf");
+
+        config = configurateManager.get("config.conf");
+        messages = configurateManager.get("messages.conf");
 
         // Register Audience (Messages)
         platform = BukkitAudiences.create(this);
@@ -123,13 +99,13 @@ public class SkipNight extends JavaPlugin {
         getServer().getPluginManager().registerEvents(vote, this);
 
         // Register ACF
-        manager = new PaperCommandManager(this);
+        paperCommandManager = new PaperCommandManager(this);
 
         // Register Commands with ACF
         if (config.isSkipNight())
-            manager.registerCommand(new SkipNightCommand(this));
+            paperCommandManager.registerCommand(new SkipNightCommand(this));
         if (config.isSkipDay())
-            manager.registerCommand(new SkipDayCommand(this));
+            paperCommandManager.registerCommand(new SkipDayCommand(this));
 
         // bStats
         Metrics metrics = new Metrics(this,  	5796);

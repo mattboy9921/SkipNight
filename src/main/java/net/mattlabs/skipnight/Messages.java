@@ -36,6 +36,9 @@ public class Messages {
     @Comment("\nVote text that appears before certain messages.\n" +
             "(Does not accept color codes)")
     private String vote = "Vote";
+    public String getVote() {
+        return vote;
+    }
 
     @Comment("\nValue for the word \"day\".\n" +
             "(Does not accept color codes)")
@@ -200,7 +203,9 @@ public class Messages {
 
     // Headers
     // [Vote]
-    private transient String voteHeader = "<gray>[<blue>" + vote + "<gray>]<reset> ";
+    private String voteHeader() {
+        return "<gray>[<blue>" + vote + "<gray>]<reset> ";
+    }
 
     // -
     private transient String hyphenHeader = " <blue>-<reset> ";
@@ -215,7 +220,7 @@ public class Messages {
 
     public Component voteStarted(String name, String voteType) {
         // <gray>[<blue>Vote<gray>] <reset>%name has started a vote to skip the day|night!
-        return MiniMessage.miniMessage().deserialize(voteHeader + MessageFormat.format(playerStartedVote, name, voteType));
+        return MiniMessage.miniMessage().deserialize(voteHeader() + MessageFormat.format(playerStartedVote, name, voteType));
     }
 
     public Component voteButtons(String voteType) {
@@ -241,17 +246,17 @@ public class Messages {
 
     public Component tenSecondsLeft() {
         // <gray>[<blue>Vote<gray>] <blue><bold>10 <reset>seconds left to vote!
-        return MiniMessage.miniMessage().deserialize(voteHeader + tenSecondsLeft);
+        return MiniMessage.miniMessage().deserialize(voteHeader() + tenSecondsLeft);
     }
 
     public Component votePassedBossBar(String voteType) {
         // <gray>[<blue>Vote<gray>] <reset>Vote <blue><bold>passed<reset>! Skipping the day|night.
-        return MiniMessage.miniMessage().deserialize(voteHeader + MessageFormat.format(votePassed, voteType));
+        return MiniMessage.miniMessage().deserialize(voteHeader() + MessageFormat.format(votePassed, voteType));
     }
 
     public Component voteFailedBossBar(String voteType) {
         // <gray>[<blue>Vote<gray>] <reset>Vote <blue><bold>failed<reset>! The day|night will not be skipped.
-        return MiniMessage.miniMessage().deserialize(voteHeader + MessageFormat.format(voteFailed, voteType));
+        return MiniMessage.miniMessage().deserialize(voteHeader() + MessageFormat.format(voteFailed, voteType));
     }
 
     public Component alreadyVoted() {
@@ -281,7 +286,7 @@ public class Messages {
 
     public Component leftWorld() {
         // <gray>[<blue>Vote<gray>] <reset>You left the world, your vote will not count.
-        return MiniMessage.miniMessage().deserialize(voteHeader + leftWorld);
+        return MiniMessage.miniMessage().deserialize(voteHeader() + leftWorld);
     }
 
     public Component inBedVotedYes() {
@@ -291,7 +296,7 @@ public class Messages {
 
     public Component inBedNoVoteInProg() {
         // <gray>[<blue>Vote<gray>] <reset>Start a vote to skip the night? || <blue><bold>[Vote]||cmd:/skipnight||ttp:<gold><bold>Click <reset>here to start a vote.
-        return MiniMessage.miniMessage().deserialize(voteHeader + MessageFormat.format(inBedNoVoteInProg,
+        return MiniMessage.miniMessage().deserialize(voteHeader() + MessageFormat.format(inBedNoVoteInProg,
                         "<click:suggest_command:/skipnight>" +
                         "<hover:show_text:'" + clickToStartVote + "'>" +
                         "<bold>[" + startVote + "]"));
