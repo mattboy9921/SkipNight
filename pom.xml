@@ -8,7 +8,7 @@
 
     <groupId>net.mattlabs.skipnight</groupId>
     <artifactId>SkipNight</artifactId>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
 
     <description>
         Allows players to vote to skip the night
