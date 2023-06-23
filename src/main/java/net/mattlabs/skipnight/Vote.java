@@ -396,6 +396,19 @@ public class Vote implements Runnable, Listener {
         }
         return voteTypeString;
     }
+
+    private String voteTypeCommandString() {
+        String voteTypeString = "null";
+        switch (voteType) {
+            case DAY:
+                voteTypeString = "day";
+                break;
+            case NIGHT:
+                voteTypeString = "night";
+                break;
+        }
+        return voteTypeString;
+    }
     
     public String voteTypeStringCommand(VoteType voteType) {
         String voteTypeString = "null";
@@ -452,7 +465,7 @@ public class Vote implements Runnable, Listener {
                         awayVoters.remove(voter);
                         voters.add(voter);
                         platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeString()));
+                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
@@ -465,7 +478,7 @@ public class Vote implements Runnable, Listener {
                         idleVoters.remove(voter);
                         voters.add(voter);
                         platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeString()));
+                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
@@ -480,7 +493,7 @@ public class Vote implements Runnable, Listener {
                         voters.add(voter);
                         platform.player(player).showBossBar(bar);
                         platform.player(player).sendMessage(messages.voteStarted(this.player.getName(), voteTypeString()));
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeString()));
+                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
                     }
                 }
             } else {
@@ -552,7 +565,7 @@ public class Vote implements Runnable, Listener {
                         awayVoters.remove(voter);
                         voters.add(voter);
                         platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeString()));
+                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
@@ -565,7 +578,7 @@ public class Vote implements Runnable, Listener {
                         idleVoters.remove(voter);
                         voters.add(voter);
                         platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeString()));
+                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
@@ -580,7 +593,7 @@ public class Vote implements Runnable, Listener {
                         voters.add(voter);
                         platform.player(player).showBossBar(bar);
                         platform.player(player).sendMessage(messages.voteStarted(this.player.getName(), voteTypeString()));
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeString()));
+                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
                     }
                 }
                 platform.player(player).sendMessage(message);
@@ -653,7 +666,7 @@ public class Vote implements Runnable, Listener {
                         awayVoters.remove(voter);
                         voters.add(voter);
                         platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeString()));
+                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
@@ -666,7 +679,7 @@ public class Vote implements Runnable, Listener {
                         idleVoters.remove(voter);
                         voters.add(voter);
                         platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeString()));
+                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
@@ -690,7 +703,7 @@ public class Vote implements Runnable, Listener {
                             voter.voteYes();
                             platform.player(player).sendMessage(messages.youVoteYes());
                         } else {
-                            platform.player(player).sendMessage(messages.voteButtons(voteTypeString()));
+                            platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
                         }
                     }
                 }
