@@ -294,7 +294,7 @@ public class Messages {
     public Component inBedNoVoteInProg() {
         // <gray>[<blue>Vote<gray>] <reset>Start a vote to skip the night? || <blue><bold>[Vote]||cmd:/skipnight||ttp:<gold><bold>Click <reset>here to start a vote.
         return MiniMessage.miniMessage().deserialize(voteHeader() + MessageFormat.format(inBedNoVoteInProg,
-                        "<click:suggest_command:/skipnight>" +
+                        "<click:run_command:/skipnight>" +
                         "<hover:show_text:'" + clickToStartVote + "'>" +
                         "<bold>[" + startVote + "]"));
     }
