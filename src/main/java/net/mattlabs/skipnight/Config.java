@@ -35,6 +35,11 @@ public class Config {
             "Any world listed here will not allow voting to ship the night/day.")
     private ArrayList<String> worldBlacklist = new ArrayList<>(Collections.singletonList("example-world-1"));
 
+    @Setting(value = "cooldown")
+    @Comment("\nA cooldown value in seconds to prevent additional votes after a failed vote.\n" +
+            "Set to 0 to disable.")
+    private int cooldown = 0;
+
     public boolean isSkipNight() {
         return skipNight;
     }
@@ -49,5 +54,9 @@ public class Config {
 
     public ArrayList<String> getWorldBlacklist() {
         return worldBlacklist;
+    }
+
+    public int getCooldown() {
+        return cooldown;
     }
 }

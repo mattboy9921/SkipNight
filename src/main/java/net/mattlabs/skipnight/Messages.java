@@ -198,6 +198,11 @@ public class Messages {
             "(Does not accept color codes)")
     private String itIsAlready = "It is already {0}!";
 
+    // Vote cooldown
+    @Comment("\nAppears when a player tries to start a vote too quickly after a failed vote.\n" +
+            "(Does not accept color codes)")
+    private String cooldown = "You cannot start another vote, a vote just failed!";
+
     // Headers
     // [Vote]
     private String voteHeader() {
@@ -406,5 +411,9 @@ public class Messages {
 
     public String getNightString() {
         return night;
+    }
+
+    public Component cooldown() {
+        return MiniMessage.miniMessage().deserialize("<red>" + cooldown);
     }
 }

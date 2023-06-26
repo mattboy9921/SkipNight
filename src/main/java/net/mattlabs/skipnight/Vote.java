@@ -30,6 +30,7 @@ public class Vote implements Runnable, Listener {
         CANCEL,
         FINAL,
         COMPLETE,
+        COOLDOWN,
         OFF
     }
 
@@ -128,6 +129,9 @@ public class Vote implements Runnable, Listener {
                 break;
             case COMPLETE:
                 doComplete();
+                break;
+            case COOLDOWN:
+                doCooldown();
                 break;
             default:
                 break;
@@ -246,8 +250,13 @@ public class Vote implements Runnable, Listener {
             voters = null;
             fastForward = null;
             voteType = null;
-            timer = Timer.OFF;
+            timer = yes > no ? Timer.OFF : Timer.COOLDOWN;
         }
+    }
+
+    private void doCooldown() {
+        if (countDown >= (config.getCooldown() * -1) - 9) plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
+        else timer = Timer.OFF;
     }
 
     private void doCancel() {
@@ -362,6 +371,8 @@ public class Vote implements Runnable, Listener {
             platform.player(player).sendMessage(messages.noVoteWhileIdle());
         else if (tag.equalsIgnoreCase("Away"))
             platform.player(player).sendMessage(messages.noVoteWhileAway());
+        else if (timer == Timer.COOLDOWN) // If the vote is in cooldown
+            platform.player(player).sendMessage(messages.cooldown());
         else if (!(timer == Timer.OFF)) // If there's a vote happening
             platform.player(player).sendMessage(messages.voteInProg());
         else if (voteType == VoteType.NIGHT && playerMustSleep && config.isPhantomSupport()) // If it's night, player hasn't slept in 3 days
