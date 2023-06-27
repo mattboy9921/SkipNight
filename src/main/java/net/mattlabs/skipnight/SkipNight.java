@@ -33,6 +33,8 @@ public class SkipNight extends JavaPlugin {
     private BukkitAudiences platform;
     private String version;
 
+    static boolean testEnabled = false;
+
     public void onEnable() {
         instance = this;
 
@@ -108,7 +110,7 @@ public class SkipNight extends JavaPlugin {
             paperCommandManager.registerCommand(new SkipDayCommand(this));
 
         // bStats
-        Metrics metrics = new Metrics(this,  	5796);
+        if (!testEnabled) new Metrics(this,  	5796);
 
         // PlayerActivity Integration
         if (!hasPlayerActivity()) getLogger().info("PlayerActivity not found, disabling Idle/Away features");

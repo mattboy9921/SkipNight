@@ -38,7 +38,7 @@ public class Config {
     @Setting(value = "cooldown")
     @Comment("\nA cooldown value in seconds to prevent additional votes after a failed vote.\n" +
             "Set to 0 to disable.")
-    private int cooldown = 0;
+    private int cooldown = 30;
 
     public boolean isSkipNight() {
         return skipNight;
