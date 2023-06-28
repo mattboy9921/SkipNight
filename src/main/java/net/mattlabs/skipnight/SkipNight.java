@@ -118,6 +118,10 @@ public class SkipNight extends JavaPlugin {
         getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar, mbaxter, zml, Selida and ViMaSter)");
     }
 
+    public void onDisable() {
+        platform.close();
+    }
+
     public static SkipNight getInstance() {
         return instance;
     }
