@@ -38,7 +38,7 @@ public class Vote implements Runnable, Listener {
     private VoteType voteType;
     private int yes, no, playerCount, countDown, away, idle;
     private BossBar bar;
-    private Plugin plugin;
+    private SkipNight plugin;
     private List<Voter> voters;
     private List<Voter> awayVoters;
     private List<Voter> idleVoters;
@@ -51,7 +51,7 @@ public class Vote implements Runnable, Listener {
     private boolean playerActivity;
     private Config config;
 
-    Vote(Plugin plugin) {
+    Vote(SkipNight plugin) {
         timer = Timer.OFF;
         this.plugin = plugin;
         messages = SkipNight.getInstance().getMessages();

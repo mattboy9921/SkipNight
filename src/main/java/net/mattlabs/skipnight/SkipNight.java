@@ -33,6 +33,8 @@ public class SkipNight extends JavaPlugin {
     private BukkitAudiences platform;
     private String version;
 
+    static boolean testEnabled = false;
+
     public void onEnable() {
         instance = this;
 
@@ -102,18 +104,22 @@ public class SkipNight extends JavaPlugin {
         paperCommandManager = new PaperCommandManager(this);
 
         // Register Commands with ACF
-        if (config.isSkipNight())
+        if (config.isSkipNight() || testEnabled)
             paperCommandManager.registerCommand(new SkipNightCommand(this));
-        if (config.isSkipDay())
+        if (config.isSkipDay() || testEnabled)
             paperCommandManager.registerCommand(new SkipDayCommand(this));
 
         // bStats
-        Metrics metrics = new Metrics(this,  	5796);
+        if (!testEnabled) new Metrics(this,  	5796);
 
         // PlayerActivity Integration
         if (!hasPlayerActivity()) getLogger().info("PlayerActivity not found, disabling Idle/Away features");
 
         getLogger().info("SkipNight loaded - By mattboy9921 (Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar, mbaxter, zml, Selida and ViMaSter)");
+    }
+
+    public void onDisable() {
+        platform.close();
     }
 
     public static SkipNight getInstance() {
