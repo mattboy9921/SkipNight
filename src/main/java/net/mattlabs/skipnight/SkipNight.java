@@ -104,9 +104,9 @@ public class SkipNight extends JavaPlugin {
         paperCommandManager = new PaperCommandManager(this);
 
         // Register Commands with ACF
-        if (config.isSkipNight())
+        if (config.isSkipNight() || testEnabled)
             paperCommandManager.registerCommand(new SkipNightCommand(this));
-        if (config.isSkipDay())
+        if (config.isSkipDay() || testEnabled)
             paperCommandManager.registerCommand(new SkipDayCommand(this));
 
         // bStats

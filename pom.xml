@@ -64,7 +64,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19.4-R0.1-SNAPSHOT</version>
+            <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- For ACF -->
@@ -131,17 +131,11 @@
             <version>5.9.1</version>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.junit.platform</groupId>-->
-<!--            <artifactId>junit-platform-runner</artifactId>-->
-<!--            <version>1.2.0</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
         <!-- For MockBukkit -->
         <dependency>
             <groupId>com.github.seeseemelk</groupId>
-            <artifactId>MockBukkit-v1.19</artifactId>
-            <version>2.147.2</version>
+            <artifactId>MockBukkit-v1.20</artifactId>
+            <version>3.16.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
