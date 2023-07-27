@@ -45,6 +45,36 @@ public class NightVoteTest extends VoteTest {
     }
 
     @Test
+    @DisplayName("Test vote during thunderstorm")
+    public void voteDuringStorm() {
+        onePlayerSetup();
+        world.setTime(8000);
+        world.setStorm(true);
+
+        // Player starts vote
+        server.execute("skip" + voteType, player1).assertSucceeded();
+        Assertions.assertEquals(
+                plain.serialize(plugin.getMessages().voteStarted(player1.getName(), voteType)),
+                plain.serialize(player1.nextComponentMessage())
+        );
+        Assertions.assertEquals(
+                plain.serialize(plugin.getMessages().youVoteYes()),
+                plain.serialize(player1.nextComponentMessage())
+        );
+
+        // Let vote process
+        server.getScheduler().performTicks(60 * 20);
+
+        Assertions.assertEquals(
+                plain.serialize(plugin.getMessages().votePassedBossBar(voteType)),
+                plain.serialize(player1.nextComponentMessage())
+        );
+
+        // Make sure time fast forwards
+        Assertions.assertTrue(world.getTime() < startTime || world.getTime() > endTime);
+    }
+
+    @Test
     @DisplayName("Test start vote needs to sleep")
     public void voteStartVoteNeedSleep() {
         onePlayerSetup();

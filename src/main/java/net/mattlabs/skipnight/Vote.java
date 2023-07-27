@@ -14,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -207,6 +206,23 @@ public class Vote implements Runnable, Listener {
     }
 
     private void doComplete() {
+        BukkitRunnable bossBarFastForward = new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                countDown = -7;
+                float totalTime;
+                if (voteType == VoteType.NIGHT) totalTime = 23900f;
+                else totalTime = 12516f;
+                float progress = world.getTime() / totalTime;
+                if (progress > 1.0f) {
+                    bar.progress(1.0f);
+                    this.cancel();
+                }
+                else bar.progress(progress);
+            }
+        };
+
         countDown--;
         if (countDown == -1) {
             bar.progress(1.0f);
@@ -219,19 +235,7 @@ public class Vote implements Runnable, Listener {
 
                 // Set boss bar progress to fast forward progress
                 bar.progress(0.0f);
-                new BukkitRunnable() {
-
-                    @Override
-                    public void run() {
-                        float time = (float) world.getTime();
-                        if (time > 12000.0f) time-=12000.0f;
-                        bar.progress(time / 12000.0f);
-                        if (countDown <= -8) {
-                            bar.progress(1.0f);
-                            this.cancel();
-                        }
-                    }
-                }.runTaskTimer(plugin, 0, 1);
+                bossBarFastForward.runTaskTimer(plugin, 0, 1);
 
                 if (world.hasStorm()) world.setStorm(false);
             }
@@ -364,7 +368,7 @@ public class Vote implements Runnable, Listener {
             platform.player(player).sendMessage(messages.worldIsBlacklisted());
         else if (!isInOverworld(player)) // If player isn't in the overworld
             platform.player(player).sendMessage(messages.worldNotOverworld());
-        else if (voteType == VoteType.NIGHT && player.getWorld().getTime() < 12516) // If it's day, trying to skip night
+        else if (voteType == VoteType.NIGHT && player.getWorld().getTime() < 12516 && !player.getWorld().hasStorm()) // If it's day and not raining, trying to skip night
             platform.player(player).sendMessage(messages.canOnlyVoteAtNight());
         else if (voteType == VoteType.DAY && player.getWorld().getTime() >= 12516) // If it's night, trying to skip day
             platform.player(player).sendMessage(messages.canOnlyVoteAtDay());
@@ -759,7 +763,7 @@ public class Vote implements Runnable, Listener {
     }
 
     private boolean voteCancel() {
-        return (voteType == VoteType.NIGHT && (world.getTime() > 23900 || world.getTime() < 12516)) ||
+        return (voteType == VoteType.NIGHT && (world.getTime() > 23900 || world.getTime() < 12516)) && !world.hasStorm() ||
                 (voteType == VoteType.DAY && world.getTime() > 12516 && world.getTime() < 23900);
     }
 }
