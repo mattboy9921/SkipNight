@@ -40,6 +40,11 @@ public class Config {
             "Set to 0 to disable.")
     private int cooldown = 30;
 
+    @Setting(value = "disable-header")
+    @Comment("\nSet this to true to have the \"[Vote]\" header before plugin messages.\n" +
+            "Set to false to disable the header.")
+    private boolean disableHeader = false;
+
     public boolean isSkipNight() {
         return skipNight;
     }
@@ -59,4 +64,9 @@ public class Config {
     public int getCooldown() {
         return cooldown;
     }
+
+    public boolean isHeaderDisabled() {
+        return disableHeader;
+    }
+
 }

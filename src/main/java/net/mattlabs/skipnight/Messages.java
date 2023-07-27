@@ -206,7 +206,7 @@ public class Messages {
     // Headers
     // [Vote]
     private String voteHeader() {
-        return "<gray>[<blue>" + vote + "<gray>]<reset> ";
+        return SkipNight.getInstance().getConfiguration().isHeaderDisabled() ? "" : "<gray>[<blue>" + vote + "<gray>]<reset> ";
     }
 
     // -
