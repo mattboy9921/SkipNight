@@ -45,6 +45,10 @@ public class Config {
             "Set to false to disable the header.")
     private boolean disableHeader = false;
 
+    @Setting(value = "vote-duration")
+    @Comment("\nA value for the duration of the vote in seconds.")
+    private int voteDuration = 30;
+
     public boolean isSkipNight() {
         return skipNight;
     }
@@ -69,4 +73,7 @@ public class Config {
         return disableHeader;
     }
 
+    public int getVoteDuration() {
+        return voteDuration;
+    }
 }

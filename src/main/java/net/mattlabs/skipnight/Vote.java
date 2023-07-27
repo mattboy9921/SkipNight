@@ -36,7 +36,7 @@ public class Vote implements Runnable, Listener {
 
     private Timer timer;
     private VoteType voteType;
-    private int yes, no, playerCount, countDown, away, idle;
+    private int yes, no, playerCount, countDown, countDownInit, away, idle;
     private BossBar bar;
     private SkipNight plugin;
     private List<Voter> voters;
@@ -147,7 +147,8 @@ public class Vote implements Runnable, Listener {
 
         yes = 1;
         no = 0;
-        countDown = 30;
+        countDown = config.getVoteDuration();
+        countDownInit = config.getVoteDuration();
         away = 0;
         idle = 0;
 
@@ -166,13 +167,13 @@ public class Vote implements Runnable, Listener {
         countDown--;
         if (yes + no == playerCount) timer = Timer.INTERRUPT;
         if (voteCancel()) timer = Timer.CANCEL;
-        bar.progress((float) countDown / 30.0f);
+        bar.progress((float) countDown / countDownInit);
         if (playerActivity)
             bar.name(messages.currentVotePA(yes, no, idle, away));
         else
             bar.name(messages.currentVote(yes, no));
         voters = updateAll(voters);
-        if (countDown == 10) timer = Timer.FINAL;
+        if (countDown <= 10) timer = Timer.FINAL;
         plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
     }
 
@@ -190,7 +191,7 @@ public class Vote implements Runnable, Listener {
         countDown--;
         if (yes + no == playerCount) timer = Timer.INTERRUPT;
         if (voteCancel()) timer = Timer.CANCEL;
-        bar.progress((float) countDown / 30.0f);
+        bar.progress((float) countDown / countDownInit);
         if (playerActivity)
             bar.name(messages.currentVotePA(yes, no, idle, away));
         else
