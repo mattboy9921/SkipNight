@@ -59,17 +59,6 @@ public class SkipNight extends JavaPlugin {
                 HoconConfigurationLoader.builder().path(configFile.toPath()).build();
         convertConfigFormat(new File(this.getDataFolder(), "config.yml"), configLoader);
 
-        // Transform Messages
-        File messasgesFile = new File(this.getDataFolder(), "messages.conf");
-        ConfigurationLoader<CommentedConfigurationNode> messagesLoader =
-                HoconConfigurationLoader.builder().path(messasgesFile.toPath()).build();
-        try {
-            messagesLoader.save(Transformations.updateNode(messagesLoader.load()));
-        }
-        catch (final ConfigurateException e) {
-            getLogger().severe("Failed to fully update the message config: " + ExceptionUtils.getStackTrace(e));
-        }
-
         config = null;
         messages = null;
 
@@ -77,7 +66,7 @@ public class SkipNight extends JavaPlugin {
         configurateManager = new ConfigurateManager(this);
 
         configurateManager.add("config.conf", TypeToken.get(Config.class), new Config(), Config::new);
-        configurateManager.add("messages.conf", TypeToken.get(Messages.class), new Messages(), Messages::new);
+        configurateManager.add("messages.conf", TypeToken.get(Messages.class), new Messages(), Messages::new, Transformations.create());
 
         configurateManager.saveDefaults("config.conf");
         configurateManager.saveDefaults("messages.conf");
