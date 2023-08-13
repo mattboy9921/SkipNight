@@ -66,12 +66,12 @@ public class ConfigurateManager {
         ConfigurationLoader<CommentedConfigurationNode> loader = configNode.getLoader();
 
         if (!file.exists()) {
-            Bukkit.getLogger().info("\"" + fileName + "\" file doesn't exist, creating...");
+            plugin.getLogger().info("\"" + fileName + "\" file doesn't exist, creating...");
             try {
                 loader.save(loader.createNode().set(configNode.getTypeToken(), configNode.getConfigSerializable()));
             }
             catch (IOException | StackOverflowError e) {
-                Bukkit.getLogger().severe("Failed to save \"" + fileName + "\"!");
+                plugin.getLogger().severe("Failed to save \"" + fileName + "\"!");
                 Bukkit.getPluginManager().disablePlugin(plugin);
             }
         }
@@ -86,7 +86,7 @@ public class ConfigurateManager {
             loader.save(loader.createNode().set(configNode.getTypeToken(), configNode.getConfigSerializable()));
         }
         catch (IOException e) {
-            Bukkit.getLogger().severe("Failed to save \"" + fileName + "\"!");
+            plugin.getLogger().severe("Failed to save \"" + fileName + "\"!");
         }
     }
 
@@ -105,14 +105,14 @@ public class ConfigurateManager {
                 transformation.apply(node);
                 int endVersion = transformation.version(node);
                 if (startVersion != endVersion)
-                    Bukkit.getLogger().info("Updated " + fileName + " schema from " + startVersion + " to " + endVersion);
+                    plugin.getLogger().info("Updated " + fileName + " schema from " + startVersion + " to " + endVersion);
             }
             // Load
             T t = node.get(configNode.getTypeToken(), configNode.getConfigSerializableSupplier());
             configNode.setConfigSerializable(t);
         }
         catch (IOException e) {
-            Bukkit.getLogger().severe("Failed to load \"" + fileName + "\" - using a default!");
+            plugin.getLogger().severe("Failed to load \"" + fileName + "\" - using a default!");
         }
     }
 
