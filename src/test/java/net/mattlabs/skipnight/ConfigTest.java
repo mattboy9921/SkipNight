@@ -49,6 +49,6 @@ public class ConfigTest {
     public void readMessagesValue() {
         Assertions.assertEquals(
                 " - Please vote: [Yes] [No]",
-                PlainTextComponentSerializer.plainText().serialize(plugin.getMessages().voteButtons("night")));
+                PlainTextComponentSerializer.plainText().serialize(plugin.getMessages().duringVote().voteButtons("night")));
     }
 }

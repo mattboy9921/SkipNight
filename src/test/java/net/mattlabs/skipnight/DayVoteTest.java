@@ -30,7 +30,7 @@ public class DayVoteTest extends VoteTest {
         // Player starts vote
         server.execute("skip" + voteType, player1).assertSucceeded();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().canOnlyVoteAtDay()),
+                plain.serialize(plugin.getMessages().beforeVote().canOnlyVoteAtDay()),
                 plain.serialize(player1.nextComponentMessage())
         );
 

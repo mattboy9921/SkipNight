@@ -36,7 +36,7 @@ public class NightVoteTest extends VoteTest {
         // Player starts vote
         server.execute("skip" + voteType, player1).assertSucceeded();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().canOnlyVoteAtNight()),
+                plain.serialize(plugin.getMessages().beforeVote().canOnlyVoteAtNight()),
                 plain.serialize(player1.nextComponentMessage())
         );
 
@@ -54,11 +54,11 @@ public class NightVoteTest extends VoteTest {
         // Player starts vote
         server.execute("skip" + voteType, player1).assertSucceeded();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().voteStarted(player1.getName(), voteType)),
+                plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
                 plain.serialize(player1.nextComponentMessage())
         );
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().youVoteYes()),
+                plain.serialize(plugin.getMessages().duringVote().youVoteYes()),
                 plain.serialize(player1.nextComponentMessage())
         );
 
@@ -66,7 +66,7 @@ public class NightVoteTest extends VoteTest {
         server.getScheduler().performTicks(60 * 20);
 
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().votePassedBossBar(voteType)),
+                plain.serialize(plugin.getMessages().afterVote().votePassedBossBar(voteType)),
                 plain.serialize(player1.nextComponentMessage())
         );
 
@@ -85,7 +85,7 @@ public class NightVoteTest extends VoteTest {
         // Player starts vote
         server.execute("skipnight", player1).assertSucceeded();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().mustSleepNewVote()),
+                plain.serialize(plugin.getMessages().beforeVote().mustSleepNewVote()),
                 plain.serialize(player1.nextComponentMessage())
         );
 
@@ -112,7 +112,7 @@ public class NightVoteTest extends VoteTest {
         for (int i = 0; i < 2; i++)
             player2.nextComponentMessage();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().mustSleep()),
+                plain.serialize(plugin.getMessages().beforeVote().mustSleep()),
                 plain.serialize(player2.nextComponentMessage())
         );
     }
@@ -152,7 +152,7 @@ public class NightVoteTest extends VoteTest {
 
         // Check for no message on bed enter
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().inBedNoVoteInProg()),
+                plain.serialize(plugin.getMessages().beforeVote().inBedNoVoteInProg()),
                 plain.serialize(player1.nextComponentMessage())
         );
     }
@@ -179,7 +179,7 @@ public class NightVoteTest extends VoteTest {
 
         // Check for message on bed enter
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().inBedVotedYes()),
+                plain.serialize(plugin.getMessages().duringVote().inBedVotedYes()),
                 plain.serialize(player2.nextComponentMessage())
         );
     }

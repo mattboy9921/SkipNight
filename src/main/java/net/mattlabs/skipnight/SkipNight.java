@@ -6,14 +6,12 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.mattlabs.skipnight.commands.SkipDayCommand;
 import net.mattlabs.skipnight.commands.SkipNightCommand;
 import net.mattlabs.skipnight.util.ConfigurateManager;
-import net.mattlabs.skipnight.util.Transformations;
+import net.mattlabs.skipnight.util.MessageTransformations;
 import net.mattlabs.skipnight.util.Versions;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.CommentedConfigurationNode;
-import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
@@ -66,7 +64,7 @@ public class SkipNight extends JavaPlugin {
         configurateManager = new ConfigurateManager(this);
 
         configurateManager.add("config.conf", TypeToken.get(Config.class), new Config(), Config::new);
-        configurateManager.add("messages.conf", TypeToken.get(Messages.class), new Messages(), Messages::new, Transformations.create());
+        configurateManager.add("messages.conf", TypeToken.get(Messages.class), new Messages(), Messages::new, MessageTransformations.create());
 
         configurateManager.saveDefaults("config.conf");
         configurateManager.saveDefaults("messages.conf");

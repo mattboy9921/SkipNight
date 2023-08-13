@@ -50,11 +50,11 @@ public abstract class VoteTest {
         // Player starts vote
         server.execute("skip" + voteType, player1).assertSucceeded();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().voteStarted(player1.getName(), voteType)),
+                plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
                 plain.serialize(player1.nextComponentMessage())
         );
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().youVoteYes()),
+                plain.serialize(plugin.getMessages().duringVote().youVoteYes()),
                 plain.serialize(player1.nextComponentMessage())
         );
 
@@ -62,7 +62,7 @@ public abstract class VoteTest {
         server.getScheduler().performTicks(60 * 20);
 
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().votePassedBossBar(voteType)),
+                plain.serialize(plugin.getMessages().afterVote().votePassedBossBar(voteType)),
                 plain.serialize(player1.nextComponentMessage())
         );
 
@@ -79,20 +79,20 @@ public abstract class VoteTest {
         // First player starts vote
         server.execute("skip" + voteType, player1).assertSucceeded();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().voteStarted(player1.getName(), voteType)),
+                plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
                 plain.serialize(player1.nextComponentMessage())
         );
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().youVoteYes()),
+                plain.serialize(plugin.getMessages().duringVote().youVoteYes()),
                 plain.serialize(player1.nextComponentMessage())
         );
 
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().voteStarted(player1.getName(), voteType)),
+                plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
                 plain.serialize(player2.nextComponentMessage())
         );
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().voteButtons(voteType)),
+                plain.serialize(plugin.getMessages().duringVote().voteButtons(voteType)),
                 plain.serialize(player2.nextComponentMessage())
         );
 
@@ -100,7 +100,7 @@ public abstract class VoteTest {
         server.getScheduler().performTicks(10 * 20);
         server.execute("skip" + voteType, player2, "yes").assertSucceeded();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().youVoteYes()),
+                plain.serialize(plugin.getMessages().duringVote().youVoteYes()),
                 plain.serialize(player2.nextComponentMessage())
         );
 
@@ -108,11 +108,11 @@ public abstract class VoteTest {
         server.getScheduler().performTicks(60 * 20);
 
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().votePassedBossBar(voteType)),
+                plain.serialize(plugin.getMessages().afterVote().votePassedBossBar(voteType)),
                 plain.serialize(player1.nextComponentMessage())
         );
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().votePassedBossBar(voteType)),
+                plain.serialize(plugin.getMessages().afterVote().votePassedBossBar(voteType)),
                 plain.serialize(player2.nextComponentMessage())
         );
 
@@ -129,20 +129,20 @@ public abstract class VoteTest {
         // First player starts vote
         server.execute("skip" + voteType, player1).assertSucceeded();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().voteStarted(player1.getName(), voteType)),
+                plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
                 plain.serialize(player1.nextComponentMessage())
         );
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().youVoteYes()),
+                plain.serialize(plugin.getMessages().duringVote().youVoteYes()),
                 plain.serialize(player1.nextComponentMessage())
         );
 
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().voteStarted(player1.getName(), voteType)),
+                plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
                 plain.serialize(player2.nextComponentMessage())
         );
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().voteButtons(voteType)),
+                plain.serialize(plugin.getMessages().duringVote().voteButtons(voteType)),
                 plain.serialize(player2.nextComponentMessage())
         );
 
@@ -150,7 +150,7 @@ public abstract class VoteTest {
         server.getScheduler().performTicks(10 * 20);
         server.execute("skip" + voteType, player2, "no").assertSucceeded();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().youVoteNo()),
+                plain.serialize(plugin.getMessages().duringVote().youVoteNo()),
                 plain.serialize(player2.nextComponentMessage())
         );
 
@@ -158,11 +158,11 @@ public abstract class VoteTest {
         server.getScheduler().performTicks(60 * 20);
 
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().voteFailedBossBar(voteType)),
+                plain.serialize(plugin.getMessages().afterVote().voteFailedBossBar(voteType)),
                 plain.serialize(player1.nextComponentMessage())
         );
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().voteFailedBossBar(voteType)),
+                plain.serialize(plugin.getMessages().afterVote().voteFailedBossBar(voteType)),
                 plain.serialize(player2.nextComponentMessage())
         );
 
@@ -200,7 +200,7 @@ public abstract class VoteTest {
         // Player starts vote
         server.execute("skip" + voteType, player1).assertSucceeded();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().worldIsBlacklisted()),
+                plain.serialize(plugin.getMessages().beforeVote().worldIsBlacklisted()),
                 plain.serialize(player1.nextComponentMessage())
         );
 
@@ -220,7 +220,7 @@ public abstract class VoteTest {
         // Player starts vote
         server.execute("skip" + voteType, player1).assertSucceeded();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().worldNotOverworld()),
+                plain.serialize(plugin.getMessages().beforeVote().worldNotOverworld()),
                 plain.serialize(player1.nextComponentMessage())
         );
     }
@@ -249,7 +249,7 @@ public abstract class VoteTest {
             player1.nextComponentMessage();
 
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().cooldown()),
+                plain.serialize(plugin.getMessages().beforeVote().cooldown()),
                 plain.serialize(player1.nextComponentMessage())
         );
 
@@ -275,7 +275,7 @@ public abstract class VoteTest {
             player2.nextComponentMessage();
 
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().voteInProg()),
+                plain.serialize(plugin.getMessages().duringVote().voteInProg()),
                 plain.serialize(player2.nextComponentMessage())
         );
     }

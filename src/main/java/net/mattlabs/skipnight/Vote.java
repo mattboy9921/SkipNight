@@ -88,7 +88,7 @@ public class Vote implements Runnable, Listener {
                     if (voter.getVote() == 0) {
                         voter.voteYes();
                         yes++;
-                        platform.player(player).sendMessage(messages.inBedVotedYes());
+                        platform.player(player).sendMessage(messages.duringVote().inBedVotedYes());
                         plugin.getLogger().info("Voter exists but hasn't voted");
                     }
                 }
@@ -96,7 +96,7 @@ public class Vote implements Runnable, Listener {
                     voters.add(voter);
                     voter.voteYes();
                     yes++;
-                    platform.player(player).sendMessage(messages.inBedVotedYes());
+                    platform.player(player).sendMessage(messages.duringVote().inBedVotedYes());
                     plugin.getLogger().info("Voter doesn't exist but hasn't voted");
                 }
             }
@@ -104,7 +104,7 @@ public class Vote implements Runnable, Listener {
         else {
             if (player.hasPermission("skipnight.vote.night") && player.getWorld().getTime() >= 12516) { // player has permission
                 if (player.getWorld().getPlayers().size() > 1) // if player isn't only one in the world
-                    platform.player(player).sendMessage(messages.inBedNoVoteInProg());
+                    platform.player(player).sendMessage(messages.beforeVote().inBedNoVoteInProg());
             }
         }
     }
@@ -152,9 +152,9 @@ public class Vote implements Runnable, Listener {
         idle = 0;
 
         if (playerActivity)
-            bar.name(messages.currentVotePA(yes, no, idle, away)).color(BossBar.Color.PURPLE);
+            bar.name(messages.duringVote().currentVotePA(yes, no, idle, away)).color(BossBar.Color.PURPLE);
         else
-            bar.name(messages.currentVote(yes, no)).color(BossBar.Color.PURPLE);
+            bar.name(messages.duringVote().currentVote(yes, no)).color(BossBar.Color.PURPLE);
 
         voters = updateAll(voters, player);
 
@@ -168,9 +168,9 @@ public class Vote implements Runnable, Listener {
         if (voteCancel()) timer = Timer.CANCEL;
         bar.progress((float) countDown / countDownInit);
         if (playerActivity)
-            bar.name(messages.currentVotePA(yes, no, idle, away));
+            bar.name(messages.duringVote().currentVotePA(yes, no, idle, away));
         else
-            bar.name(messages.currentVote(yes, no));
+            bar.name(messages.duringVote().currentVote(yes, no));
         voters = updateAll(voters);
         if (countDown <= 10) timer = Timer.FINAL;
         plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
@@ -179,7 +179,7 @@ public class Vote implements Runnable, Listener {
     private void doInterrupt() {
         countDown = 0;
         bar.progress(1.0f);
-        bar.name(messages.allPlayersHaveVoted());
+        bar.name(messages.afterVote().allPlayersHaveVoted());
         bar.color(BossBar.Color.YELLOW);
 
         timer = Timer.COMPLETE;
@@ -192,10 +192,10 @@ public class Vote implements Runnable, Listener {
         if (voteCancel()) timer = Timer.CANCEL;
         bar.progress((float) countDown / countDownInit);
         if (playerActivity)
-            bar.name(messages.currentVotePA(yes, no, idle, away));
+            bar.name(messages.duringVote().currentVotePA(yes, no, idle, away));
         else
-            bar.name(messages.currentVote(yes, no));
-        if (countDown == 9) voters = updateAll(voters, messages.tenSecondsLeft());
+            bar.name(messages.duringVote().currentVote(yes, no));
+        if (countDown == 9) voters = updateAll(voters, messages.duringVote().tenSecondsLeft());
         else voters = updateAll(voters);
 
         if (countDown % 2 == 1) bar.color(BossBar.Color.WHITE);
@@ -227,9 +227,9 @@ public class Vote implements Runnable, Listener {
         if (countDown == -1) {
             bar.progress(1.0f);
             if (yes > no) {
-                bar.name(messages.votePassedBossBar());
+                bar.name(messages.afterVote().votePassedBossBar());
                 bar.color(BossBar.Color.GREEN);
-                updateAll(voters, messages.votePassedBossBar(voteTypeString()));
+                updateAll(voters, messages.afterVote().votePassedBossBar(voteTypeString()));
                 fastForward = new FastForward(world, plugin, voteType);
                 plugin.getServer().getScheduler().runTaskLater(plugin, fastForward, 10);
 
@@ -240,9 +240,9 @@ public class Vote implements Runnable, Listener {
                 if (world.hasStorm()) world.setStorm(false);
             }
             else {
-                bar.name(messages.voteFailedBossBar());
+                bar.name(messages.afterVote().voteFailedBossBar());
                 bar.color(BossBar.Color.RED);
-                updateAll(voters, messages.voteFailedBossBar(voteTypeString()));
+                updateAll(voters, messages.afterVote().voteFailedBossBar(voteTypeString()));
             }
             plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
         }
@@ -269,8 +269,8 @@ public class Vote implements Runnable, Listener {
         if (countDown == 0) {
             bar.progress(1.0f);
             bar.color(BossBar.Color.BLUE);
-            if (voteType == VoteType.NIGHT) bar.name(messages.itIsAlreadyDay());
-            else bar.name(messages.itIsAlreadyNight());
+            if (voteType == VoteType.NIGHT) bar.name(messages.afterVote().itIsAlreadyDay());
+            else bar.name(messages.afterVote().itIsAlreadyNight());
         }
 
         countDown--;
@@ -300,21 +300,21 @@ public class Vote implements Runnable, Listener {
                     } else playerMustSleep = false;
                     
                     if (this.voteType == VoteType.NIGHT && playerMustSleep && config.isPhantomSupport()) {
-                        platform.player(uuid).sendMessage(messages.mustSleep());
-                        actionBarMessage(messages.playerHasNotSlept(Bukkit.getPlayer(uuid).getName()));
+                        platform.player(uuid).sendMessage(messages.beforeVote().mustSleep());
+                        actionBarMessage(messages.duringVote().playerHasNotSlept(Bukkit.getPlayer(uuid).getName()));
 
                     }
                     else {
                         yes++;
                         voter.voteYes();
-                        platform.player(uuid).sendMessage(messages.youVoteYes());
-                        actionBarMessage(messages.playerHasVotedYes(Bukkit.getPlayer(uuid).getName()));
+                        platform.player(uuid).sendMessage(messages.duringVote().youVoteYes());
+                        actionBarMessage(messages.duringVote().playerHasVotedYes(Bukkit.getPlayer(uuid).getName()));
                     }
                 }
-                else platform.player(uuid).sendMessage(messages.alreadyVoted());
+                else platform.player(uuid).sendMessage(messages.duringVote().alreadyVoted());
             }
         }
-        else platform.player(uuid).sendMessage(messages.noVoteInProg(voteTypeString(voteType)));
+        else platform.player(uuid).sendMessage(messages.beforeVote().noVoteInProg(voteTypeString(voteType)));
     }
 
     public void addNo(UUID uuid, VoteType voteType) {
@@ -330,20 +330,20 @@ public class Vote implements Runnable, Listener {
                     } else playerMustSleep = false;
                     
                     if (this.voteType == VoteType.NIGHT && playerMustSleep && config.isPhantomSupport()) {
-                        platform.player(uuid).sendMessage(messages.mustSleep());
-                        actionBarMessage(messages.playerHasNotSlept(Bukkit.getPlayer(uuid).getName()));
+                        platform.player(uuid).sendMessage(messages.beforeVote().mustSleep());
+                        actionBarMessage(messages.duringVote().playerHasNotSlept(Bukkit.getPlayer(uuid).getName()));
                     }
                     else {
                         no++;
                         voter.voteNo();
-                        platform.player(uuid).sendMessage(messages.youVoteNo());
-                        actionBarMessage(messages.playerHasVotedNo(Bukkit.getPlayer(uuid).getName()));
+                        platform.player(uuid).sendMessage(messages.duringVote().youVoteNo());
+                        actionBarMessage(messages.duringVote().playerHasVotedNo(Bukkit.getPlayer(uuid).getName()));
                     }
                 }
-                else platform.player(uuid).sendMessage(messages.alreadyVoted());
+                else platform.player(uuid).sendMessage(messages.duringVote().alreadyVoted());
             }
         }
-        else platform.player(uuid).sendMessage(messages.noVoteInProg(voteTypeString(voteType)));
+        else platform.player(uuid).sendMessage(messages.beforeVote().noVoteInProg(voteTypeString(voteType)));
     }
 
     // Attempts to start a vote if all conditions are met, otherwise informs player why vote can't start
@@ -363,25 +363,25 @@ public class Vote implements Runnable, Listener {
         } else playerMustSleep = false;
 
         if (!player.hasPermission("skipnight.vote." + voteTypeStringCommand(voteType))) // If player doesn't have permission
-            platform.player(player).sendMessage(messages.noPerm());
+            platform.player(player).sendMessage(messages.general().noPerm());
         else if (config.getWorldBlacklist().contains(player.getWorld().getName())) // If world is blacklisted
-            platform.player(player).sendMessage(messages.worldIsBlacklisted());
+            platform.player(player).sendMessage(messages.beforeVote().worldIsBlacklisted());
         else if (!isInOverworld(player)) // If player isn't in the overworld
-            platform.player(player).sendMessage(messages.worldNotOverworld());
+            platform.player(player).sendMessage(messages.beforeVote().worldNotOverworld());
         else if (voteType == VoteType.NIGHT && player.getWorld().getTime() < 12516 && !player.getWorld().hasStorm()) // If it's day and not raining, trying to skip night
-            platform.player(player).sendMessage(messages.canOnlyVoteAtNight());
+            platform.player(player).sendMessage(messages.beforeVote().canOnlyVoteAtNight());
         else if (voteType == VoteType.DAY && player.getWorld().getTime() >= 12516) // If it's night, trying to skip day
-            platform.player(player).sendMessage(messages.canOnlyVoteAtDay());
+            platform.player(player).sendMessage(messages.beforeVote().canOnlyVoteAtDay());
         else if (tag.equalsIgnoreCase("Idle"))
-            platform.player(player).sendMessage(messages.noVoteWhileIdle());
+            platform.player(player).sendMessage(messages.beforeVote().noVoteWhileIdle());
         else if (tag.equalsIgnoreCase("Away"))
-            platform.player(player).sendMessage(messages.noVoteWhileAway());
+            platform.player(player).sendMessage(messages.beforeVote().noVoteWhileAway());
         else if (timer == Timer.COOLDOWN) // If the vote is in cooldown
-            platform.player(player).sendMessage(messages.cooldown());
+            platform.player(player).sendMessage(messages.beforeVote().cooldown());
         else if (!(timer == Timer.OFF)) // If there's a vote happening
-            platform.player(player).sendMessage(messages.voteInProg());
+            platform.player(player).sendMessage(messages.duringVote().voteInProg());
         else if (voteType == VoteType.NIGHT && playerMustSleep && config.isPhantomSupport()) // If it's night, player hasn't slept in 3 days
-            platform.player(player).sendMessage(messages.mustSleepNewVote());
+            platform.player(player).sendMessage(messages.beforeVote().mustSleepNewVote());
         else {
             timer = Timer.INIT;
             this.voteType = voteType;
@@ -460,7 +460,7 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        platform.player(player).sendMessage(messages.idle());
+                        platform.player(player).sendMessage(messages.duringVote().idle());
                     }
                     if (tag.equalsIgnoreCase("Away")) { // in V, away
                         voters.remove(voter);
@@ -468,48 +468,48 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        platform.player(player).sendMessage(messages.away());
+                        platform.player(player).sendMessage(messages.duringVote().away());
                     }
                 } else if (awayVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Idle")) { // in A, idle
                         awayVoters.remove(voter);
                         idleVoters.add(voter);
-                        platform.player(player).sendMessage(messages.idle());
+                        platform.player(player).sendMessage(messages.duringVote().idle());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in A, active
                         awayVoters.remove(voter);
                         voters.add(voter);
-                        platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
+                        platform.player(player).sendMessage(messages.duringVote().back());
+                        platform.player(player).sendMessage(messages.duringVote().voteButtons(voteTypeCommandString()));
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
                         idleVoters.remove(voter);
                         awayVoters.add(voter);
-                        platform.player(player).sendMessage(messages.away());
+                        platform.player(player).sendMessage(messages.duringVote().away());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in I, active
                         idleVoters.remove(voter);
                         voters.add(voter);
-                        platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
+                        platform.player(player).sendMessage(messages.duringVote().back());
+                        platform.player(player).sendMessage(messages.duringVote().voteButtons(voteTypeCommandString()));
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
                         awayVoters.add(voter);
                         platform.player(player).showBossBar(bar);
-                        platform.player(player).sendMessage(messages.away());
+                        platform.player(player).sendMessage(messages.duringVote().away());
                     } else if (tag.equalsIgnoreCase("Idle")) { // not in V, A, I, idle
                         idleVoters.add(voter);
                         platform.player(player).showBossBar(bar);
-                        platform.player(player).sendMessage(messages.idle());
+                        platform.player(player).sendMessage(messages.duringVote().idle());
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         platform.player(player).showBossBar(bar);
-                        platform.player(player).sendMessage(messages.voteStarted(this.player.getName(), voteTypeString()));
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
+                        platform.player(player).sendMessage(messages.duringVote().voteStarted(this.player.getName(), voteTypeString()));
+                        platform.player(player).sendMessage(messages.duringVote().voteButtons(voteTypeCommandString()));
                     }
                 }
             } else {
@@ -519,17 +519,17 @@ public class Vote implements Runnable, Listener {
                     if (vote == 1) yes--;
                     if (vote == -1) no--;
                     platform.player(player).hideBossBar(bar);
-                    platform.player(player).sendMessage(messages.leftWorld());
+                    platform.player(player).sendMessage(messages.duringVote().leftWorld());
                 }
                 if (idleVoters.contains(voter)) { // not in world, in I
                     idleVoters.remove(voter);
                     platform.player(player).hideBossBar(bar);
-                    platform.player(player).sendMessage(messages.leftWorld());
+                    platform.player(player).sendMessage(messages.duringVote().leftWorld());
                 }
                 if (awayVoters.contains(voter)) { // not in world, in A
                     awayVoters.remove(voter);
                     platform.player(player).hideBossBar(bar);
-                    platform.player(player).sendMessage(messages.leftWorld());
+                    platform.player(player).sendMessage(messages.duringVote().leftWorld());
                 }
             }
         }
@@ -560,7 +560,7 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        platform.player(player).sendMessage(messages.idle());
+                        platform.player(player).sendMessage(messages.duringVote().idle());
                     }
                     if (tag.equalsIgnoreCase("Away")) { // in V, away
                         voters.remove(voter);
@@ -568,48 +568,48 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        platform.player(player).sendMessage(messages.away());
+                        platform.player(player).sendMessage(messages.duringVote().away());
                     }
                 } else if (awayVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Idle")) { // in A, idle
                         awayVoters.remove(voter);
                         idleVoters.add(voter);
-                        platform.player(player).sendMessage(messages.idle());
+                        platform.player(player).sendMessage(messages.duringVote().idle());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in A, active
                         awayVoters.remove(voter);
                         voters.add(voter);
-                        platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
+                        platform.player(player).sendMessage(messages.duringVote().back());
+                        platform.player(player).sendMessage(messages.duringVote().voteButtons(voteTypeCommandString()));
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
                         idleVoters.remove(voter);
                         awayVoters.add(voter);
-                        platform.player(player).sendMessage(messages.away());
+                        platform.player(player).sendMessage(messages.duringVote().away());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in I, active
                         idleVoters.remove(voter);
                         voters.add(voter);
-                        platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
+                        platform.player(player).sendMessage(messages.duringVote().back());
+                        platform.player(player).sendMessage(messages.duringVote().voteButtons(voteTypeCommandString()));
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
                         awayVoters.add(voter);
                         platform.player(player).showBossBar(bar);
-                        platform.player(player).sendMessage(messages.away());
+                        platform.player(player).sendMessage(messages.duringVote().away());
                     } else if (tag.equalsIgnoreCase("Idle")) { // not in V, A, I, idle
                         idleVoters.add(voter);
                         platform.player(player).showBossBar(bar);
-                        platform.player(player).sendMessage(messages.idle());
+                        platform.player(player).sendMessage(messages.duringVote().idle());
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         platform.player(player).showBossBar(bar);
-                        platform.player(player).sendMessage(messages.voteStarted(this.player.getName(), voteTypeString()));
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
+                        platform.player(player).sendMessage(messages.duringVote().voteStarted(this.player.getName(), voteTypeString()));
+                        platform.player(player).sendMessage(messages.duringVote().voteButtons(voteTypeCommandString()));
                     }
                 }
                 platform.player(player).sendMessage(message);
@@ -620,17 +620,17 @@ public class Vote implements Runnable, Listener {
                     if (vote == 1) yes--;
                     if (vote == -1) no--;
                     platform.player(player).hideBossBar(bar);
-                    platform.player(player).sendMessage(messages.leftWorld());
+                    platform.player(player).sendMessage(messages.duringVote().leftWorld());
                 }
                 if (idleVoters.contains(voter)) { // not in world, in I
                     idleVoters.remove(voter);
                     platform.player(player).hideBossBar(bar);
-                    platform.player(player).sendMessage(messages.leftWorld());
+                    platform.player(player).sendMessage(messages.duringVote().leftWorld());
                 }
                 if (awayVoters.contains(voter)) { // not in world, in A
                     awayVoters.remove(voter);
                     platform.player(player).hideBossBar(bar);
-                    platform.player(player).sendMessage(messages.leftWorld());
+                    platform.player(player).sendMessage(messages.duringVote().leftWorld());
                 }
             }
         }
@@ -661,7 +661,7 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        platform.player(player).sendMessage(messages.idle());
+                        platform.player(player).sendMessage(messages.duringVote().idle());
                     }
                     if (tag.equalsIgnoreCase("Away")) { // in V, away
                         voters.remove(voter);
@@ -669,57 +669,57 @@ public class Vote implements Runnable, Listener {
                         int vote = voter.resetVote();
                         if (vote == 1) yes--;
                         if (vote == -1) no--;
-                        platform.player(player).sendMessage(messages.away());
+                        platform.player(player).sendMessage(messages.duringVote().away());
                     }
                 } else if (awayVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Idle")) { // in A, idle
                         awayVoters.remove(voter);
                         idleVoters.add(voter);
-                        platform.player(player).sendMessage(messages.idle());
+                        platform.player(player).sendMessage(messages.duringVote().idle());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in A, active
                         awayVoters.remove(voter);
                         voters.add(voter);
-                        platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
+                        platform.player(player).sendMessage(messages.duringVote().back());
+                        platform.player(player).sendMessage(messages.duringVote().voteButtons(voteTypeCommandString()));
                     }
                 } else if (idleVoters.contains(voter)) {
                     if (tag.equalsIgnoreCase("Away")) { // in I, away
                         idleVoters.remove(voter);
                         awayVoters.add(voter);
-                        platform.player(player).sendMessage(messages.away());
+                        platform.player(player).sendMessage(messages.duringVote().away());
                     }
                     if (!tag.equalsIgnoreCase("Idle")
                             && !tag.equalsIgnoreCase("Away")) { // in I, active
                         idleVoters.remove(voter);
                         voters.add(voter);
-                        platform.player(player).sendMessage(messages.back());
-                        platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
+                        platform.player(player).sendMessage(messages.duringVote().back());
+                        platform.player(player).sendMessage(messages.duringVote().voteButtons(voteTypeCommandString()));
                     }
                 } else {
                     if (tag.equalsIgnoreCase("Away")) { // not in V, A, I, away
                         awayVoters.add(voter);
                         platform.player(player).showBossBar(bar);
-                        platform.player(player).sendMessage(messages.voteStarted(this.player.getName(), voteTypeString()));
-                        platform.player(player).sendMessage(messages.away());
+                        platform.player(player).sendMessage(messages.duringVote().voteStarted(this.player.getName(), voteTypeString()));
+                        platform.player(player).sendMessage(messages.duringVote().away());
                     } else if (tag.equalsIgnoreCase("Idle")) { // not in V, A, I, idle
                         idleVoters.add(voter);
                         platform.player(player).showBossBar(bar);
-                        platform.player(player).sendMessage(messages.voteStarted(this.player.getName(), voteTypeString()));
-                        platform.player(player).sendMessage(messages.idle());
+                        platform.player(player).sendMessage(messages.duringVote().voteStarted(this.player.getName(), voteTypeString()));
+                        platform.player(player).sendMessage(messages.duringVote().idle());
                     } else { // not in V, A, I, active
                         voters.add(voter);
                         platform.player(player).showBossBar(bar);
-                        platform.player(player).sendMessage(messages.voteStarted(this.player.getName(), voteTypeString()));
+                        platform.player(player).sendMessage(messages.duringVote().voteStarted(this.player.getName(), voteTypeString()));
                         if (player == sender) {
                             voter.voteYes();
-                            platform.player(player).sendMessage(messages.youVoteYes());
+                            platform.player(player).sendMessage(messages.duringVote().youVoteYes());
                         } else if (player.isSleeping()) {
                             voter.voteYes();
-                            platform.player(player).sendMessage(messages.youVoteYes());
+                            platform.player(player).sendMessage(messages.duringVote().youVoteYes());
                         } else {
-                            platform.player(player).sendMessage(messages.voteButtons(voteTypeCommandString()));
+                            platform.player(player).sendMessage(messages.duringVote().voteButtons(voteTypeCommandString()));
                         }
                     }
                 }
@@ -730,17 +730,17 @@ public class Vote implements Runnable, Listener {
                     if (vote == 1) yes--;
                     if (vote == -1) no--;
                     platform.player(player).hideBossBar(bar);
-                    platform.player(player).sendMessage(messages.leftWorld());
+                    platform.player(player).sendMessage(messages.duringVote().leftWorld());
                 }
                 if (idleVoters.contains(voter)) { // not in world, in I
                     idleVoters.remove(voter);
                     platform.player(player).hideBossBar(bar);
-                    platform.player(player).sendMessage(messages.leftWorld());
+                    platform.player(player).sendMessage(messages.duringVote().leftWorld());
                 }
                 if (awayVoters.contains(voter)) { // not in world, in A
                     awayVoters.remove(voter);
                     platform.player(player).hideBossBar(bar);
-                    platform.player(player).sendMessage(messages.leftWorld());
+                    platform.player(player).sendMessage(messages.duringVote().leftWorld());
                 }
             }
         }
