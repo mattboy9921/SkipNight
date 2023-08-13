@@ -169,6 +169,7 @@ public class NightVoteTest extends VoteTest {
         // Second player places bed and sleeps
         Block bed = player2.simulateBlockPlace(Material.RED_BED, player2.getLocation()).getBlockPlaced();
         Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player2, bed, PlayerBedEnterEvent.BedEnterResult.OK));
+        player2.setSleeping(true);
 
         // Wait for event to execute
         while (!future.isDone()) server.getScheduler().performOneTick();

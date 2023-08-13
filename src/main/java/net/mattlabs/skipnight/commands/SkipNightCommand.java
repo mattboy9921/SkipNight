@@ -40,7 +40,7 @@ public class SkipNightCommand extends BaseCommand {
         }
         else {
             Player player = (Player) sender;
-            this.vote.addYes(player.getUniqueId(), VoteType.NIGHT);
+            this.vote.addYes(player, VoteType.NIGHT);
         }
     }
 
@@ -52,7 +52,7 @@ public class SkipNightCommand extends BaseCommand {
         }
         else {
             Player player = (Player) sender;
-            this.vote.addNo(player.getUniqueId(), VoteType.NIGHT);
+            this.vote.addNo(player, VoteType.NIGHT);
         }
     }
 }

@@ -4,12 +4,26 @@ import java.util.UUID;
 
 public class Voter {
 
-    private UUID uuid;
+    private enum Status {
+        ACTIVE,
+        BED,
+        IDLE,
+        AWAY;
+    }
+
+    private final UUID uuid;
     private int vote;
+
+    private Status status;
 
     Voter(UUID uuid) {
         this.uuid = uuid;
         vote = 0;
+        status = null;
+    }
+
+    UUID getUuid() {
+        return uuid;
     }
 
     int getVote() {
@@ -24,10 +38,40 @@ public class Voter {
         vote = -1;
     }
 
-    int resetVote() {
-        int vote = this.vote;
+    void resetVote() {
         this.vote = 0;
-        return vote;
+    }
+
+    boolean isActive() {
+        return status == Status.ACTIVE;
+    }
+
+    boolean isBed() {
+        return status == Status.BED;
+    }
+
+    boolean isIdle() {
+        return status == Status.IDLE;
+    }
+
+    boolean isAway() {
+        return status == Status.AWAY;
+    }
+
+    void setActive() {
+        status = Status.ACTIVE;
+    }
+
+    void setBed() {
+        status = Status.BED;
+    }
+
+    void setIdle() {
+        status = Status.IDLE;
+    }
+
+    void setAway() {
+        status = Status.AWAY;
     }
 
     @Override

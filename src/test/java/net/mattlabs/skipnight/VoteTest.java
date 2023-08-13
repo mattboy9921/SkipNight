@@ -253,6 +253,17 @@ public abstract class VoteTest {
                 plain.serialize(player1.nextComponentMessage())
         );
 
+        // Wait out cooldown
+        server.getScheduler().performTicks(100 * 20);
+
+        // First player starts vote again
+        server.execute("skip" + voteType, player1).assertSucceeded();
+
+        Assertions.assertEquals(
+                plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
+                plain.serialize(player1.nextComponentMessage())
+        );
+
         // Make sure time does not fast-forward
         Assertions.assertTrue(world.getTime() > startTime || world.getTime() < endTime);
     }
