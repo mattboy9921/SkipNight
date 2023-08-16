@@ -138,6 +138,17 @@
             <version>3.16.0</version>
             <scope>test</scope>
         </dependency>
+        <!-- For Cloud -->
+        <dependency>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-paper</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+        <dependency>
+            <groupId>me.lucko</groupId>
+            <artifactId>commodore</artifactId>
+            <version>2.2</version>
+        </dependency>
     </dependencies>
 
     <pluginRepositories>
@@ -242,6 +253,15 @@
                         <relocation>
                             <pattern>net.kyori</pattern>
                             <shadedPattern>net.mattlabs.skipnight</shadedPattern>
+                        </relocation>
+                        <!-- Cloud -->
+                        <relocation>
+                            <pattern>cloud.commandframework</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.cloud</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>me.lucko.commodore</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.commodore</shadedPattern>
                         </relocation>
                     </relocations>
                     <!-- Fix signed dependency JARs -->

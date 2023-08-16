@@ -6,6 +6,7 @@ import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.junit.jupiter.api.*;
 
 public abstract class VoteTest {

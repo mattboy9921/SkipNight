@@ -1,5 +1,10 @@
 package net.mattlabs.skipnight;
 
+import cloud.commandframework.CommandTree;
+import cloud.commandframework.bukkit.CloudBukkitCapabilities;
+import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
+import cloud.commandframework.execution.CommandExecutionCoordinator;
+import cloud.commandframework.execution.FilteringCommandSuggestionProcessor;
 import co.aikar.commands.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -10,6 +15,7 @@ import net.mattlabs.skipnight.util.MessageTransformations;
 import net.mattlabs.skipnight.util.Versions;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurationNode;
@@ -19,11 +25,13 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Function;
 
 public class SkipNight extends JavaPlugin {
 
     public Vote vote;
-    private PaperCommandManager paperCommandManager;
+    private PaperCommandManager paperCommandManagerOld;
+    private cloud.commandframework.paper.PaperCommandManager<CommandSender> paperCommandManager;
     private ConfigurateManager configurateManager;
     private Config config;
     private Messages messages;
@@ -88,13 +96,39 @@ public class SkipNight extends JavaPlugin {
         getServer().getPluginManager().registerEvents(vote, this);
 
         // Register ACF
-        paperCommandManager = new PaperCommandManager(this);
+        //paperCommandManagerOld = new PaperCommandManager(this);
+
+        // Register Cloud
+        try {
+            paperCommandManager = new cloud.commandframework.paper.PaperCommandManager<>(
+                    this,
+                    AsynchronousCommandExecutionCoordinator.<CommandSender>builder().build(),
+                    Function.identity(),
+                    Function.identity()
+            );
+        } catch (Exception e) {
+            this.getLogger().severe("Could not enable Cloud, disabling plugin...");
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
+        // Use contains filter for suggestions
+        paperCommandManager.commandSuggestionProcessor(new FilteringCommandSuggestionProcessor<>(
+                FilteringCommandSuggestionProcessor.Filter.<CommandSender>contains(true).andTrimBeforeLastSpace()
+        ));
+        // Register Brigadier
+        if (paperCommandManager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) paperCommandManager.registerBrigadier();
+        // Register asynchronous completions
+        if (paperCommandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) paperCommandManager.registerAsynchronousCompletions();
+        // Create Commands
+        if (config.isSkipNight() || testEnabled)
+            new SkipNightCommand(paperCommandManager, this);
+        if (config.isSkipDay() || testEnabled)
+            new SkipDayCommand(paperCommandManager, this);
 
         // Register Commands with ACF
-        if (config.isSkipNight() || testEnabled)
-            paperCommandManager.registerCommand(new SkipNightCommand(this));
-        if (config.isSkipDay() || testEnabled)
-            paperCommandManager.registerCommand(new SkipDayCommand(this));
+//        if (config.isSkipNight() || testEnabled)
+//            paperCommandManagerOld.registerCommand(new SkipNightCommand(this));
+//        if (config.isSkipDay() || testEnabled)
+//            paperCommandManagerOld.registerCommand(new SkipDayCommand(this));
 
         // bStats
         if (!testEnabled) new Metrics(this,  	5796);
