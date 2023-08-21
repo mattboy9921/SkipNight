@@ -4,20 +4,13 @@ import cloud.commandframework.Command;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.paper.PaperCommandManager;
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.CommandContexts;
-import co.aikar.commands.annotation.*;
 import net.mattlabs.skipnight.SkipNight;
 import net.mattlabs.skipnight.Vote;
 import net.mattlabs.skipnight.util.VoteType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static org.bukkit.Bukkit.getLogger;
-
-@CommandAlias("skipnight|sn")
-@CommandPermission("skipnight.vote.night")
-public class SkipNightCommand extends BaseCommand {
+public class SkipNightCommand {
 
     PaperCommandManager<CommandSender> commandManager;
     Vote vote;
@@ -66,41 +59,5 @@ public class SkipNightCommand extends BaseCommand {
 
     private void no(CommandContext<CommandSender> context) {
         this.vote.addNo((Player) context.getSender(), VoteType.NIGHT);
-    }
-
-    @Default
-    @Description("Starts a vote to skip the night.")
-    public void onSkipNight(CommandSender sender) {
-        if (!(sender instanceof Player)) {
-            getLogger().info("Vote can't be started from console.");
-        }
-        else {
-            Player player = (Player) sender;
-            this.vote.start(player, VoteType.NIGHT);
-        }
-    }
-
-    @Subcommand("yes")
-    @Description("Votes yes for current vote.")
-    public void onYes(CommandSender sender) {
-        if (!(sender instanceof Player)) {
-            getLogger().info("Vote not allowed from console.");
-        }
-        else {
-            Player player = (Player) sender;
-            this.vote.addYes(player, VoteType.NIGHT);
-        }
-    }
-
-    @Subcommand("no")
-    @Description("Votes no for current vote.")
-    public void onNo(CommandSender sender) {
-        if (!(sender instanceof Player)) {
-            getLogger().info("Vote not allowed from console.");
-        }
-        else {
-            Player player = (Player) sender;
-            this.vote.addNo(player, VoteType.NIGHT);
-        }
     }
 }

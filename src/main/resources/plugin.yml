@@ -6,10 +6,6 @@ author: mattboy9921 (mattboy9921@aim.com)
 website: https://www.spigotmc.org/resources/skipnight.48334/
 softdepend: [PlayerActivity]
 main: net.mattlabs.skipnight.SkipNight
-commands:
-  skipnight:
-    description: SkipNight command(s).
-    usage: /skipnight [yes|no]
 permissions:
   skipnight.vote.night:
     description: Allows player to vote to skip the night.

@@ -1,11 +1,9 @@
 package net.mattlabs.skipnight;
 
-import cloud.commandframework.CommandTree;
 import cloud.commandframework.bukkit.CloudBukkitCapabilities;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
-import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.execution.FilteringCommandSuggestionProcessor;
-import co.aikar.commands.PaperCommandManager;
+import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.mattlabs.skipnight.commands.SkipDayCommand;
@@ -30,8 +28,7 @@ import java.util.function.Function;
 public class SkipNight extends JavaPlugin {
 
     public Vote vote;
-    private PaperCommandManager paperCommandManagerOld;
-    private cloud.commandframework.paper.PaperCommandManager<CommandSender> paperCommandManager;
+    private cloud.commandframework.paper.PaperCommandManager<CommandSender> commandManager;
     private ConfigurateManager configurateManager;
     private Config config;
     private Messages messages;
@@ -39,7 +36,7 @@ public class SkipNight extends JavaPlugin {
     private BukkitAudiences platform;
     private String version;
 
-    static boolean testEnabled = false;
+    public static boolean testEnabled = false;
 
     public void onEnable() {
         instance = this;
@@ -95,12 +92,9 @@ public class SkipNight extends JavaPlugin {
         // Register Listeners
         getServer().getPluginManager().registerEvents(vote, this);
 
-        // Register ACF
-        //paperCommandManagerOld = new PaperCommandManager(this);
-
         // Register Cloud
         try {
-            paperCommandManager = new cloud.commandframework.paper.PaperCommandManager<>(
+            commandManager = new cloud.commandframework.paper.PaperCommandManager<>(
                     this,
                     AsynchronousCommandExecutionCoordinator.<CommandSender>builder().build(),
                     Function.identity(),
@@ -111,24 +105,27 @@ public class SkipNight extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
         }
         // Use contains filter for suggestions
-        paperCommandManager.commandSuggestionProcessor(new FilteringCommandSuggestionProcessor<>(
+        commandManager.commandSuggestionProcessor(new FilteringCommandSuggestionProcessor<>(
                 FilteringCommandSuggestionProcessor.Filter.<CommandSender>contains(true).andTrimBeforeLastSpace()
         ));
         // Register Brigadier
-        if (paperCommandManager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) paperCommandManager.registerBrigadier();
+        if (commandManager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) commandManager.registerBrigadier();
         // Register asynchronous completions
-        if (paperCommandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) paperCommandManager.registerAsynchronousCompletions();
+        if (commandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) commandManager.registerAsynchronousCompletions();
+        // Override exception handlers
+        new MinecraftExceptionHandler<CommandSender>()
+                .withInvalidSyntaxHandler()
+                .withInvalidSenderHandler()
+                .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, component -> messages.general().noPerm())
+                .withArgumentParsingHandler()
+                .withCommandExecutionHandler()
+                .withDecorator(component -> Messages.voteHeader().append(component))
+                .apply(commandManager, platform::sender);
         // Create Commands
         if (config.isSkipNight() || testEnabled)
-            new SkipNightCommand(paperCommandManager, this);
+            new SkipNightCommand(commandManager, this);
         if (config.isSkipDay() || testEnabled)
-            new SkipDayCommand(paperCommandManager, this);
-
-        // Register Commands with ACF
-//        if (config.isSkipNight() || testEnabled)
-//            paperCommandManagerOld.registerCommand(new SkipNightCommand(this));
-//        if (config.isSkipDay() || testEnabled)
-//            paperCommandManagerOld.registerCommand(new SkipDayCommand(this));
+            new SkipDayCommand(commandManager, this);
 
         // bStats
         if (!testEnabled) new Metrics(this,  	5796);
@@ -161,6 +158,10 @@ public class SkipNight extends JavaPlugin {
 
     public Config getConfiguration() {
         return config;
+    }
+
+    public cloud.commandframework.paper.PaperCommandManager<CommandSender> getCommandManager() {
+        return commandManager;
     }
 
     public boolean hasPlayerActivity() {

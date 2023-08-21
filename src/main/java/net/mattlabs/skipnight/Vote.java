@@ -19,7 +19,7 @@ import java.util.*;
 
 public class Vote implements Runnable, Listener {
 
-    private enum Timer {
+    enum Timer {
         INIT,
         OPERATION,
         INTERRUPT,
@@ -30,7 +30,7 @@ public class Vote implements Runnable, Listener {
         OFF
     }
 
-    private Timer timer;
+    Timer timer;
     private VoteType voteType;
     private int yes, no, playerCount, countDown, countDownInit, away, idle;
     private BossBar bar;
@@ -68,6 +68,7 @@ public class Vote implements Runnable, Listener {
     @EventHandler
     public void onBedEnter(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
+        // TODO fix so players clicking on bed during day don't get message
         // Player has permission and isn't the only one in the world
         if (player.hasPermission("skipnight.vote.night") && player.getWorld().getPlayers().size() > 1 && timer == Timer.OFF) {
             platform.player(player).sendMessage(messages.beforeVote().inBedNoVoteInProg());
@@ -387,8 +388,11 @@ public class Vote implements Runnable, Listener {
 
                     if (message != null) messageList.add(message);
 
+                    // TODO move this so not in overworld gets messages too
                     // Send messages
-                    for (Component messageToSend : messageList) platform.player(player).sendMessage(messageToSend);
+                    for (Component messageToSend : messageList) {
+                        SkipNight.getInstance().getPlatform().player(player).sendMessage(messageToSend);
+                    }
                 }
                 // Not in Overworld
                 else {

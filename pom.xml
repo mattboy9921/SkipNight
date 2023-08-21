@@ -67,12 +67,6 @@
             <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!-- For ACF -->
-        <dependency>
-            <groupId>co.aikar</groupId>
-            <artifactId>acf-paper</artifactId>
-            <version>0.5.1-SNAPSHOT</version>
-        </dependency>
         <!-- For Configurate -->
         <dependency>
             <groupId>org.spongepowered</groupId>
@@ -135,13 +129,18 @@
         <dependency>
             <groupId>com.github.seeseemelk</groupId>
             <artifactId>MockBukkit-v1.20</artifactId>
-            <version>3.16.0</version>
+            <version>3.19.1</version>
             <scope>test</scope>
         </dependency>
         <!-- For Cloud -->
         <dependency>
             <groupId>cloud.commandframework</groupId>
             <artifactId>cloud-paper</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+        <dependency>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-minecraft-extras</artifactId>
             <version>1.8.3</version>
         </dependency>
         <dependency>
