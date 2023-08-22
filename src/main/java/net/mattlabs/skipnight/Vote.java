@@ -389,12 +389,6 @@ public class Vote implements Runnable, Listener {
                     }
 
                     if (message != null) messageList.add(message);
-
-                    // TODO move this so not in overworld gets messages too
-                    // Send messages
-                    for (Component messageToSend : messageList) {
-                        SkipNight.getInstance().getPlatform().player(player).sendMessage(messageToSend);
-                    }
                 }
                 // Not in Overworld
                 else {
@@ -402,6 +396,10 @@ public class Vote implements Runnable, Listener {
                         messageList.add(messages.duringVote().leftWorld());
                         voters.remove(voter.getUuid());
                     }
+                }
+                // Send messages
+                for (Component messageToSend : messageList) {
+                    SkipNight.getInstance().getPlatform().player(player).sendMessage(messageToSend);
                 }
             }
         }
