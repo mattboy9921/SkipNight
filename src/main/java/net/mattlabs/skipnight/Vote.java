@@ -68,9 +68,11 @@ public class Vote implements Runnable, Listener {
     @EventHandler
     public void onBedEnter(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
-        // TODO fix so players clicking on bed during day don't get message
         // Player has permission and isn't the only one in the world
-        if (player.hasPermission("skipnight.vote.night") && player.getWorld().getPlayers().size() > 1 && timer == Timer.OFF) {
+        if (player.hasPermission("skipnight.vote.night")
+                && player.getWorld().getPlayers().size() > 1
+                && timer == Timer.OFF
+                && player.isSleeping()) {
             platform.player(player).sendMessage(messages.beforeVote().inBedNoVoteInProg());
         }
     }
