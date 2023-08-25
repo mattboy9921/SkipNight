@@ -29,7 +29,6 @@ public class SkipNight extends JavaPlugin {
 
     public Vote vote;
     private cloud.commandframework.paper.PaperCommandManager<CommandSender> commandManager;
-    private ConfigurateManager configurateManager;
     private Config config;
     private Messages messages;
     private static SkipNight instance;
@@ -38,6 +37,7 @@ public class SkipNight extends JavaPlugin {
 
     public static boolean testEnabled = false;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void onEnable() {
         instance = this;
 
@@ -66,7 +66,7 @@ public class SkipNight extends JavaPlugin {
         messages = null;
 
         // Configurate
-        configurateManager = new ConfigurateManager(this);
+        ConfigurateManager configurateManager = new ConfigurateManager(this);
 
         configurateManager.add("config.conf", TypeToken.get(Config.class), new Config(), Config::new);
         configurateManager.add("messages.conf", TypeToken.get(Messages.class), new Messages(), Messages::new, MessageTransformations.create());
@@ -172,7 +172,8 @@ public class SkipNight extends JavaPlugin {
      * @param yamlConfigFile The file representing the location of the YML file
      * @param hoconLoader The HoconConfigurationLoader instance
      */
-    private void convertConfigFormat(File yamlConfigFile, ConfigurationLoader hoconLoader) {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void convertConfigFormat(File yamlConfigFile, ConfigurationLoader<CommentedConfigurationNode> hoconLoader) {
 
         // Check if YAML file exists
         if (yamlConfigFile.exists()) {

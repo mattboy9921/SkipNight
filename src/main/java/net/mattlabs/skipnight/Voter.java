@@ -8,7 +8,7 @@ public class Voter {
         ACTIVE,
         BED,
         IDLE,
-        AWAY;
+        AWAY
     }
 
     private final UUID uuid;

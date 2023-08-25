@@ -5,9 +5,9 @@ import org.bukkit.plugin.Plugin;
 
 public class FastForward implements Runnable {
 
-    private World world;
-    private Plugin plugin;
-    private VoteType voteType;
+    private final World world;
+    private final Plugin plugin;
+    private final VoteType voteType;
 
     public FastForward(World world, Plugin plugin, VoteType voteType) {
         this.world = world;

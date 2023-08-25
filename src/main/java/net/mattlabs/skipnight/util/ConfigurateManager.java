@@ -22,7 +22,7 @@ public class ConfigurateManager {
 
     @SuppressWarnings("rawtypes")
     private final Map<String, ConfigNode> configMap;
-    private Plugin plugin;
+    private final Plugin plugin;
 
     public ConfigurateManager(Plugin plugin) {
         configMap = new HashMap<>();
@@ -44,6 +44,7 @@ public class ConfigurateManager {
     }
 
     // Add with configuration options
+    @SuppressWarnings("unused")
     public <T> void add(String fileName, TypeToken<T> typeToken, T configSerializable, Supplier<T> configSerializableSupplier, UnaryOperator<ConfigurationOptions> configurationOptions) {
         add(fileName, typeToken, configSerializable, configSerializableSupplier, configurationOptions, null);
     }
@@ -116,6 +117,7 @@ public class ConfigurateManager {
         }
     }
 
+    @SuppressWarnings("unused")
     public void reload() {
         configMap.forEach((name, node) -> {
             load(name);
