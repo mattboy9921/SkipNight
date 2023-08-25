@@ -116,10 +116,9 @@ public class SkipNight extends JavaPlugin {
         new MinecraftExceptionHandler<CommandSender>()
                 .withInvalidSyntaxHandler()
                 .withInvalidSenderHandler()
-                .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, component -> messages.general().noPerm())
+                .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, exception -> messages.general().noPerm())
                 .withArgumentParsingHandler()
                 .withCommandExecutionHandler()
-                .withDecorator(component -> Messages.voteHeader().append(component))
                 .apply(commandManager, platform::sender);
         // Create Commands
         if (config.isSkipNight() || testEnabled)

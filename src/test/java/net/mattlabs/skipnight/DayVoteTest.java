@@ -1,6 +1,5 @@
 package net.mattlabs.skipnight;
 
-import net.mattlabs.skipnight.util.VoteType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,8 +8,8 @@ import org.junit.jupiter.api.Test;
 public class DayVoteTest extends VoteTest {
 
     @Override
-    VoteType voteType() {
-        return VoteType.DAY;
+    String voteType() {
+        return "day";
     }
 
     @Override
@@ -30,7 +29,7 @@ public class DayVoteTest extends VoteTest {
         world.setTime(16000);
 
         // Player starts vote
-        vote.start(player1, voteType);
+        commandManager.executeCommand(player1, "skip" + voteType).join();
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().canOnlyVoteAtDay()),
                 plain.serialize(player1.nextComponentMessage())

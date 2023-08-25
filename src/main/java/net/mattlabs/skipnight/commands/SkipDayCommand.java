@@ -24,28 +24,28 @@ public class SkipDayCommand {
     // Register each command
     private void commands() {
         // Set up builder with permissions
-        Command.Builder<CommandSender> skipNightBuilder = commandManager.commandBuilder("skipday", "sd")
+        Command.Builder<CommandSender> builder = commandManager.commandBuilder("skipday", "sd")
                 .senderType(Player.class)
-                .permission(sender -> sender.hasPermission("skipnight.vote.day"));
+                .permission("skipnight.vote.day");
 
         // Base Command
-        commandManager.command(skipNightBuilder
+        commandManager.command(builder
                 .meta(CommandMeta.DESCRIPTION, "Starts a vote to skip the day.")
-                .handler(context -> commandManager.taskRecipe().begin(context).asynchronous(this::baseCommand).execute())
+                .handler(this::baseCommand)
         );
 
         // Yes
-        commandManager.command(skipNightBuilder
+        commandManager.command(builder
                 .literal("yes", "y")
                 .meta(CommandMeta.DESCRIPTION, "Votes yes for the current vote.")
-                .handler(context -> commandManager.taskRecipe().begin(context).asynchronous(this::yes).execute())
+                .handler(this::yes)
         );
 
         // No
-        commandManager.command(skipNightBuilder
+        commandManager.command(builder
                 .literal("no", "n")
                 .meta(CommandMeta.DESCRIPTION, "Votes no for the current vote.")
-                .handler(context -> commandManager.taskRecipe().begin(context).asynchronous(this::no).execute())
+                .handler(this::no)
         );
     }
 
