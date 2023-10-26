@@ -287,14 +287,14 @@ public class Messages {
             String yes = lgeneral().yesString().substring(0, 1).toUpperCase() + lgeneral().yesString().substring(1);
             String no = lgeneral().noString().substring(0, 1).toUpperCase() + lgeneral().noString().substring(1);
             return Messages.hyphenHeader().append(MiniMessage.miniMessage().deserialize(pleaseVote).colorIfAbsent(NamedTextColor.WHITE))
-                    .append(Component.text("[" + yes + "]", NamedTextColor.GREEN, TextDecoration.BOLD))
+                    .append(Component.text("[" + yes + "]", NamedTextColor.GREEN, TextDecoration.BOLD)
                         .hoverEvent(HoverEvent.showText(MiniMessage.miniMessage().deserialize(clickHereToVote,
                                 Placeholder.parsed("vote_value", lgeneral().yesString()))))
-                        .clickEvent(ClickEvent.runCommand("/skip" + voteType + " yes"))
-                    .append(Component.text(" [" + no + "]", NamedTextColor.DARK_RED, TextDecoration.BOLD))
+                        .clickEvent(ClickEvent.runCommand("/skip" + voteType + " yes")))
+                    .append(Component.text(" [" + no + "]", NamedTextColor.DARK_RED, TextDecoration.BOLD)
                         .hoverEvent(HoverEvent.showText(MiniMessage.miniMessage().deserialize(clickHereToVote,
                                 Placeholder.parsed("vote_value", lgeneral().noString()))))
-                        .clickEvent(ClickEvent.runCommand("/skip" + voteType + " no"));
+                        .clickEvent(ClickEvent.runCommand("/skip" + voteType + " no")));
         }
 
         // You Voted
