@@ -401,7 +401,7 @@ public class Messages {
             return MiniMessage.miniMessage().deserialize(playerHasVoted,
                     TagResolver.resolver(
                             Placeholder.parsed("player_name", name),
-                            Placeholder.parsed("vote_vale", lgeneral().yesString())
+                            Placeholder.parsed("vote_value", lgeneral().yesString())
                     ));
         }
 
