@@ -71,8 +71,7 @@ public class Vote implements Runnable, Listener {
         // Player has permission and isn't the only one in the world
         if (player.hasPermission("skipnight.vote.night")
                 && player.getWorld().getPlayers().size() > 1
-                && timer == Timer.OFF
-                && player.isSleeping()) {
+                && timer == Timer.OFF) {
             platform.player(player).sendMessage(messages.beforeVote().inBedNoVoteInProg());
         }
     }
@@ -366,9 +365,11 @@ public class Vote implements Runnable, Listener {
                             if (!voter.isBed()) {
                                 if (voter.isIdle() || voter.isAway())
                                     messageList.add(messages.duringVote().back()); // Was idle or away, now back
-                                // In bed, auto vote yes
-                                messageList.add(messages.duringVote().inBedVotedYes());
-                                voter.voteYes();
+                                // In bed, auto vote yes (only if voter hasn't voted)
+                                if (voter.getVote() == 0) {
+                                    messageList.add(messages.duringVote().inBedVotedYes());
+                                    voter.voteYes();
+                                }
                                 voter.setBed();
                             }
                         }
