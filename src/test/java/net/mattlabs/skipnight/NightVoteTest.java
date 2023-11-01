@@ -183,4 +183,56 @@ public class NightVoteTest extends VoteTest {
                 plain.serialize(player2.nextComponentMessage())
         );
     }
+
+    @Test
+    @DisplayName("Test bed enter before vote")
+    public void voteBedEnterBeforeVote() {
+        twoPlayerSetup();
+        world.setTime(13000);
+
+        // First player places bed and sleeps
+        Block bed = player1.simulateBlockPlace(Material.RED_BED, player1.getLocation()).getBlockPlaced();
+        Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player1, bed, PlayerBedEnterEvent.BedEnterResult.OK));
+        player1.setSleeping(true);
+
+        // Wait for event to execute
+        while (!future.isDone()) server.getScheduler().performOneTick();
+
+        // Check for message on bed enter
+        Assertions.assertEquals(
+                plain.serialize(plugin.getMessages().beforeVote().inBedNoVoteInProg()),
+                plain.serialize(player1.nextComponentMessage())
+        );
+    }
+
+    @Test
+    @DisplayName("Test in bed before vote start")
+    public void voteInBedDuringVoteStart() {
+        twoPlayerSetup();
+        world.setTime(13000);
+
+        // First player places bed and sleeps
+        Block bed = player1.simulateBlockPlace(Material.RED_BED, player1.getLocation()).getBlockPlaced();
+        Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player1, bed, PlayerBedEnterEvent.BedEnterResult.OK));
+        player1.setSleeping(true);
+
+        // Wait for event to execute
+        while (!future.isDone()) server.getScheduler().performOneTick();
+
+        // Second player starts a vote
+        commandManager.executeCommand(player2, "skip" + voteType).join();
+
+        // Burn message
+        player1.nextComponentMessage();
+
+        // Check for messages on sleeping player
+        Assertions.assertEquals(
+                plain.serialize(plugin.getMessages().duringVote().voteStarted(player2.getName(), voteType)),
+                plain.serialize(player1.nextComponentMessage())
+        );
+        Assertions.assertEquals(
+                plain.serialize(plugin.getMessages().duringVote().inBedVotedYes()),
+                plain.serialize(player1.nextComponentMessage())
+        );
+    }
 }
