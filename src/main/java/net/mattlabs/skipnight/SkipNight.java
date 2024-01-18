@@ -1,19 +1,21 @@
 package net.mattlabs.skipnight;
 
-import co.aikar.commands.PaperCommandManager;
+import cloud.commandframework.bukkit.CloudBukkitCapabilities;
+import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
+import cloud.commandframework.execution.FilteringCommandSuggestionProcessor;
+import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.mattlabs.skipnight.commands.SkipDayCommand;
 import net.mattlabs.skipnight.commands.SkipNightCommand;
 import net.mattlabs.skipnight.util.ConfigurateManager;
-import net.mattlabs.skipnight.util.Transformations;
+import net.mattlabs.skipnight.util.MessageTransformations;
 import net.mattlabs.skipnight.util.Versions;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.CommentedConfigurationNode;
-import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
@@ -21,20 +23,21 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Function;
 
 public class SkipNight extends JavaPlugin {
 
     public Vote vote;
-    private PaperCommandManager paperCommandManager;
-    private ConfigurateManager configurateManager;
+    private cloud.commandframework.paper.PaperCommandManager<CommandSender> commandManager;
     private Config config;
     private Messages messages;
     private static SkipNight instance;
     private BukkitAudiences platform;
     private String version;
 
-    static boolean testEnabled = false;
+    public static boolean testEnabled = false;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void onEnable() {
         instance = this;
 
@@ -59,25 +62,14 @@ public class SkipNight extends JavaPlugin {
                 HoconConfigurationLoader.builder().path(configFile.toPath()).build();
         convertConfigFormat(new File(this.getDataFolder(), "config.yml"), configLoader);
 
-        // Transform Messages
-        File messasgesFile = new File(this.getDataFolder(), "messages.conf");
-        ConfigurationLoader<CommentedConfigurationNode> messagesLoader =
-                HoconConfigurationLoader.builder().path(messasgesFile.toPath()).build();
-        try {
-            messagesLoader.save(Transformations.updateNode(messagesLoader.load()));
-        }
-        catch (final ConfigurateException e) {
-            getLogger().severe("Failed to fully update the message config: " + ExceptionUtils.getStackTrace(e));
-        }
-
         config = null;
         messages = null;
 
         // Configurate
-        configurateManager = new ConfigurateManager(this);
+        ConfigurateManager configurateManager = new ConfigurateManager(this);
 
         configurateManager.add("config.conf", TypeToken.get(Config.class), new Config(), Config::new);
-        configurateManager.add("messages.conf", TypeToken.get(Messages.class), new Messages(), Messages::new);
+        configurateManager.add("messages.conf", TypeToken.get(Messages.class), new Messages(), Messages::new, MessageTransformations.create());
 
         configurateManager.saveDefaults("config.conf");
         configurateManager.saveDefaults("messages.conf");
@@ -100,14 +92,39 @@ public class SkipNight extends JavaPlugin {
         // Register Listeners
         getServer().getPluginManager().registerEvents(vote, this);
 
-        // Register ACF
-        paperCommandManager = new PaperCommandManager(this);
-
-        // Register Commands with ACF
+        // Register Cloud
+        try {
+            commandManager = new cloud.commandframework.paper.PaperCommandManager<>(
+                    this,
+                    AsynchronousCommandExecutionCoordinator.<CommandSender>builder().build(),
+                    Function.identity(),
+                    Function.identity()
+            );
+        } catch (Exception e) {
+            this.getLogger().severe("Could not enable Cloud, disabling plugin...");
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
+        // Use contains filter for suggestions
+        commandManager.commandSuggestionProcessor(new FilteringCommandSuggestionProcessor<>(
+                FilteringCommandSuggestionProcessor.Filter.<CommandSender>contains(true).andTrimBeforeLastSpace()
+        ));
+        // Register Brigadier
+        if (commandManager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) commandManager.registerBrigadier();
+        // Register asynchronous completions
+        if (commandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) commandManager.registerAsynchronousCompletions();
+        // Override exception handlers
+        new MinecraftExceptionHandler<CommandSender>()
+                .withInvalidSyntaxHandler()
+                .withInvalidSenderHandler()
+                .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, exception -> messages.general().noPerm())
+                .withArgumentParsingHandler()
+                .withCommandExecutionHandler()
+                .apply(commandManager, platform::sender);
+        // Create Commands
         if (config.isSkipNight() || testEnabled)
-            paperCommandManager.registerCommand(new SkipNightCommand(this));
+            new SkipNightCommand(commandManager, this);
         if (config.isSkipDay() || testEnabled)
-            paperCommandManager.registerCommand(new SkipDayCommand(this));
+            new SkipDayCommand(commandManager, this);
 
         // bStats
         if (!testEnabled) new Metrics(this,  	5796);
@@ -142,6 +159,10 @@ public class SkipNight extends JavaPlugin {
         return config;
     }
 
+    public cloud.commandframework.paper.PaperCommandManager<CommandSender> getCommandManager() {
+        return commandManager;
+    }
+
     public boolean hasPlayerActivity() {
         return getServer().getPluginManager().getPlugin("PlayerActivity") != null;
     }
@@ -151,7 +172,8 @@ public class SkipNight extends JavaPlugin {
      * @param yamlConfigFile The file representing the location of the YML file
      * @param hoconLoader The HoconConfigurationLoader instance
      */
-    private void convertConfigFormat(File yamlConfigFile, ConfigurationLoader hoconLoader) {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void convertConfigFormat(File yamlConfigFile, ConfigurationLoader<CommentedConfigurationNode> hoconLoader) {
 
         // Check if YAML file exists
         if (yamlConfigFile.exists()) {

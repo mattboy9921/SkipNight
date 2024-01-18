@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("ConstantConditions")
 public class DayVoteTest extends VoteTest {
 
     @Override
@@ -28,9 +29,9 @@ public class DayVoteTest extends VoteTest {
         world.setTime(16000);
 
         // Player starts vote
-        server.execute("skip" + voteType, player1).assertSucceeded();
+        commandManager.executeCommand(player1, "skip" + voteType).join();
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().canOnlyVoteAtDay()),
+                plain.serialize(plugin.getMessages().beforeVote().canOnlyVoteAtDay()),
                 plain.serialize(player1.nextComponentMessage())
         );
 
