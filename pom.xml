@@ -8,7 +8,7 @@
 
     <groupId>net.mattlabs.skipnight</groupId>
     <artifactId>SkipNight</artifactId>
-    <version>1.8.0-beta.4</version>
+    <version>1.8.0</version>
 
     <description>
         Allows players to vote to skip the night
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.20.2-R0.1-SNAPSHOT</version>
+            <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- For Configurate -->
@@ -89,22 +89,22 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
-            <version>4.14.0</version>
+            <version>4.15.0</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-platform-bukkit</artifactId>
-            <version>4.3.1</version>
+            <version>4.3.2</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-legacy</artifactId>
-            <version>4.14.0</version>
+            <version>4.15.0</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
-            <version>4.14.0</version>
+            <version>4.15.0</version>
         </dependency>
         <!-- For Nullable -->
         <dependency>
