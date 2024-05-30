@@ -118,7 +118,7 @@ public class Vote implements Runnable, Listener {
     *  Sets the boss bar each second. */
     private void doOperation() {
         countDown--;
-        if (yes + no == playerCount) timer = Timer.INTERRUPT;
+        if (yes + no + idle + away == playerCount) timer = Timer.INTERRUPT;
         if (voteCancel()) timer = Timer.CANCEL;
         bar.progress((float) countDown / countDownInit);
         if (playerActivity)
@@ -144,7 +144,7 @@ public class Vote implements Runnable, Listener {
     /* The last 10 seconds of the vote. Boss bar alternates white and purple and players receive a message. */
     private void doFinal() {
         countDown--;
-        if (yes + no == playerCount) timer = Timer.INTERRUPT;
+        if (yes + no + idle + away == playerCount) timer = Timer.INTERRUPT;
         if (voteCancel()) timer = Timer.CANCEL;
         bar.progress((float) countDown / countDownInit);
         if (playerActivity)
