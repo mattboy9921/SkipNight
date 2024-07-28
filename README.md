@@ -8,7 +8,7 @@ SpigotMC link: https://www.spigotmc.org/resources/skipnight.48334/
 [![Players Using SkipNight](https://img.shields.io/bstats/players/5796?style=flat&label=Players&logo=bookmeter&logoColor=94A0A5&labelColor=384142&color=00695C)](https://bstats.org/plugin/bukkit/SkipNight/5796)
 ![SkipNight Downloads](https://img.shields.io/github/downloads/mattboy9921/skipnight/total?label=Downloads&logo=docusign&logoColor=94A0A5&labelColor=384142)
 [![SkipNight Latest Release](https://img.shields.io/github/v/release/mattboy9921/skipnight?label=Release&logo=dropbox&logoColor=94A0A5&labelColor=384142)](https://github.com/mattboy9921/SkipNight/releases/latest)
-![SkipNight Tested Versions](https://img.shields.io/badge/Tested%20Versions-1.8.0--1.20.6-success?&logo=verizon&logoColor=94A0A5&labelColor=384142)
+![SkipNight Tested Versions](https://img.shields.io/badge/Tested%20Versions-1.8.0--1.21-success?&logo=verizon&logoColor=94A0A5&labelColor=384142)
 ![SkipNight Made with Love](https://img.shields.io/badge/Made-with%20Love-red?&logo=undertale&logoColor=94A0A5&labelColor=384142)
 
 **Commands**
@@ -33,6 +33,6 @@ SpigotMC link: https://www.spigotmc.org/resources/skipnight.48334/
  The messages configuration contains every string of text found in the plugin. 
  Follow the instructions in the messages configuration to modify these for your needs.
  
-Tested working on Paper 1.8.0 - 1.20.6.
+Tested working on Paper 1.8.0 - 1.21.
 
 Special thanks to RoyCurtis, iamliammckimm, CRX VrynzX, Scarsz, Aikar, mbaxter, zml, Selida and ViMaSter! 
