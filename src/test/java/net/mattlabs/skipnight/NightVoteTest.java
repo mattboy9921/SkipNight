@@ -35,7 +35,7 @@ public class NightVoteTest extends VoteTest {
         world.setTime(8000);
 
         // Player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().canOnlyVoteAtNight()),
                 plain.serialize(player1.nextComponentMessage())
@@ -53,7 +53,7 @@ public class NightVoteTest extends VoteTest {
         world.setStorm(true);
 
         // Player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
                 plain.serialize(player1.nextComponentMessage())
@@ -84,7 +84,7 @@ public class NightVoteTest extends VoteTest {
         world.setTime(13000);
 
         // Player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().mustSleepNewVote()),
                 plain.serialize(player1.nextComponentMessage())
@@ -103,11 +103,11 @@ public class NightVoteTest extends VoteTest {
         world.setTime(13000);
 
         // First player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
 
         // Wait, then have second player vote yes
         server.getScheduler().performTicks(10 * 20);
-        commandManager.executeCommand(player2, "skip" + voteType + " yes").join();
+        commandManager.commandExecutor().executeCommand(player2, "skip" + voteType + " yes").join();
 
         // Burn messages
         for (int i = 0; i < 2; i++)
@@ -163,7 +163,7 @@ public class NightVoteTest extends VoteTest {
         world.setTime(13000);
 
         // First player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
 
         // Second player places bed and sleeps
         Block bed = player2.simulateBlockPlace(Material.RED_BED, player2.getLocation()).getBlockPlaced();
@@ -220,7 +220,7 @@ public class NightVoteTest extends VoteTest {
         while (!future.isDone()) server.getScheduler().performOneTick();
 
         // Second player starts a vote
-        commandManager.executeCommand(player2, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player2, "skip" + voteType).join();
 
         // Burn message
         player1.nextComponentMessage();

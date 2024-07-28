@@ -8,7 +8,7 @@
 
     <groupId>net.mattlabs.skipnight</groupId>
     <artifactId>SkipNight</artifactId>
-    <version>1.8.1</version>
+    <version>1.8.2</version>
 
     <description>
         Allows players to vote to skip the night
@@ -38,11 +38,6 @@
             <id>papermc</id>
             <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
-        <!-- For ACF -->
-        <repository>
-            <id>aikar</id>
-            <url>https://repo.aikar.co/content/groups/aikar/</url>
-        </repository>
         <!-- For Configurate -->
         <repository>
             <id>sponge</id>
@@ -64,7 +59,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.20.4-R0.1-SNAPSHOT</version>
+            <version>1.21-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- For Configurate -->
@@ -122,31 +117,26 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.10.2</version>
+            <version>5.11.0-M2</version>
             <scope>test</scope>
         </dependency>
         <!-- For MockBukkit -->
         <dependency>
             <groupId>com.github.seeseemelk</groupId>
-            <artifactId>MockBukkit-v1.20</artifactId>
-            <version>3.86.1</version>
+            <artifactId>MockBukkit-v1.21</artifactId>
+            <version>3.96.1</version>
             <scope>test</scope>
         </dependency>
         <!-- For Cloud -->
         <dependency>
-            <groupId>cloud.commandframework</groupId>
+            <groupId>org.incendo</groupId>
             <artifactId>cloud-paper</artifactId>
-            <version>1.8.4</version>
+            <version>2.0.0-beta.9</version>
         </dependency>
         <dependency>
-            <groupId>cloud.commandframework</groupId>
+            <groupId>org.incendo</groupId>
             <artifactId>cloud-minecraft-extras</artifactId>
-            <version>1.8.4</version>
-        </dependency>
-        <dependency>
-            <groupId>me.lucko</groupId>
-            <artifactId>commodore</artifactId>
-            <version>2.2</version>
+            <version>2.0.0-beta.9</version>
         </dependency>
     </dependencies>
 
@@ -221,46 +211,33 @@
                 <configuration>
                     <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
                     <relocations>
-                        <!-- ACF -->
-                        <relocation>
-                            <pattern>co.aikar.commands</pattern>
-                            <shadedPattern>net.mattlabs.skipnight.acf</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>co.aikar.locales</pattern>
-                            <shadedPattern>net.mattlabs.skipnight.locales</shadedPattern>
-                        </relocation>
                         <!-- bStats -->
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>net.mattlabs.skipnight</shadedPattern>
+                            <shadedPattern>net.mattlabs.skipnight.bstats</shadedPattern>
                         </relocation>
                         <!-- Configurate -->
                         <relocation>
                             <pattern>org.spongepowered</pattern>
-                            <shadedPattern>net.mattlabs.skipnight</shadedPattern>
+                            <shadedPattern>net.mattlabs.skipnight.spongepowered</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>io.leangen.geantyref</pattern>
-                            <shadedPattern>net.mattlabs.skipnight</shadedPattern>
+                            <shadedPattern>net.mattlabs.skipnight.geantyref</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.typesafe</pattern>
-                            <shadedPattern>net.mattlabs.skipnight</shadedPattern>
+                            <shadedPattern>net.mattlabs.skipnight.typesafe</shadedPattern>
                         </relocation>
                         <!-- Adventure -->
                         <relocation>
                             <pattern>net.kyori</pattern>
-                            <shadedPattern>net.mattlabs.skipnight</shadedPattern>
+                            <shadedPattern>net.mattlabs.skipnight.kyori</shadedPattern>
                         </relocation>
                         <!-- Cloud -->
                         <relocation>
-                            <pattern>cloud.commandframework</pattern>
-                            <shadedPattern>net.mattlabs.skipnight.cloud</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>me.lucko.commodore</pattern>
-                            <shadedPattern>net.mattlabs.skipnight.commodore</shadedPattern>
+                            <pattern>org.incendo</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.incendo</shadedPattern>
                         </relocation>
                     </relocations>
                     <!-- Fix signed dependency JARs -->

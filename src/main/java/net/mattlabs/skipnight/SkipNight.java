@@ -1,9 +1,5 @@
 package net.mattlabs.skipnight;
 
-import cloud.commandframework.bukkit.CloudBukkitCapabilities;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
-import cloud.commandframework.execution.FilteringCommandSuggestionProcessor;
-import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.mattlabs.skipnight.commands.SkipDayCommand;
@@ -15,6 +11,9 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
+import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.paper.LegacyPaperCommandManager;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
@@ -28,7 +27,7 @@ import java.util.function.Function;
 public class SkipNight extends JavaPlugin {
 
     public Vote vote;
-    private cloud.commandframework.paper.PaperCommandManager<CommandSender> commandManager;
+    private LegacyPaperCommandManager<CommandSender> commandManager;
     private Config config;
     private Messages messages;
     private static SkipNight instance;
@@ -93,33 +92,13 @@ public class SkipNight extends JavaPlugin {
         getServer().getPluginManager().registerEvents(vote, this);
 
         // Register Cloud
-        try {
-            commandManager = new cloud.commandframework.paper.PaperCommandManager<>(
-                    this,
-                    AsynchronousCommandExecutionCoordinator.<CommandSender>builder().build(),
-                    Function.identity(),
-                    Function.identity()
-            );
-        } catch (Exception e) {
-            this.getLogger().severe("Could not enable Cloud, disabling plugin...");
-            Bukkit.getPluginManager().disablePlugin(this);
-        }
-        // Use contains filter for suggestions
-        commandManager.commandSuggestionProcessor(new FilteringCommandSuggestionProcessor<>(
-                FilteringCommandSuggestionProcessor.Filter.<CommandSender>contains(true).andTrimBeforeLastSpace()
-        ));
-        // Register Brigadier
-        if (commandManager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) commandManager.registerBrigadier();
-        // Register asynchronous completions
-        if (commandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) commandManager.registerAsynchronousCompletions();
-        // Override exception handlers
-        new MinecraftExceptionHandler<CommandSender>()
-                .withInvalidSyntaxHandler()
-                .withInvalidSenderHandler()
-                .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, exception -> messages.general().noPerm())
-                .withArgumentParsingHandler()
-                .withCommandExecutionHandler()
-                .apply(commandManager, platform::sender);
+        commandManager = LegacyPaperCommandManager.createNative(
+                this,
+                ExecutionCoordinator.coordinatorFor(ExecutionCoordinator.nonSchedulingExecutor())
+        );
+        // Register Brigadier, fallback to asynchronous completions
+        if (commandManager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER) && !testEnabled) commandManager.registerBrigadier();
+        else if (commandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) commandManager.registerAsynchronousCompletions();
         // Create Commands
         if (config.isSkipNight() || testEnabled)
             new SkipNightCommand(commandManager, this);
@@ -159,7 +138,7 @@ public class SkipNight extends JavaPlugin {
         return config;
     }
 
-    public cloud.commandframework.paper.PaperCommandManager<CommandSender> getCommandManager() {
+    public LegacyPaperCommandManager<CommandSender> getCommandManager() {
         return commandManager;
     }
 

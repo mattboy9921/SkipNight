@@ -29,7 +29,7 @@ public class DayVoteTest extends VoteTest {
         world.setTime(16000);
 
         // Player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().canOnlyVoteAtDay()),
                 plain.serialize(player1.nextComponentMessage())

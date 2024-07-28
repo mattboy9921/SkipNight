@@ -4,10 +4,10 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.WorldMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import cloud.commandframework.paper.PaperCommandManager;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.incendo.cloud.paper.LegacyPaperCommandManager;
 import org.junit.jupiter.api.*;
 
 import java.util.concurrent.CompletionException;
@@ -17,7 +17,7 @@ public abstract class VoteTest {
 
     ServerMock server;
     SkipNight plugin;
-    PaperCommandManager<CommandSender> commandManager;
+    LegacyPaperCommandManager<CommandSender> commandManager;
     World world;
     PlayerMock player1;
     PlayerMock player2;
@@ -57,7 +57,7 @@ public abstract class VoteTest {
         world.setTime(startTime + 200);
 
         // Player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
 
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
@@ -87,7 +87,7 @@ public abstract class VoteTest {
         world.setTime(startTime + 200);
 
         // First player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
                 plain.serialize(player1.nextComponentMessage())
@@ -108,7 +108,7 @@ public abstract class VoteTest {
 
         // Wait, then have second player vote yes
         server.getScheduler().performTicks(10 * 20);
-        commandManager.executeCommand(player2, "skip" + voteType + " yes").join();
+        commandManager.commandExecutor().executeCommand(player2, "skip" + voteType + " yes").join();
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().youVoteYes()),
                 plain.serialize(player2.nextComponentMessage())
@@ -137,7 +137,7 @@ public abstract class VoteTest {
         world.setTime(startTime + 200);
 
         // First player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
                 plain.serialize(player1.nextComponentMessage())
@@ -158,7 +158,7 @@ public abstract class VoteTest {
 
         // Wait, then have second player vote no
         server.getScheduler().performTicks(10 * 20);
-        commandManager.executeCommand(player2, "skip" + voteType + " no").join();
+        commandManager.commandExecutor().executeCommand(player2, "skip" + voteType + " no").join();
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().youVoteNo()),
                 plain.serialize(player2.nextComponentMessage())
@@ -190,7 +190,7 @@ public abstract class VoteTest {
         // Player starts vote
         // This is wonky because of how Cloud handles not having permission for a root node, in game it is as if
         // the command does not exist. Executing
-        Assertions.assertThrowsExactly(CompletionException.class, () -> commandManager.executeCommand(player1, "skip" + voteType).join());
+        Assertions.assertThrowsExactly(CompletionException.class, () -> commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join());
 
         // Make sure time does not fast-forward
         Assertions.assertTrue(world.getTime() > startTime || world.getTime() < endTime);
@@ -206,7 +206,7 @@ public abstract class VoteTest {
         blackListedWorld.setTime(startTime + 200);
 
         // Player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().worldIsBlacklisted()),
                 plain.serialize(player1.nextComponentMessage())
@@ -226,7 +226,7 @@ public abstract class VoteTest {
         player1.teleport(nether.getSpawnLocation());
 
         // Player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().worldNotOverworld()),
                 plain.serialize(player1.nextComponentMessage())
@@ -240,17 +240,17 @@ public abstract class VoteTest {
         world.setTime(startTime + 200);
 
         // First player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
 
         // Wait, then have second player vote no
         server.getScheduler().performTicks(10 * 20);
-        commandManager.executeCommand(player2, "skip" + voteType + " no").join();
+        commandManager.commandExecutor().executeCommand(player2, "skip" + voteType + " no").join();
 
         // Let vote process
         server.getScheduler().performTicks(20 * 20);
 
         // First player starts vote again
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
 
         // Burn messages
         for (int i = 0; i < 3; i++)
@@ -265,7 +265,7 @@ public abstract class VoteTest {
         server.getScheduler().performTicks(100 * 20);
 
         // First player starts vote again
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
 
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
@@ -283,11 +283,11 @@ public abstract class VoteTest {
         world.setTime(startTime + 200);
 
         // First player starts vote
-        commandManager.executeCommand(player1, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
 
         // Wait, then have second player start a vote
         server.getScheduler().performTicks(10 * 20);
-        commandManager.executeCommand(player2, "skip" + voteType).join();
+        commandManager.commandExecutor().executeCommand(player2, "skip" + voteType).join();
 
         // Burn messages
         for (int i = 0; i < 2; i++)
