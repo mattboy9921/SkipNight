@@ -68,10 +68,11 @@ public class Vote implements Runnable, Listener {
     @EventHandler
     public void onBedEnter(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
-        // Player has permission and isn't the only one in the world
+        // Player has permission, isn't the only one in the world, and it is night (or storming)
         if (player.hasPermission("skipnight.vote.night")
                 && player.getWorld().getPlayers().size() > 1
-                && timer == Timer.OFF) {
+                && timer == Timer.OFF
+                && (player.getWorld().getTime() > 12516 || player.getWorld().hasStorm())) {
             platform.player(player).sendMessage(messages.beforeVote().inBedNoVoteInProg());
         }
     }
