@@ -1,9 +1,9 @@
 package net.mattlabs.skipnight;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import be.seeseemelk.mockbukkit.ServerMock;
-import be.seeseemelk.mockbukkit.WorldMock;
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import org.mockbukkit.mockbukkit.MockBukkit;
+import org.mockbukkit.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.world.WorldMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -14,7 +14,7 @@ import java.util.concurrent.CompletionException;
 
 @SuppressWarnings("ConstantConditions")
 public abstract class VoteTest {
-
+    
     ServerMock server;
     SkipNight plugin;
     LegacyPaperCommandManager<CommandSender> commandManager;
