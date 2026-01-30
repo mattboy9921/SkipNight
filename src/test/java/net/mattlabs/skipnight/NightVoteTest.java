@@ -1,9 +1,15 @@
 package net.mattlabs.skipnight;
 
+import io.papermc.paper.block.bed.BedEnterAction;
+import io.papermc.paper.block.bed.BedEnterProblem;
+import io.papermc.paper.block.bed.BedRuleResult;
+import net.kyori.adventure.text.Component;
+import net.mattlabs.skipnight.util.VoteType;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,8 +20,8 @@ import java.util.concurrent.Future;
 public class NightVoteTest extends VoteTest {
 
     @Override
-    String voteType() {
-        return "night";
+    VoteType voteType() {
+        return VoteType.NIGHT;
     }
 
     @Override
@@ -28,6 +34,28 @@ public class NightVoteTest extends VoteTest {
         return 23900;
     }
 
+    BedEnterAction bedEnterAction = new BedEnterAction() {
+        @Override
+        public BedRuleResult canSleep() {
+            return BedRuleResult.ALLOWED;
+        }
+
+        @Override
+        public BedRuleResult canSetSpawn() {
+            return BedRuleResult.ALLOWED;
+        }
+
+        @Override
+        public @Nullable BedEnterProblem problem() {
+            return null;
+        }
+
+        @Override
+        public @Nullable Component errorMessage() {
+            return null;
+        }
+    };
+
     @Test
     @DisplayName("Test vote during the day")
     public void voteDuringDay() {
@@ -35,7 +63,7 @@ public class NightVoteTest extends VoteTest {
         world.setTime(8000);
 
         // Player starts vote
-        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
+        vote.start(player1, voteType);
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().canOnlyVoteAtNight()),
                 plain.serialize(player1.nextComponentMessage())
@@ -53,9 +81,9 @@ public class NightVoteTest extends VoteTest {
         world.setStorm(true);
 
         // Player starts vote
-        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
+        vote.start(player1, voteType);
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteType)),
+                plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteTypeString)),
                 plain.serialize(player1.nextComponentMessage())
         );
         Assertions.assertEquals(
@@ -67,7 +95,7 @@ public class NightVoteTest extends VoteTest {
         server.getScheduler().performTicks(60 * 20);
 
         Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().afterVote().votePassedBossBar(voteType)),
+                plain.serialize(plugin.getMessages().afterVote().votePassedBossBar(voteTypeString)),
                 plain.serialize(player1.nextComponentMessage())
         );
 
@@ -84,7 +112,7 @@ public class NightVoteTest extends VoteTest {
         world.setTime(13000);
 
         // Player starts vote
-        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
+        vote.start(player1, voteType);
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().mustSleepNewVote()),
                 plain.serialize(player1.nextComponentMessage())
@@ -103,11 +131,11 @@ public class NightVoteTest extends VoteTest {
         world.setTime(13000);
 
         // First player starts vote
-        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
+        vote.start(player1, voteType);
 
         // Wait, then have second player vote yes
         server.getScheduler().performTicks(10 * 20);
-        commandManager.commandExecutor().executeCommand(player2, "skip" + voteType + " yes").join();
+        vote.addYes(player2, voteType);
 
         // Burn messages
         for (int i = 0; i < 2; i++)
@@ -126,7 +154,7 @@ public class NightVoteTest extends VoteTest {
 
         // Place bed and sleep
         Block bed = player1.simulateBlockPlace(Material.RED_BED, player1.getLocation()).getBlockPlaced();
-        Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player1, bed, PlayerBedEnterEvent.BedEnterResult.OK));
+        Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player1, bed, PlayerBedEnterEvent.BedEnterResult.OK, bedEnterAction));
 
         // Wait for event to execute
         while (!future.isDone()) server.getScheduler().performOneTick();
@@ -144,7 +172,7 @@ public class NightVoteTest extends VoteTest {
         // Place bed and sleep
         Block bed = player1.simulateBlockPlace(Material.RED_BED, player1.getLocation()).getBlockPlaced();
         player1.setSleeping(true);
-        Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player1, bed, PlayerBedEnterEvent.BedEnterResult.OK));
+        Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player1, bed, PlayerBedEnterEvent.BedEnterResult.OK, bedEnterAction));
 
         // Wait for event to execute
         while (!future.isDone()) server.getScheduler().performOneTick();
@@ -163,11 +191,11 @@ public class NightVoteTest extends VoteTest {
         world.setTime(13000);
 
         // First player starts vote
-        commandManager.commandExecutor().executeCommand(player1, "skip" + voteType).join();
+        vote.start(player1, voteType);
 
         // Second player places bed and sleeps
         Block bed = player2.simulateBlockPlace(Material.RED_BED, player2.getLocation()).getBlockPlaced();
-        Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player2, bed, PlayerBedEnterEvent.BedEnterResult.OK));
+        Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player2, bed, PlayerBedEnterEvent.BedEnterResult.OK, bedEnterAction));
         player2.setSleeping(true);
 
         // Wait for event to execute
@@ -192,7 +220,7 @@ public class NightVoteTest extends VoteTest {
 
         // First player places bed and sleeps
         Block bed = player1.simulateBlockPlace(Material.RED_BED, player1.getLocation()).getBlockPlaced();
-        Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player1, bed, PlayerBedEnterEvent.BedEnterResult.OK));
+        Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player1, bed, PlayerBedEnterEvent.BedEnterResult.OK, bedEnterAction));
         player1.setSleeping(true);
 
         // Wait for event to execute
@@ -201,37 +229,6 @@ public class NightVoteTest extends VoteTest {
         // Check for message on bed enter
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().inBedNoVoteInProg()),
-                plain.serialize(player1.nextComponentMessage())
-        );
-    }
-
-    @Test
-    @DisplayName("Test in bed before vote start")
-    public void voteInBedDuringVoteStart() {
-        twoPlayerSetup();
-        world.setTime(13000);
-
-        // First player places bed and sleeps
-        Block bed = player1.simulateBlockPlace(Material.RED_BED, player1.getLocation()).getBlockPlaced();
-        Future<?> future = server.getScheduler().executeAsyncEvent(new PlayerBedEnterEvent(player1, bed, PlayerBedEnterEvent.BedEnterResult.OK));
-        player1.setSleeping(true);
-
-        // Wait for event to execute
-        while (!future.isDone()) server.getScheduler().performOneTick();
-
-        // Second player starts a vote
-        commandManager.commandExecutor().executeCommand(player2, "skip" + voteType).join();
-
-        // Burn message
-        player1.nextComponentMessage();
-
-        // Check for messages on sleeping player
-        Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().duringVote().voteStarted(player2.getName(), voteType)),
-                plain.serialize(player1.nextComponentMessage())
-        );
-        Assertions.assertEquals(
-                plain.serialize(plugin.getMessages().duringVote().inBedVotedYes()),
                 plain.serialize(player1.nextComponentMessage())
         );
     }

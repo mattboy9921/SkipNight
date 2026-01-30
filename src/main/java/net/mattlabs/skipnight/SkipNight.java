@@ -22,7 +22,6 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.function.Function;
 
 public class SkipNight extends JavaPlugin {
 
@@ -92,18 +91,20 @@ public class SkipNight extends JavaPlugin {
         getServer().getPluginManager().registerEvents(vote, this);
 
         // Register Cloud
-        commandManager = LegacyPaperCommandManager.createNative(
-                this,
-                ExecutionCoordinator.coordinatorFor(ExecutionCoordinator.nonSchedulingExecutor())
-        );
-        // Register Brigadier, fallback to asynchronous completions
-        if (commandManager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER) && !testEnabled) commandManager.registerBrigadier();
-        else if (commandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) commandManager.registerAsynchronousCompletions();
-        // Create Commands
-        if (config.isSkipNight() || testEnabled)
-            new SkipNightCommand(commandManager, this);
-        if (config.isSkipDay() || testEnabled)
-            new SkipDayCommand(commandManager, this);
+        if (!testEnabled) {
+            commandManager = LegacyPaperCommandManager.createNative(
+                    this,
+                    ExecutionCoordinator.coordinatorFor(ExecutionCoordinator.nonSchedulingExecutor())
+            );
+            // Register Brigadier, fallback to asynchronous completions
+            if (commandManager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER) && !testEnabled) commandManager.registerBrigadier();
+            else if (commandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) commandManager.registerAsynchronousCompletions();
+            // Create Commands
+            if (config.isSkipNight() || testEnabled)
+                new SkipNightCommand(commandManager, this);
+            if (config.isSkipDay() || testEnabled)
+                new SkipDayCommand(commandManager, this);
+        }
 
         // bStats
         if (!testEnabled) new Metrics(this,  	5796);
