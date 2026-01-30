@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.mattlabs.skipnight</groupId>
+        <artifactId>skipnight</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <!-- Project metadata -->
+
+    <artifactId>SkipNight</artifactId>
+    <packaging>jar</packaging>
+
+    <description>
+        Allows players to vote to skip the night
+    </description>
+
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>http://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>mattboy9921</name>
+            <email>mattboy9921@aim.com</email>
+            <url>https://github.com/mattboy9921/</url>
+        </developer>
+    </developers>
+
+    <!-- Project dependencies -->
+
+    <repositories>
+        <!-- For Paper API and MockBukkit -->
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <!-- For Configurate -->
+        <repository>
+            <id>sponge</id>
+            <url>https://repo.spongepowered.org/maven</url>
+        </repository>
+        <!-- For Adventure-Text-Minimessage -->
+        <repository>
+            <id>sonatype-oss-snapshots1</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>viaversion-repo</id>
+            <url>https://repo.viaversion.com</url>
+        </repository>
+    </repositories>
+    <dependencies>
+        <!-- For Paper API -->
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- For Configurate -->
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>configurate-hocon</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>configurate-yaml</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <!-- For bStats -->
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.1.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- For Adventure -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+            <version>4.26.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-bukkit</artifactId>
+            <version>4.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-serializer-legacy</artifactId>
+            <version>4.26.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-minimessage</artifactId>
+            <version>4.26.1</version>
+        </dependency>
+        <!-- For Nullable -->
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <!-- For stacktrace -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.20.0</version>
+        </dependency>
+        <!-- For JUnit -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.14.2</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- For MockBukkit -->
+        <dependency>
+            <groupId>org.mockbukkit.mockbukkit</groupId>
+            <artifactId>mockbukkit-v1.21</artifactId>
+            <version>4.101.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- For Cloud -->
+        <dependency>
+            <groupId>org.incendo</groupId>
+            <artifactId>cloud-paper</artifactId>
+            <version>2.0.0-beta.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.incendo</groupId>
+            <artifactId>cloud-minecraft-extras</artifactId>
+            <version>2.0.0-beta.14</version>
+        </dependency>
+    </dependencies>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven-snapshots</id>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <url>http://repo.mattlabs.net/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>http://repo.mattlabs.net/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
+
+    <!-- Project settings -->
+
+    <!-- Enforce Unicode when compiling Java -->
+    <properties>
+        <!-- Enforce Unicode when compiling Java -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Minecraft Version -->
+        <mcver>1.13</mcver>
+    </properties>
+
+    <build>
+        <!-- Replaces tokens like "${project.version}" in plugin.yml -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+            <!-- Specifies minimum Java version and Unicode for compile and runtime -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>15</source>
+                    <target>15</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- Ensure resource files are processed as Unicode -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
+
+                <configuration>
+                    <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+                    <relocations>
+                        <!-- bStats -->
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.bstats</shadedPattern>
+                        </relocation>
+                        <!-- Configurate -->
+                        <relocation>
+                            <pattern>org.spongepowered</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.spongepowered</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>io.leangen.geantyref</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.geantyref</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.typesafe</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.typesafe</shadedPattern>
+                        </relocation>
+                        <!-- Adventure -->
+                        <relocation>
+                            <pattern>net.kyori</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.kyori</shadedPattern>
+                        </relocation>
+                        <!-- Cloud -->
+                        <relocation>
+                            <pattern>org.incendo</pattern>
+                            <shadedPattern>net.mattlabs.skipnight.incendo</shadedPattern>
+                        </relocation>
+                    </relocations>
+                    <!-- Fix signed dependency JARs -->
+                    <filters>
+                        <filter>
+                            <artifact>*:*:*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.RSA</exclude>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.MF</exclude>
+                                <exclude>META-INF/versions/16/</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
+
+                <!-- Perform shading for package phase -->
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.3</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <reportFormat>plain</reportFormat>
+                    <consoleOutputReporter>
+                        <disable>true</disable>
+                    </consoleOutputReporter>
+                    <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter"/>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>me.fabriciorby</groupId>
+                        <artifactId>maven-surefire-junit5-tree-reporter</artifactId>
+                        <version>0.1.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <!-- Profile to copy JAR to test server -->
+        <profile>
+            <id>testServer</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <delete>
+                                            <fileset dir="${basedir}\..\..\Test Server\${mcver}\plugins" includes="${project.artifactId}-*.jar" />
+                                        </delete>
+                                        <echo>Copying ${project.artifactId}-${project.version}.jar to test server...</echo>
+                                        <copy todir="${basedir}\..\..\Test Server\${mcver}\plugins" overwrite="true" flatten="true">
+                                            <fileset dir="${basedir}/target" includes="${project.artifactId}-${project.version}.jar" />
+                                        </copy>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
