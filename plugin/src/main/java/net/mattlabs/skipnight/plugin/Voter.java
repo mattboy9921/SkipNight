@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight;
+package net.mattlabs.skipnight.plugin;
 
 import java.util.UUID;
 

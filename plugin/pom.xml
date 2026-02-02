@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>net.mattlabs.skipnight</groupId>
-        <artifactId>skipnight</artifactId>
+        <artifactId>skipnight-root</artifactId>
         <version>${revision}</version>
     </parent>
 
@@ -141,6 +141,12 @@
             <groupId>org.incendo</groupId>
             <artifactId>cloud-minecraft-extras</artifactId>
             <version>2.0.0-beta.14</version>
+        </dependency>
+        <!-- For impl-current -->
+        <dependency>
+            <groupId>net.mattlabs.skipnight</groupId>
+            <artifactId>skipnight-impl-current</artifactId>
+            <version>${revision}</version>
         </dependency>
     </dependencies>
 
@@ -309,10 +315,10 @@
                                 <configuration>
                                     <target>
                                         <delete>
-                                            <fileset dir="${basedir}\..\..\Test Server\${mcver}\plugins" includes="${project.artifactId}-*.jar" />
+                                            <fileset dir="${basedir}\..\..\..\Test Server\${mcver}\plugins" includes="${project.artifactId}-*.jar" />
                                         </delete>
                                         <echo>Copying ${project.artifactId}-${project.version}.jar to test server...</echo>
-                                        <copy todir="${basedir}\..\..\Test Server\${mcver}\plugins" overwrite="true" flatten="true">
+                                        <copy todir="${basedir}\..\..\..\Test Server\${mcver}\plugins" overwrite="true" flatten="true">
                                             <fileset dir="${basedir}/target" includes="${project.artifactId}-${project.version}.jar" />
                                         </copy>
                                     </target>

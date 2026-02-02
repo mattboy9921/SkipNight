@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight;
+package net.mattlabs.skipnight.plugin;
 
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;

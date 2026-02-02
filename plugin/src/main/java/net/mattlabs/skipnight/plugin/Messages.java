@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight;
+package net.mattlabs.skipnight.plugin;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;

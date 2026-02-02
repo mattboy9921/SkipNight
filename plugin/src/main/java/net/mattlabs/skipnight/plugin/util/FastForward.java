@@ -1,9 +1,10 @@
-package net.mattlabs.skipnight.util;
+package net.mattlabs.skipnight.plugin.util;
 
+import net.mattlabs.skipnight.api.ScheduledRunnable;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
-public class FastForward implements Runnable {
+public class FastForward extends ScheduledRunnable {
 
     private final World world;
     private final Plugin plugin;

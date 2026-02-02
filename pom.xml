@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.mattlabs.skipnight</groupId>
-    <artifactId>skipnight</artifactId>
+    <artifactId>skipnight-root</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
 
@@ -16,6 +16,8 @@
     <modules>
         <!-- Folder name, not artifactId -->
         <module>plugin</module>
+        <module>api</module>
+        <module>impl-current</module>
         <!-- later we'll add: api, impl-modern, etc. -->
     </modules>
 </project>

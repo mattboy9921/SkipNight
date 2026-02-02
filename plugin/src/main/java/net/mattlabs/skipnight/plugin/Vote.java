@@ -1,11 +1,13 @@
-package net.mattlabs.skipnight;
+package net.mattlabs.skipnight.plugin;
 
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
-import net.mattlabs.skipnight.util.FastForward;
-import net.mattlabs.skipnight.util.Versions;
-import net.mattlabs.skipnight.util.VoteType;
+import net.mattlabs.skipnight.api.ScheduledRunnable;
+import net.mattlabs.skipnight.api.Scheduler;
+import net.mattlabs.skipnight.plugin.util.FastForward;
+import net.mattlabs.skipnight.plugin.util.Versions;
+import net.mattlabs.skipnight.plugin.util.VoteType;
 import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -13,11 +15,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class Vote implements Runnable, Listener {
+public class Vote extends ScheduledRunnable implements Listener {
 
     enum Timer {
         INIT,
@@ -44,6 +45,7 @@ public class Vote implements Runnable, Listener {
     private final String version;
     private final boolean playerActivity;
     private final Config config;
+    private final Scheduler scheduler;
 
     Vote(SkipNight plugin) {
         timer = Timer.OFF;
@@ -53,6 +55,7 @@ public class Vote implements Runnable, Listener {
         version = SkipNight.getInstance().getVersion();
         playerActivity = SkipNight.getInstance().hasPlayerActivity();
         config = SkipNight.getInstance().getConfiguration();
+        scheduler = SkipNight.getInstance().getScheduler();
     }
 
     @EventHandler
@@ -112,7 +115,7 @@ public class Vote implements Runnable, Listener {
         updateAll();
 
         timer = Timer.OPERATION;
-        plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
+        scheduler.runTaskLater(this, 20);
     }
 
     /* The main stage of the vote. Checks for a completed vote or waits until the last 10 seconds to move on.
@@ -128,7 +131,7 @@ public class Vote implements Runnable, Listener {
             bar.name(messages.duringVote().currentVote(yes, no));
         updateAll();
         if (countDown <= 10) timer = Timer.FINAL;
-        plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
+        scheduler.runTaskLater(this, 20);
     }
 
     /* The stage for when everyone has voted. Sets the boss bar and moves onto the next stage. */
@@ -139,7 +142,7 @@ public class Vote implements Runnable, Listener {
         bar.color(BossBar.Color.YELLOW);
 
         timer = Timer.COMPLETE;
-        plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
+        scheduler.runTaskLater(this, 20);
     }
 
     /* The last 10 seconds of the vote. Boss bar alternates white and purple and players receive a message. */
@@ -159,28 +162,12 @@ public class Vote implements Runnable, Listener {
         else bar.color(BossBar.Color.PURPLE);
 
         if (countDown == 0) timer = Timer.COMPLETE;
-        plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
+        scheduler.runTaskLater(this, 10);
     }
 
     /* The stage of the vote after the timer has run out. Displays vote passed/failed via boss bar and message.
     *  Initiates a fast-forward to the correct time. */
     private void doComplete() {
-        BukkitRunnable bossBarFastForward = new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                float totalTime;
-                if (voteType == VoteType.NIGHT) totalTime = 23900f;
-                else totalTime = 12516f;
-                float progress = world.getTime() / totalTime;
-                if (progress > 1.0f) {
-                    bar.progress(1.0f);
-                    this.cancel();
-                }
-                else bar.progress(progress);
-            }
-        };
-
         countDown--;
         if (countDown == -1) {
             bar.progress(1.0f);
@@ -189,11 +176,37 @@ public class Vote implements Runnable, Listener {
                 bar.color(BossBar.Color.GREEN);
                 updateAll(messages.afterVote().votePassedBossBar(voteTypeString()));
                 fastForward = new FastForward(world, plugin, voteType);
-                plugin.getServer().getScheduler().runTaskLater(plugin, fastForward, 10);
+                scheduler.runTaskLater(fastForward, 10);
 
                 // Set boss bar progress to fast-forward progress
                 bar.progress(0.0f);
-                bossBarFastForward.runTaskTimer(plugin, 0, 1);
+                scheduler.runTaskTimer(new ScheduledRunnable() {
+                    @Override
+                    public void run() {
+                        float nightEnd = 23900f;
+                        float dayEnd = 12516f;
+                        float currentTime = world.getTime();
+
+                        switch (voteType) {
+                            case NIGHT:
+                                if (currentTime >= dayEnd && currentTime <= nightEnd)
+                                    bar.progress(currentTime / nightEnd);
+                                else {
+                                    bar.progress(1.0f);
+                                    this.cancel();
+                                }
+                                break;
+                            case DAY:
+                                if (currentTime >= nightEnd || currentTime <= dayEnd)
+                                    bar.progress(currentTime / dayEnd);
+                                else {
+                                    bar.progress(1.0f);
+                                    this.cancel();
+                                }
+                                break;
+                        }
+                    }
+                }, 0, 1);
 
                 //if (world.hasStorm()) world.setStorm(false);
             }
@@ -202,10 +215,10 @@ public class Vote implements Runnable, Listener {
                 bar.color(BossBar.Color.RED);
                 updateAll(messages.afterVote().voteFailedBossBar(voteTypeString()));
             }
-            plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
+            scheduler.runTaskLater(this, 20);
         }
 
-        if (countDown <= -2) plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
+        if (countDown <= -2) scheduler.runTaskLater(this, 20);
 
         if (countDown <= -9 && bar.progress() == 1.0f) {
             platform.all().hideBossBar(bar);
@@ -220,7 +233,7 @@ public class Vote implements Runnable, Listener {
     /* Runs after everything is done to prevent a vote from starting again until after a time. */
     private void doCooldown() {
         countDown--;
-        if (countDown >= (config.getCooldown() * -1) - 9) plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
+        if (countDown >= (config.getCooldown() * -1) - 9) scheduler.runTaskLater(this, 20);
         else timer = Timer.OFF;
     }
 
@@ -236,7 +249,7 @@ public class Vote implements Runnable, Listener {
 
         countDown--;
 
-        if (countDown > -4) plugin.getServer().getScheduler().runTaskLater(plugin, this, 20);
+        if (countDown > -4) scheduler.runTaskLater(this, 20);
 
         if (countDown == -4) {
             platform.all().hideBossBar(bar);

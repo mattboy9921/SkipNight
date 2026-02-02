@@ -1,6 +1,6 @@
-package net.mattlabs.skipnight;
+package net.mattlabs.skipnight.plugin;
 
-import net.mattlabs.skipnight.util.VoteType;
+import net.mattlabs.skipnight.plugin.util.VoteType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

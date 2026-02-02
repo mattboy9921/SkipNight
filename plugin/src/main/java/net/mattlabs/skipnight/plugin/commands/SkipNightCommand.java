@@ -1,8 +1,8 @@
-package net.mattlabs.skipnight.commands;
+package net.mattlabs.skipnight.plugin.commands;
 
-import net.mattlabs.skipnight.SkipNight;
-import net.mattlabs.skipnight.Vote;
-import net.mattlabs.skipnight.util.VoteType;
+import net.mattlabs.skipnight.plugin.SkipNight;
+import net.mattlabs.skipnight.plugin.Vote;
+import net.mattlabs.skipnight.plugin.util.VoteType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.incendo.cloud.Command;

@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.mattlabs.skipnight</groupId>
+        <artifactId>skipnight-root</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>skipnight-impl-current</artifactId>
+    <packaging>jar</packaging>
+
+    <repositories>
+        <!-- For Paper API -->
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- core API module -->
+        <dependency>
+            <groupId>net.mattlabs.skipnight</groupId>
+            <artifactId>skipnight-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- Paper API -->
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>

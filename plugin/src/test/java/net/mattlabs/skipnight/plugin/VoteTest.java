@@ -1,6 +1,6 @@
-package net.mattlabs.skipnight;
+package net.mattlabs.skipnight.plugin;
 
-import net.mattlabs.skipnight.util.VoteType;
+import net.mattlabs.skipnight.plugin.util.VoteType;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
 import org.mockbukkit.mockbukkit.world.WorldMock;

@@ -1,10 +1,10 @@
-package net.mattlabs.skipnight;
+package net.mattlabs.skipnight.plugin;
 
 import io.papermc.paper.block.bed.BedEnterAction;
 import io.papermc.paper.block.bed.BedEnterProblem;
 import io.papermc.paper.block.bed.BedRuleResult;
 import net.kyori.adventure.text.Component;
-import net.mattlabs.skipnight.util.VoteType;
+import net.mattlabs.skipnight.plugin.util.VoteType;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;

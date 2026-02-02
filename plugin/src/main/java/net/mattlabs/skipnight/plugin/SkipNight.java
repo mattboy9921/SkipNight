@@ -1,12 +1,14 @@
-package net.mattlabs.skipnight;
+package net.mattlabs.skipnight.plugin;
 
 import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.mattlabs.skipnight.commands.SkipDayCommand;
-import net.mattlabs.skipnight.commands.SkipNightCommand;
-import net.mattlabs.skipnight.util.ConfigurateManager;
-import net.mattlabs.skipnight.util.MessageTransformations;
-import net.mattlabs.skipnight.util.Versions;
+import net.mattlabs.skipnight.api.Scheduler;
+import net.mattlabs.skipnight.impl_current.CurrentScheduler;
+import net.mattlabs.skipnight.plugin.commands.SkipDayCommand;
+import net.mattlabs.skipnight.plugin.commands.SkipNightCommand;
+import net.mattlabs.skipnight.plugin.util.ConfigurateManager;
+import net.mattlabs.skipnight.plugin.util.MessageTransformations;
+import net.mattlabs.skipnight.plugin.util.Versions;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -32,6 +34,7 @@ public class SkipNight extends JavaPlugin {
     private static SkipNight instance;
     private BukkitAudiences platform;
     private String version;
+    private Scheduler scheduler;
 
     public static boolean testEnabled = false;
 
@@ -83,6 +86,9 @@ public class SkipNight extends JavaPlugin {
 
         // Register Audience (Messages)
         platform = BukkitAudiences.create(this);
+
+        // Create Scheduler Impl
+        scheduler = new CurrentScheduler(this);
 
         // Register vote
         vote = new Vote(this);
@@ -141,6 +147,10 @@ public class SkipNight extends JavaPlugin {
 
     public LegacyPaperCommandManager<CommandSender> getCommandManager() {
         return commandManager;
+    }
+
+    public Scheduler getScheduler() {
+        return scheduler;
     }
 
     public boolean hasPlayerActivity() {
