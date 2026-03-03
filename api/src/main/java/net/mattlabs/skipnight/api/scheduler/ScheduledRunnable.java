@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight.api;
+package net.mattlabs.skipnight.api.scheduler;
 
 public abstract class ScheduledRunnable implements Runnable {
     private ScheduledTask task;

@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight.plugin.util;
+package net.mattlabs.skipnight.api.util;
 
 public enum VoteType {
     DAY,

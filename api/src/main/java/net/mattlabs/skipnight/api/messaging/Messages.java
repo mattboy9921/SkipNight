@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight.plugin;
+package net.mattlabs.skipnight.api.messaging;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -16,6 +16,12 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
 @ConfigSerializable
 public class Messages {
+
+    private static MessagesContext messagesContext;
+
+    public static void Initialize(MessagesContext messagesContext) {
+        Messages.messagesContext = messagesContext;
+    }
 
     // Header fields
     @SuppressWarnings("unused")
@@ -564,7 +570,7 @@ public class Messages {
         Component header = Component.text("[", NamedTextColor.GRAY)
                 .append(Component.text(lgeneral().voteString(), NamedTextColor.BLUE))
                 .append(Component.text("] ", NamedTextColor.GRAY));
-        return SkipNight.getInstance().getConfiguration().isHeaderDisabled() ? Component.text("") : header;
+        return messagesContext.isHeaderDisabled() ? Component.text("") : header;
     }
 
     // -
@@ -582,6 +588,6 @@ public class Messages {
     }
 
     private static General lgeneral() {
-        return SkipNight.getInstance().getMessages().general();
+        return messagesContext.general();
     }
 }

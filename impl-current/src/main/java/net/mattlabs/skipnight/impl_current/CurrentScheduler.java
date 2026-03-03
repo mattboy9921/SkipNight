@@ -1,8 +1,8 @@
 package net.mattlabs.skipnight.impl_current;
 
-import net.mattlabs.skipnight.api.ScheduledRunnable;
-import net.mattlabs.skipnight.api.ScheduledTask;
-import net.mattlabs.skipnight.api.Scheduler;
+import net.mattlabs.skipnight.api.scheduler.ScheduledRunnable;
+import net.mattlabs.skipnight.api.scheduler.ScheduledTask;
+import net.mattlabs.skipnight.api.scheduler.Scheduler;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 

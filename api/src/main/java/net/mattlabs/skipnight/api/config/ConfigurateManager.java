@@ -1,8 +1,6 @@
-package net.mattlabs.skipnight.plugin.util;
+package net.mattlabs.skipnight.api.config;
 
 import io.leangen.geantyref.TypeToken;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
@@ -15,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.logging.Logger;
 
 /* This class uses the raw instance of the parameterized inner class ConfigNode and performs unchecked assignment.
  *  Warnings are suppressed as all instances of unchecked assignment are correct type. */
@@ -22,15 +21,17 @@ public class ConfigurateManager {
 
     @SuppressWarnings("rawtypes")
     private final Map<String, ConfigNode> configMap;
-    private final Plugin plugin;
+    private final Logger logger;
+    private final File dataFolder;
 
-    public ConfigurateManager(Plugin plugin) {
+    public ConfigurateManager(File dataFolder, Logger logger) {
         configMap = new HashMap<>();
-        this.plugin = plugin;
+        this.logger = logger;
+        this.dataFolder = dataFolder;
 
         // Create Data Directory
         //noinspection ResultOfMethodCallIgnored
-        plugin.getDataFolder().mkdir();
+        dataFolder.mkdir();
     }
 
     // Basic add
@@ -51,7 +52,7 @@ public class ConfigurateManager {
 
     // Add with configuration options and transformations
     public <T> void add(String fileName, TypeToken<T> typeToken, T configSerializable, Supplier<T> configSerializableSupplier, UnaryOperator<ConfigurationOptions> configurationOptions, ConfigurationTransformation.Versioned transformation) {
-        File file = new File(plugin.getDataFolder(), fileName);
+        File file = new File(dataFolder, fileName);
         ConfigurationLoader<CommentedConfigurationNode> loader =
                 HoconConfigurationLoader.builder()
                         .path(file.toPath())
@@ -60,22 +61,23 @@ public class ConfigurateManager {
         configMap.put(fileName, configNode);
     }
 
-    public <T> void saveDefaults(String fileName) {
+    public <T> boolean saveDefaults(String fileName) {
         @SuppressWarnings("unchecked")
         ConfigNode<T> configNode = configMap.get(fileName);
         File file = configNode.getFile();
         ConfigurationLoader<CommentedConfigurationNode> loader = configNode.getLoader();
 
         if (!file.exists()) {
-            plugin.getLogger().info("\"" + fileName + "\" file doesn't exist, creating...");
+            logger.info("\"" + fileName + "\" file doesn't exist, creating...");
             try {
                 loader.save(loader.createNode().set(configNode.getTypeToken(), configNode.getConfigSerializable()));
             }
             catch (IOException | StackOverflowError e) {
-                plugin.getLogger().severe("Failed to save \"" + fileName + "\"!");
-                Bukkit.getPluginManager().disablePlugin(plugin);
+                logger.severe("Failed to save \"" + fileName + "\"!");
+                return false;
             }
         }
+        return true;
     }
 
     public <T> void save(String fileName) {
@@ -87,7 +89,7 @@ public class ConfigurateManager {
             loader.save(loader.createNode().set(configNode.getTypeToken(), configNode.getConfigSerializable()));
         }
         catch (IOException e) {
-            plugin.getLogger().severe("Failed to save \"" + fileName + "\"!");
+            logger.severe("Failed to save \"" + fileName + "\"!");
         }
     }
 
@@ -106,14 +108,14 @@ public class ConfigurateManager {
                 transformation.apply(node);
                 int endVersion = transformation.version(node);
                 if (startVersion != endVersion)
-                    plugin.getLogger().info("Updated " + fileName + " schema from " + startVersion + " to " + endVersion);
+                    logger.info("Updated " + fileName + " schema from " + startVersion + " to " + endVersion);
             }
             // Load
             T t = node.get(configNode.getTypeToken(), configNode.getConfigSerializableSupplier());
             configNode.setConfigSerializable(t);
         }
         catch (IOException e) {
-            plugin.getLogger().severe("Failed to load \"" + fileName + "\" - using a default!");
+            logger.severe("Failed to load \"" + fileName + "\" - using a default!");
         }
     }
 

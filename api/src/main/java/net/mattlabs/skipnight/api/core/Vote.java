@@ -1,24 +1,20 @@
-package net.mattlabs.skipnight.plugin;
+package net.mattlabs.skipnight.api.core;
 
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
-import net.mattlabs.skipnight.api.ScheduledRunnable;
-import net.mattlabs.skipnight.api.Scheduler;
-import net.mattlabs.skipnight.plugin.util.FastForward;
-import net.mattlabs.skipnight.plugin.util.Versions;
-import net.mattlabs.skipnight.plugin.util.VoteType;
-import org.bukkit.Statistic;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import net.mattlabs.skipnight.api.messaging.Messages;
+import net.mattlabs.skipnight.api.messaging.MessagesAdapter;
+import net.mattlabs.skipnight.api.player.PlayerAdapter;
+import net.mattlabs.skipnight.api.world.WorldAdapter;
+import net.mattlabs.skipnight.api.config.Config;
+import net.mattlabs.skipnight.api.scheduler.ScheduledRunnable;
+import net.mattlabs.skipnight.api.scheduler.Scheduler;
+import net.mattlabs.skipnight.api.util.FastForward;
+import net.mattlabs.skipnight.api.util.VoteType;
 
 import java.util.*;
 
-public class Vote extends ScheduledRunnable implements Listener {
+public class Vote extends ScheduledRunnable {
 
     enum Timer {
         INIT,
@@ -35,48 +31,44 @@ public class Vote extends ScheduledRunnable implements Listener {
     private VoteType voteType;
     private int yes, no, playerCount, countDown, countDownInit, away, idle;
     private BossBar bar;
-    private final SkipNight plugin;
     private Map<UUID, Voter> voters;
-    private Player voteInitiator;
-    private World world;
+    private UUID voteInitiator;
+    private UUID world;
     private FastForward fastForward;
     private final Messages messages;
-    private final BukkitAudiences platform;
-    private final String version;
     private final boolean playerActivity;
     private final Config config;
     private final Scheduler scheduler;
+    private final PlayerAdapter playerAdapter;
+    private final WorldAdapter worldAdapter;
+    private final MessagesAdapter messagesAdapter;
 
-    Vote(SkipNight plugin) {
+    public Vote(Messages messages, boolean playerActivity, Config config, Scheduler scheduler, PlayerAdapter playerAdapter, WorldAdapter worldAdapter, MessagesAdapter messagesAdapter) {
         timer = Timer.OFF;
-        this.plugin = plugin;
-        messages = SkipNight.getInstance().getMessages();
-        platform = SkipNight.getInstance().getPlatform();
-        version = SkipNight.getInstance().getVersion();
-        playerActivity = SkipNight.getInstance().hasPlayerActivity();
-        config = SkipNight.getInstance().getConfiguration();
-        scheduler = SkipNight.getInstance().getScheduler();
+        this.messages = messages;
+        this.playerActivity = playerActivity;
+        this.config = config;
+        this.scheduler = scheduler;
+        this.playerAdapter = playerAdapter;
+        this.worldAdapter = worldAdapter;
+        this.messagesAdapter = messagesAdapter;
     }
 
-    @EventHandler
-    public void onLogoff(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-
-        if (timer != Timer.OFF) // vote is running
-            if (player.hasPermission("skipnight.vote." + voteTypeCommandString(voteType))) { // player has permission
-                voters.remove(player.getUniqueId());
+    public void onLogOffEvent(UUID playerUUID) {
+        if (timer != Timer.OFF)
+            if (playerAdapter.hasPermission(playerUUID, "skipnight.vote." + voteTypeCommandString(voteType))) {
+                voters.remove(playerUUID);
             }
     }
 
-    @EventHandler
-    public void onBedEnter(PlayerBedEnterEvent event) {
-        Player player = event.getPlayer();
+    public void onBedEnterEvent(UUID playerUUID) {
+        UUID worldUUID = playerAdapter.getWorldUUID(playerUUID);
         // Player has permission, isn't the only one in the world, and it is night (or storming)
-        if (player.hasPermission("skipnight.vote.night")
-                && player.getWorld().getPlayers().size() > 1
+        if (playerAdapter.hasPermission(playerUUID, "skipnight.vote.night")
+                && worldAdapter.getPlayers(worldUUID).size() > 1
                 && timer == Timer.OFF
-                && (player.getWorld().getTime() > 12516 || player.getWorld().hasStorm())) {
-            platform.player(player).sendMessage(messages.beforeVote().inBedNoVoteInProg());
+                && (worldAdapter.getTime(worldUUID) > 12516 || worldAdapter.hasStorm(worldUUID))) {
+            messagesAdapter.sendMessage(playerUUID, messages.beforeVote().inBedNoVoteInProg());
         }
     }
 
@@ -175,7 +167,7 @@ public class Vote extends ScheduledRunnable implements Listener {
                 bar.name(messages.afterVote().votePassedBossBar());
                 bar.color(BossBar.Color.GREEN);
                 updateAll(messages.afterVote().votePassedBossBar(voteTypeString()));
-                fastForward = new FastForward(world, plugin, voteType);
+                fastForward = new FastForward(worldAdapter, world, scheduler, voteType);
                 scheduler.runTaskLater(fastForward, 10);
 
                 // Set boss bar progress to fast-forward progress
@@ -185,7 +177,7 @@ public class Vote extends ScheduledRunnable implements Listener {
                     public void run() {
                         float nightEnd = 23900f;
                         float dayEnd = 12516f;
-                        float currentTime = world.getTime();
+                        float currentTime = worldAdapter.getTime(world);
 
                         switch (voteType) {
                             case NIGHT:
@@ -221,7 +213,7 @@ public class Vote extends ScheduledRunnable implements Listener {
         if (countDown <= -2) scheduler.runTaskLater(this, 20);
 
         if (countDown <= -9 && bar.progress() == 1.0f) {
-            platform.all().hideBossBar(bar);
+            messagesAdapter.hideBossBarAll(bar);
             bar = null;
             voters = null;
             fastForward = null;
@@ -252,7 +244,7 @@ public class Vote extends ScheduledRunnable implements Listener {
         if (countDown > -4) scheduler.runTaskLater(this, 20);
 
         if (countDown == -4) {
-            platform.all().hideBossBar(bar);
+            messagesAdapter.hideBossBarAll(bar);
             bar = null;
             voters = null;
             fastForward = null;
@@ -261,77 +253,79 @@ public class Vote extends ScheduledRunnable implements Listener {
         }
     }
 
-    public void addYes(Player player, VoteType voteType) {
+    public void addYes(UUID playerUUID, VoteType voteType) {
         if (timer != Timer.OFF) {
-            Voter voter = new Voter(player.getUniqueId());
+            Voter voter = new Voter(playerUUID);
             if (voters.containsKey(voter.getUuid())) {
                 voter = voters.get(voter.getUuid());
                 if (voter.getVote() == 0) {
-                    if (this.voteType == VoteType.NIGHT && playerMustSleep(player) && config.isPhantomSupport()) {
-                        platform.player(player).sendMessage(messages.beforeVote().mustSleep());
-                        actionBarMessage(messages.duringVote().playerHasNotSlept(player.getName()));
+                    if (this.voteType == VoteType.NIGHT && playerAdapter.playerMustSleep(playerUUID) && config.isPhantomSupport()) {
+                        messagesAdapter.sendMessage(playerUUID, messages.beforeVote().mustSleep());
+                        actionBarMessage(messages.duringVote().playerHasNotSlept(playerAdapter.getName(playerUUID)));
                     }
                     else {
                         voter.voteYes();
-                        platform.player(player).sendMessage(messages.duringVote().youVoteYes());
-                        actionBarMessage(messages.duringVote().playerHasVotedYes(player.getName()));
+                        messagesAdapter.sendMessage(playerUUID, messages.duringVote().youVoteYes());
+                        actionBarMessage(messages.duringVote().playerHasVotedYes(playerAdapter.getName(playerUUID)));
                     }
                 }
-                else platform.player(player).sendMessage(messages.duringVote().alreadyVoted());
+                else messagesAdapter.sendMessage(playerUUID, messages.duringVote().alreadyVoted());
             }
         }
-        else platform.player(player).sendMessage(messages.beforeVote().noVoteInProg(voteTypeCommandString(voteType)));
+        else messagesAdapter.sendMessage(playerUUID, messages.beforeVote().noVoteInProg(voteTypeCommandString(voteType)));
     }
 
-    public void addNo(Player player, VoteType voteType) {
+    public void addNo(UUID playerUUID, VoteType voteType) {
         if (timer != Timer.OFF) {
-            Voter voter = new Voter(player.getUniqueId());
+            Voter voter = new Voter(playerUUID);
             if (voters.containsKey(voter.getUuid())) {
                 voter = voters.get(voter.getUuid());
                 if (voter.getVote() == 0) {
-                    if (this.voteType == VoteType.NIGHT && playerMustSleep(player) && config.isPhantomSupport()) {
-                        platform.player(player).sendMessage(messages.beforeVote().mustSleep());
-                        actionBarMessage(messages.duringVote().playerHasNotSlept(player.getName()));
+                    if (this.voteType == VoteType.NIGHT && playerAdapter.playerMustSleep(playerUUID) && config.isPhantomSupport()) {
+                        messagesAdapter.sendMessage(playerUUID, messages.beforeVote().mustSleep());
+                        actionBarMessage(messages.duringVote().playerHasNotSlept(playerAdapter.getName(playerUUID)));
                     }
                     else {
                         voter.voteNo();
-                        platform.player(player).sendMessage(messages.duringVote().youVoteNo());
-                        actionBarMessage(messages.duringVote().playerHasVotedNo(player.getName()));
+                        messagesAdapter.sendMessage(playerUUID, messages.duringVote().youVoteNo());
+                        actionBarMessage(messages.duringVote().playerHasVotedNo(playerAdapter.getName(playerUUID)));
                     }
                 }
-                else platform.player(player).sendMessage(messages.duringVote().alreadyVoted());
+                else messagesAdapter.sendMessage(playerUUID, messages.duringVote().alreadyVoted());
             }
         }
-        else platform.player(player).sendMessage(messages.beforeVote().noVoteInProg(voteTypeCommandString(voteType)));
+        else messagesAdapter.sendMessage(playerUUID, messages.beforeVote().noVoteInProg(voteTypeCommandString(voteType)));
     }
 
     // Attempts to start a vote if all conditions are met, otherwise informs player why vote can't start
-    public void start(Player player, VoteType voteType) {
-        if (!player.hasPermission("skipnight.vote." + voteTypeCommandString(voteType))) // If player doesn't have permission
-            platform.player(player).sendMessage(messages.general().noPerm());
-        else if (config.getWorldBlacklist().contains(player.getWorld().getName())) // If world is blacklisted
-            platform.player(player).sendMessage(messages.beforeVote().worldIsBlacklisted());
-        else if (!isInOverworld(player)) // If player isn't in the overworld
-            platform.player(player).sendMessage(messages.beforeVote().worldNotOverworld());
-        else if (voteType == VoteType.NIGHT && player.getWorld().getTime() < 12516 && !player.getWorld().hasStorm()) // If it's day and not raining, trying to skip night
-            platform.player(player).sendMessage(messages.beforeVote().canOnlyVoteAtNight());
-        else if (voteType == VoteType.DAY && player.getWorld().getTime() >= 12516) // If it's night, trying to skip day
-            platform.player(player).sendMessage(messages.beforeVote().canOnlyVoteAtDay());
-        else if (readTag(player).equalsIgnoreCase("Idle"))
-            platform.player(player).sendMessage(messages.beforeVote().noVoteWhileIdle());
-        else if (readTag(player).equalsIgnoreCase("Away"))
-            platform.player(player).sendMessage(messages.beforeVote().noVoteWhileAway());
+    public void start(UUID playerUUID, VoteType voteType) {
+        UUID worldUUID = playerAdapter.getWorldUUID(playerUUID);
+
+        if (!playerAdapter.hasPermission(playerUUID,"skipnight.vote." + voteTypeCommandString(voteType))) // If player doesn't have permission
+            messagesAdapter.sendMessage(playerUUID, messages.general().noPerm());
+        else if (config.getWorldBlacklist().contains(worldAdapter.getName(worldUUID))) // If world is blacklisted
+            messagesAdapter.sendMessage(playerUUID, messages.beforeVote().worldIsBlacklisted());
+        else if (!playerAdapter.isInOverworld(playerUUID)) // If player isn't in the overworld
+            messagesAdapter.sendMessage(playerUUID, messages.beforeVote().worldNotOverworld());
+        else if (voteType == VoteType.NIGHT && worldAdapter.getTime(worldUUID) < 12516 && !worldAdapter.hasStorm(worldUUID)) // If it's day and not raining, trying to skip night
+            messagesAdapter.sendMessage(playerUUID, messages.beforeVote().canOnlyVoteAtNight());
+        else if (voteType == VoteType.DAY && worldAdapter.getTime(worldUUID) >= 12516) // If it's night, trying to skip day
+            messagesAdapter.sendMessage(playerUUID, messages.beforeVote().canOnlyVoteAtDay());
+        else if (playerAdapter.readTag(playerUUID).equalsIgnoreCase("Idle"))
+            messagesAdapter.sendMessage(playerUUID, messages.beforeVote().noVoteWhileIdle());
+        else if (playerAdapter.readTag(playerUUID).equalsIgnoreCase("Away"))
+            messagesAdapter.sendMessage(playerUUID, messages.beforeVote().noVoteWhileAway());
         else if (timer == Timer.COOLDOWN) // If the vote is in cooldown
-            platform.player(player).sendMessage(messages.beforeVote().cooldown());
+            messagesAdapter.sendMessage(playerUUID, messages.beforeVote().cooldown());
         else if (!(timer == Timer.OFF)) // If there's a vote happening
-            platform.player(player).sendMessage(messages.duringVote().voteInProg());
-        else if (voteType == VoteType.NIGHT && playerMustSleep(player) && config.isPhantomSupport()) // If it's night, player hasn't slept in 3 days
-            platform.player(player).sendMessage(messages.beforeVote().mustSleepNewVote());
+            messagesAdapter.sendMessage(playerUUID, messages.duringVote().voteInProg());
+        else if (voteType == VoteType.NIGHT && playerAdapter.playerMustSleep(playerUUID) && config.isPhantomSupport()) // If it's night, player hasn't slept in 3 days
+            messagesAdapter.sendMessage(playerUUID, messages.beforeVote().mustSleepNewVote());
         else {
             timer = Timer.INIT;
             this.voteType = voteType;
-            this.voteInitiator = player;
-            world = player.getWorld();
+            this.voteInitiator = playerUUID;
+            world = playerAdapter.getWorldUUID(playerUUID);
             run();
         }
     }
@@ -340,32 +334,32 @@ public class Vote extends ScheduledRunnable implements Listener {
         updateAll(null);
     }
     private void updateAll(Component message) {
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            Voter voter = new Voter(player.getUniqueId());
+        for (UUID playerUUID : playerAdapter.getOnlinePlayers()) {
+            Voter voter = new Voter(playerUUID);
 
             List<Component> messageList = new ArrayList<>();
 
             // Check permission
-            if (player.hasPermission("skipnight.vote." + voteTypeCommandString(voteType))) {
-                if (isInOverworld(player)) {
-                    platform.player(player).showBossBar(bar);
+            if (playerAdapter.hasPermission(playerUUID, "skipnight.vote." + voteTypeCommandString(voteType))) {
+                if (playerAdapter.isInOverworld(playerUUID)) {
+                    messagesAdapter.showBossBar(playerUUID, bar);
 
                     // Add voter to list
                     if (!voters.containsKey(voter.getUuid())) {
                         voters.put(voter.getUuid(), voter);
                         // Add message
-                        messageList.add(messages.duringVote().voteStarted(voteInitiator.getName(), voteTypeString()));
+                        messageList.add(messages.duringVote().voteStarted(playerAdapter.getName(voteInitiator), voteTypeString()));
                     }
                     // Or get from the list
                     else voter = voters.get(voter.getUuid());
 
                     // Started the vote, automatically vote yes
-                    if (player.equals(voteInitiator) && timer == Timer.INIT) {
+                    if (playerUUID.equals(voteInitiator) && timer == Timer.INIT) {
                         messageList.add(messages.duringVote().youVoteYes());
                         voter.voteYes();
                     }
 
-                    switch (readTag(player)) {
+                    switch (playerAdapter.readTag(playerUUID)) {
                         case "Active" -> {
                             if (!voter.isActive()) {
                                 if (voter.isIdle() || voter.isAway())
@@ -414,7 +408,7 @@ public class Vote extends ScheduledRunnable implements Listener {
                 }
                 // Send messages
                 for (Component messageToSend : messageList) {
-                    SkipNight.getInstance().getPlatform().player(player).sendMessage(messageToSend);
+                    messagesAdapter.sendMessage(playerUUID, messageToSend);
                 }
             }
         }
@@ -426,42 +420,20 @@ public class Vote extends ScheduledRunnable implements Listener {
     }
 
     private void actionBarMessage(Component message) {
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            Voter voter = new Voter(player.getUniqueId());
+        for (UUID playerUUID : playerAdapter.getOnlinePlayers()) {
+            Voter voter = new Voter(playerUUID);
 
-            if (isInOverworld(player) && player.hasPermission("skipnight.vote." + voteTypeCommandString(voteType))) {
+            if (playerAdapter.isInOverworld(playerUUID) && playerAdapter.hasPermission(playerUUID, "skipnight.vote." + voteTypeCommandString(voteType))) {
                 if (voters.containsKey(voter.getUuid())) {
-                    platform.player(player).sendActionBar(message);
+                    messagesAdapter.sendActionBar(playerUUID, message);
                 }
             }
         }
     }
 
     private boolean voteCancel() {
-        return (voteType == VoteType.NIGHT && (world.getTime() > 23900 || world.getTime() < 12516)) && !world.hasStorm() ||
-                (voteType == VoteType.DAY && world.getTime() > 12516 && world.getTime() < 23900);
-    }
-
-    private boolean playerMustSleep(Player player) {
-        // Check version for TIME_SINCE_REST added in 1.13
-        if (Versions.versionCompare("1.13.0", version) <= 0) {
-            return player.getStatistic(Statistic.TIME_SINCE_REST) >= 72000;
-        } else return false;
-    }
-
-    @SuppressWarnings("deprecation")
-    private String readTag(Player player) {
-        // Read players tag, null if not there
-        try {
-            return player.getPlayerListName().split("#")[1];
-        } catch (IndexOutOfBoundsException e) {
-            return player.isSleeping() ? "Bed" : "Active";
-        }
-    }
-
-    // Checks whether player is in overworld
-    private boolean isInOverworld(Player player) {
-        return timer == Timer.OFF ? player.getWorld().getEnvironment() == World.Environment.NORMAL : player.getWorld().equals(voteInitiator.getWorld());
+        return (voteType == VoteType.NIGHT && (worldAdapter.getTime(world) > 23900 || worldAdapter.getTime(world) < 12516)) && !worldAdapter.hasStorm(world) ||
+                (voteType == VoteType.DAY && worldAdapter.getTime(world) > 12516 && worldAdapter.getTime(world) < 23900);
     }
 
     public String voteTypeString() {

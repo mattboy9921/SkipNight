@@ -38,44 +38,31 @@
     <!-- Project dependencies -->
 
     <repositories>
-        <!-- For Paper API and MockBukkit -->
+        <!-- For Spigot API -->
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <!-- For Paper API -->
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        <!-- For Configurate -->
-        <repository>
-            <id>sponge</id>
-            <url>https://repo.spongepowered.org/maven</url>
-        </repository>
-        <!-- For Adventure-Text-Minimessage -->
-        <repository>
-            <id>sonatype-oss-snapshots1</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>viaversion-repo</id>
-            <url>https://repo.viaversion.com</url>
-        </repository>
     </repositories>
     <dependencies>
-        <!-- For Paper API -->
+        <!-- For Paper API - Needs to be above Spigot API for Maven to pick it for test scope -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.21.11-R0.1-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- For Spigot API -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <!-- For Configurate -->
-        <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>configurate-hocon</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>configurate-yaml</artifactId>
-            <version>4.2.0</version>
         </dependency>
         <!-- For bStats -->
         <dependency>
@@ -83,39 +70,6 @@
             <artifactId>bstats-bukkit</artifactId>
             <version>3.1.0</version>
             <scope>compile</scope>
-        </dependency>
-        <!-- For Adventure -->
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-api</artifactId>
-            <version>4.26.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-platform-bukkit</artifactId>
-            <version>4.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-text-serializer-legacy</artifactId>
-            <version>4.26.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.kyori</groupId>
-            <artifactId>adventure-text-minimessage</artifactId>
-            <version>4.26.1</version>
-        </dependency>
-        <!-- For Nullable -->
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
-        </dependency>
-        <!-- For stacktrace -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.20.0</version>
         </dependency>
         <!-- For JUnit -->
         <dependency>
@@ -130,17 +84,6 @@
             <artifactId>mockbukkit-v1.21</artifactId>
             <version>4.101.0</version>
             <scope>test</scope>
-        </dependency>
-        <!-- For Cloud -->
-        <dependency>
-            <groupId>org.incendo</groupId>
-            <artifactId>cloud-paper</artifactId>
-            <version>2.0.0-beta.14</version>
-        </dependency>
-        <dependency>
-            <groupId>org.incendo</groupId>
-            <artifactId>cloud-minecraft-extras</artifactId>
-            <version>2.0.0-beta.14</version>
         </dependency>
         <!-- For impl-current -->
         <dependency>

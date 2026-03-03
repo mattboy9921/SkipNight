@@ -4,7 +4,7 @@ import io.papermc.paper.block.bed.BedEnterAction;
 import io.papermc.paper.block.bed.BedEnterProblem;
 import io.papermc.paper.block.bed.BedRuleResult;
 import net.kyori.adventure.text.Component;
-import net.mattlabs.skipnight.plugin.util.VoteType;
+import net.mattlabs.skipnight.api.util.VoteType;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
@@ -63,7 +63,7 @@ public class NightVoteTest extends VoteTest {
         world.setTime(8000);
 
         // Player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().canOnlyVoteAtNight()),
                 plain.serialize(player1.nextComponentMessage())
@@ -81,7 +81,7 @@ public class NightVoteTest extends VoteTest {
         world.setStorm(true);
 
         // Player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteTypeString)),
                 plain.serialize(player1.nextComponentMessage())
@@ -112,7 +112,7 @@ public class NightVoteTest extends VoteTest {
         world.setTime(13000);
 
         // Player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().mustSleepNewVote()),
                 plain.serialize(player1.nextComponentMessage())
@@ -131,11 +131,11 @@ public class NightVoteTest extends VoteTest {
         world.setTime(13000);
 
         // First player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
 
         // Wait, then have second player vote yes
         server.getScheduler().performTicks(10 * 20);
-        vote.addYes(player2, voteType);
+        vote.addYes(player2.getUniqueId(), voteType);
 
         // Burn messages
         for (int i = 0; i < 2; i++)
@@ -191,7 +191,7 @@ public class NightVoteTest extends VoteTest {
         world.setTime(13000);
 
         // First player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
 
         // Second player places bed and sleeps
         Block bed = player2.simulateBlockPlace(Material.RED_BED, player2.getLocation()).getBlockPlaced();

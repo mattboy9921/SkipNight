@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight.plugin.util;
+package net.mattlabs.skipnight.api.util;
 
 public class Versions {
 
@@ -43,5 +43,11 @@ public class Versions {
             j++;
         }
         return 0;
+    }
+
+    public static String versionSubstring(String versionString) {
+        int start = versionString.indexOf("MC: ") + 4;
+        int end = versionString.length() - 1;
+        return versionString.substring(start, end);
     }
 }

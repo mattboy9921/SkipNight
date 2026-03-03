@@ -2,39 +2,39 @@ package net.mattlabs.skipnight.plugin;
 
 import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.mattlabs.skipnight.api.Scheduler;
-import net.mattlabs.skipnight.impl_current.CurrentScheduler;
-import net.mattlabs.skipnight.plugin.commands.SkipDayCommand;
-import net.mattlabs.skipnight.plugin.commands.SkipNightCommand;
-import net.mattlabs.skipnight.plugin.util.ConfigurateManager;
-import net.mattlabs.skipnight.plugin.util.MessageTransformations;
-import net.mattlabs.skipnight.plugin.util.Versions;
+import net.mattlabs.skipnight.api.commands.CommandAdapter;
+import net.mattlabs.skipnight.api.config.Config;
+import net.mattlabs.skipnight.api.config.LegacyConfigHelper;
+import net.mattlabs.skipnight.api.core.Vote;
+import net.mattlabs.skipnight.api.messaging.Messages;
+import net.mattlabs.skipnight.api.messaging.MessagesAdapter;
+import net.mattlabs.skipnight.api.player.PlayerAdapter;
+import net.mattlabs.skipnight.api.scheduler.Scheduler;
+import net.mattlabs.skipnight.api.util.Versions;
+import net.mattlabs.skipnight.api.world.WorldAdapter;
+import net.mattlabs.skipnight.impl_current.*;
+import net.mattlabs.skipnight.api.config.ConfigurateManager;
+import net.mattlabs.skipnight.api.util.MessageTransformations;
+import net.mattlabs.skipnight.plugin.util.PluginMessagesContext;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
-import org.incendo.cloud.execution.ExecutionCoordinator;
-import org.incendo.cloud.paper.LegacyPaperCommandManager;
-import org.spongepowered.configurate.CommentedConfigurationNode;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
-import org.spongepowered.configurate.loader.ConfigurationLoader;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
-import java.io.IOException;
 
 public class SkipNight extends JavaPlugin {
 
     public Vote vote;
-    private LegacyPaperCommandManager<CommandSender> commandManager;
     private Config config;
     private Messages messages;
     private static SkipNight instance;
     private BukkitAudiences platform;
     private String version;
     private Scheduler scheduler;
+    private PlayerAdapter playerAdapter;
+    private WorldAdapter worldAdapter;
+    private MessagesAdapter messagesAdapter;
+    private CommandAdapter commandAdapter;
 
     public static boolean testEnabled = false;
 
@@ -43,12 +43,7 @@ public class SkipNight extends JavaPlugin {
         instance = this;
 
         // Determine version
-        version = Bukkit.getVersion();
-        int start = version.indexOf("MC: ") + 4;
-        int end = version.length() - 1;
-        version = version.substring(start, end);
-
-        if (Versions.versionCompare("1.8.0", version) >= 0) {
+        if (Versions.versionCompare("1.8.0", Versions.versionSubstring(Bukkit.getVersion())) >= 0) {
             getLogger().severe("You are running MC " + version + ". This plugin requires MC 1.8.0 or higher, disabling plugin...");
             getServer().getPluginManager().disablePlugin(this);
             return;
@@ -58,22 +53,19 @@ public class SkipNight extends JavaPlugin {
 
         // Convert old YAML file if it exists still
         this.getDataFolder().mkdir();
-        File configFile = new File(this.getDataFolder(), "config.conf");
-        ConfigurationLoader<CommentedConfigurationNode> configLoader =
-                HoconConfigurationLoader.builder().path(configFile.toPath()).build();
-        convertConfigFormat(new File(this.getDataFolder(), "config.yml"), configLoader);
+        LegacyConfigHelper.convertConfig(new File(this.getDataFolder(), "config.yml"), this.getDataFolder(), getLogger());
 
         config = null;
         messages = null;
 
         // Configurate
-        ConfigurateManager configurateManager = new ConfigurateManager(this);
+        ConfigurateManager configurateManager = new ConfigurateManager(getDataFolder(), getLogger());
 
         configurateManager.add("config.conf", TypeToken.get(Config.class), new Config(), Config::new);
         configurateManager.add("messages.conf", TypeToken.get(Messages.class), new Messages(), Messages::new, MessageTransformations.create());
 
-        configurateManager.saveDefaults("config.conf");
-        configurateManager.saveDefaults("messages.conf");
+        if (!configurateManager.saveDefaults("config.conf")) getServer().getPluginManager().disablePlugin(this);
+        if (!configurateManager.saveDefaults("messages.conf")) getServer().getPluginManager().disablePlugin(this);
 
         configurateManager.load("config.conf");
         configurateManager.load("messages.conf");
@@ -84,32 +76,38 @@ public class SkipNight extends JavaPlugin {
         config = configurateManager.get("config.conf");
         messages = configurateManager.get("messages.conf");
 
+        // MessagesContext
+        Messages.Initialize(new PluginMessagesContext(messages, config));
+
         // Register Audience (Messages)
         platform = BukkitAudiences.create(this);
 
         // Create Scheduler Impl
         scheduler = new CurrentScheduler(this);
 
+        // Create PlayerAdapter Impl
+        playerAdapter = new CurrentPlayerAdapter(this);
+
+        // Create WorldAdapter Impl
+        worldAdapter = new CurrentWorldAdapter();
+
+        // Create MessagesAdapter Impl
+        messagesAdapter = new CurrentMessagesAdapter(platform);
+
         // Register vote
-        vote = new Vote(this);
+        vote = new Vote(messages, hasPlayerActivity(), config, scheduler, playerAdapter, worldAdapter, messagesAdapter);
 
         // Register Listeners
-        getServer().getPluginManager().registerEvents(vote, this);
+        getServer().getPluginManager().registerEvents(new CurrentEventListener(vote), this);
 
         // Register Cloud
         if (!testEnabled) {
-            commandManager = LegacyPaperCommandManager.createNative(
-                    this,
-                    ExecutionCoordinator.coordinatorFor(ExecutionCoordinator.nonSchedulingExecutor())
-            );
-            // Register Brigadier, fallback to asynchronous completions
-            if (commandManager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER) && !testEnabled) commandManager.registerBrigadier();
-            else if (commandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) commandManager.registerAsynchronousCompletions();
-            // Create Commands
+            commandAdapter = new CurrentCommandAdapter(this);
+            commandAdapter.registerFramework();
             if (config.isSkipNight() || testEnabled)
-                new SkipNightCommand(commandManager, this);
+                commandAdapter.registerSkipNightCommand(vote);
             if (config.isSkipDay() || testEnabled)
-                new SkipDayCommand(commandManager, this);
+                commandAdapter.registerSkipDayCommand(vote);
         }
 
         // bStats
@@ -145,55 +143,19 @@ public class SkipNight extends JavaPlugin {
         return config;
     }
 
-    public LegacyPaperCommandManager<CommandSender> getCommandManager() {
-        return commandManager;
-    }
-
     public Scheduler getScheduler() {
         return scheduler;
     }
 
-    public boolean hasPlayerActivity() {
-        return getServer().getPluginManager().getPlugin("PlayerActivity") != null;
+    public PlayerAdapter getPlayerAdapter() {
+        return playerAdapter;
     }
 
-    /**
-     * Helper method to convert the old YAML configuration file to the new HOCON file
-     * @param yamlConfigFile The file representing the location of the YML file
-     * @param hoconLoader The HoconConfigurationLoader instance
-     */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void convertConfigFormat(File yamlConfigFile, ConfigurationLoader<CommentedConfigurationNode> hoconLoader) {
+    public WorldAdapter getWorldAdapter() {
+        return worldAdapter;
+    }
 
-        // Check if YAML file exists
-        if (yamlConfigFile.exists()) {
-            getLogger().info("Old config format found, converting...");
-
-            // Build YAML loader
-            YamlConfigurationLoader yamlLoader = YamlConfigurationLoader.builder().path(yamlConfigFile.toPath()).build();
-
-            // Read YAML file
-            ConfigurationNode yamlNode;
-            try {
-                yamlNode = yamlLoader.load();
-            }
-            catch (IOException e) {
-                getLogger().severe("Unable to read YAML configuration! " + e.getMessage());
-                return;
-            }
-
-            // Save to HOCON file
-            try {
-                hoconLoader.save(yamlNode);
-            }
-            catch (IOException e) {
-                getLogger().severe("Unable to save HOCON configuration! " + e.getMessage());
-                return;
-            }
-
-            // Delete YAML file
-            getLogger().info("Successfully converted configuration, deleting old file...");
-            yamlConfigFile.delete();
-        }
+    public boolean hasPlayerActivity() {
+        return getServer().getPluginManager().getPlugin("PlayerActivity") != null;
     }
 }

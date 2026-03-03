@@ -1,8 +1,7 @@
-package net.mattlabs.skipnight.plugin.commands;
+package net.mattlabs.skipnight.impl_current;
 
-import net.mattlabs.skipnight.plugin.SkipNight;
-import net.mattlabs.skipnight.plugin.Vote;
-import net.mattlabs.skipnight.plugin.util.VoteType;
+import net.mattlabs.skipnight.api.core.Vote;
+import net.mattlabs.skipnight.api.util.VoteType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.incendo.cloud.Command;
@@ -10,13 +9,13 @@ import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.description.CommandDescription;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
-public class SkipDayCommand {
+public class CurrentSkipNightCommand {
 
     LegacyPaperCommandManager<CommandSender> commandManager;
     Vote vote;
 
-    public SkipDayCommand(LegacyPaperCommandManager<CommandSender> commandManager, SkipNight plugin) {
-        vote = plugin.vote;
+    public CurrentSkipNightCommand(LegacyPaperCommandManager<CommandSender> commandManager, Vote vote) {
+        this.vote = vote;
         this.commandManager = commandManager;
         commands();
     }
@@ -24,13 +23,13 @@ public class SkipDayCommand {
     // Register each command
     private void commands() {
         // Set up builder with permissions
-        Command.Builder<CommandSender> builder = commandManager.commandBuilder("skipday", "sd")
-                .permission("skipnight.vote.day")
-                .senderType(Player.class);
+        Command.Builder<CommandSender> builder = commandManager.commandBuilder("skipnight", "sn")
+                        .permission("skipnight.vote.night")
+                        .senderType(Player.class);
 
         // Base Command
         commandManager.command(builder
-                .commandDescription(CommandDescription.commandDescription("Starts a vote to skip the day."))
+                .commandDescription(CommandDescription.commandDescription("Starts a vote to skip the night."))
                 .handler(this::baseCommand)
         );
 
@@ -50,14 +49,17 @@ public class SkipDayCommand {
     }
 
     private void baseCommand(CommandContext<CommandSender> context) {
-        this.vote.start((Player) context.sender(), VoteType.DAY);
+        Player player = (Player) context.sender();
+        this.vote.start(player.getUniqueId(), VoteType.NIGHT);
     }
 
     private void yes(CommandContext<CommandSender> context) {
-        this.vote.addYes((Player) context.sender(), VoteType.DAY);
+        Player player = (Player) context.sender();
+        this.vote.addYes(player.getUniqueId(), VoteType.NIGHT);
     }
 
     private void no(CommandContext<CommandSender> context) {
-        this.vote.addNo((Player) context.sender(), VoteType.DAY);
+        Player player = (Player) context.sender();
+        this.vote.addNo(player.getUniqueId(), VoteType.NIGHT);
     }
 }

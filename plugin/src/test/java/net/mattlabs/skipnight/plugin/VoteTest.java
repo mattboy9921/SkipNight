@@ -1,6 +1,7 @@
 package net.mattlabs.skipnight.plugin;
 
-import net.mattlabs.skipnight.plugin.util.VoteType;
+import net.mattlabs.skipnight.api.core.Vote;
+import net.mattlabs.skipnight.api.util.VoteType;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
 import org.mockbukkit.mockbukkit.world.WorldMock;
@@ -54,7 +55,7 @@ public abstract class VoteTest {
         world.setTime(startTime + 200);
 
         // Player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
 
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteTypeString)),
@@ -84,7 +85,7 @@ public abstract class VoteTest {
         world.setTime(startTime + 200);
 
         // First player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteTypeString)),
                 plain.serialize(player1.nextComponentMessage())
@@ -105,7 +106,7 @@ public abstract class VoteTest {
 
         // Wait, then have second player vote yes
         server.getScheduler().performTicks(10 * 20);
-        vote.addYes(player2, voteType);
+        vote.addYes(player2.getUniqueId(), voteType);
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().youVoteYes()),
                 plain.serialize(player2.nextComponentMessage())
@@ -134,7 +135,7 @@ public abstract class VoteTest {
         world.setTime(startTime + 200);
 
         // First player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteTypeString)),
                 plain.serialize(player1.nextComponentMessage())
@@ -155,7 +156,7 @@ public abstract class VoteTest {
 
         // Wait, then have second player vote no
         server.getScheduler().performTicks(10 * 20);
-        vote.addNo(player2, voteType);
+        vote.addNo(player2.getUniqueId(), voteType);
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().youVoteNo()),
                 plain.serialize(player2.nextComponentMessage())
@@ -187,7 +188,7 @@ public abstract class VoteTest {
         blackListedWorld.setTime(startTime + 200);
 
         // Player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().worldIsBlacklisted()),
                 plain.serialize(player1.nextComponentMessage())
@@ -202,12 +203,12 @@ public abstract class VoteTest {
     public void voteNotInOverworld() {
         onePlayerSetup();
         // Set up a nether world
-        WorldMock nether = new WorldMock();
+        WorldMock nether = server.addSimpleWorld("test_nether");
         nether.setEnvironment(World.Environment.NETHER);
         player1.teleport(nether.getSpawnLocation());
 
         // Player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().beforeVote().worldNotOverworld()),
                 plain.serialize(player1.nextComponentMessage())
@@ -221,17 +222,17 @@ public abstract class VoteTest {
         world.setTime(startTime + 200);
 
         // First player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
 
         // Wait, then have second player vote no
         server.getScheduler().performTicks(10 * 20);
-        vote.addNo(player2, voteType);
+        vote.addNo(player2.getUniqueId(), voteType);
 
         // Let vote process
         server.getScheduler().performTicks(20 * 20);
 
         // First player starts vote again
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
 
         // Burn messages
         for (int i = 0; i < 3; i++)
@@ -246,7 +247,7 @@ public abstract class VoteTest {
         server.getScheduler().performTicks(100 * 20);
 
         // First player starts vote again
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
 
         Assertions.assertEquals(
                 plain.serialize(plugin.getMessages().duringVote().voteStarted(player1.getName(), voteTypeString)),
@@ -264,11 +265,11 @@ public abstract class VoteTest {
         world.setTime(startTime + 200);
 
         // First player starts vote
-        vote.start(player1, voteType);
+        vote.start(player1.getUniqueId(), voteType);
 
         // Wait, then have second player start a vote
         server.getScheduler().performTicks(10 * 20);
-        vote.start(player2, voteType);
+        vote.start(player2.getUniqueId(), voteType);
 
         // Burn messages
         for (int i = 0; i < 2; i++)
