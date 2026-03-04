@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight.impl_current;
+package net.mattlabs.skipnight.impl_current.scheduler;
 
 import net.mattlabs.skipnight.api.scheduler.ScheduledRunnable;
 import net.mattlabs.skipnight.api.scheduler.ScheduledTask;

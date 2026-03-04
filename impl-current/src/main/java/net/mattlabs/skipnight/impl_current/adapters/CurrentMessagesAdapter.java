@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight.impl_current;
+package net.mattlabs.skipnight.impl_current.adapters;
 
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;

@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight.impl_current;
+package net.mattlabs.skipnight.impl_current.events;
 
 import net.mattlabs.skipnight.api.core.Vote;
 import org.bukkit.event.EventHandler;

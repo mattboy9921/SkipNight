@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight.impl_current;
+package net.mattlabs.skipnight.impl_current.commands;
 
 import net.mattlabs.skipnight.api.core.Vote;
 import net.mattlabs.skipnight.api.util.VoteType;
@@ -9,12 +9,12 @@ import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.description.CommandDescription;
 import org.incendo.cloud.paper.LegacyPaperCommandManager;
 
-public class CurrentSkipNightCommand {
+public class CurrentSkipDayCommand {
 
     LegacyPaperCommandManager<CommandSender> commandManager;
     Vote vote;
 
-    public CurrentSkipNightCommand(LegacyPaperCommandManager<CommandSender> commandManager, Vote vote) {
+    public CurrentSkipDayCommand(LegacyPaperCommandManager<CommandSender> commandManager, Vote vote) {
         this.vote = vote;
         this.commandManager = commandManager;
         commands();
@@ -23,13 +23,13 @@ public class CurrentSkipNightCommand {
     // Register each command
     private void commands() {
         // Set up builder with permissions
-        Command.Builder<CommandSender> builder = commandManager.commandBuilder("skipnight", "sn")
-                        .permission("skipnight.vote.night")
-                        .senderType(Player.class);
+        Command.Builder<CommandSender> builder = commandManager.commandBuilder("skipday", "sd")
+                .permission("skipnight.vote.day")
+                .senderType(Player.class);
 
         // Base Command
         commandManager.command(builder
-                .commandDescription(CommandDescription.commandDescription("Starts a vote to skip the night."))
+                .commandDescription(CommandDescription.commandDescription("Starts a vote to skip the day."))
                 .handler(this::baseCommand)
         );
 
@@ -50,16 +50,16 @@ public class CurrentSkipNightCommand {
 
     private void baseCommand(CommandContext<CommandSender> context) {
         Player player = (Player) context.sender();
-        this.vote.start(player.getUniqueId(), VoteType.NIGHT);
+        this.vote.start(player.getUniqueId(), VoteType.DAY);
     }
 
     private void yes(CommandContext<CommandSender> context) {
         Player player = (Player) context.sender();
-        this.vote.addYes(player.getUniqueId(), VoteType.NIGHT);
+        this.vote.addYes(player.getUniqueId(), VoteType.DAY);
     }
 
     private void no(CommandContext<CommandSender> context) {
         Player player = (Player) context.sender();
-        this.vote.addNo(player.getUniqueId(), VoteType.NIGHT);
+        this.vote.addNo(player.getUniqueId(), VoteType.DAY);
     }
 }

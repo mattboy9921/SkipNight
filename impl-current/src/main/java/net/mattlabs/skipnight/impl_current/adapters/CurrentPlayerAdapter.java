@@ -1,4 +1,4 @@
-package net.mattlabs.skipnight.impl_current;
+package net.mattlabs.skipnight.impl_current.adapters;
 
 import net.mattlabs.skipnight.api.player.PlayerAdapter;
 import net.mattlabs.skipnight.api.util.Versions;

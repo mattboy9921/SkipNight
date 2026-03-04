@@ -1,7 +1,9 @@
-package net.mattlabs.skipnight.impl_current;
+package net.mattlabs.skipnight.impl_current.adapters;
 
 import net.mattlabs.skipnight.api.commands.CommandAdapter;
 import net.mattlabs.skipnight.api.core.Vote;
+import net.mattlabs.skipnight.impl_current.commands.CurrentSkipDayCommand;
+import net.mattlabs.skipnight.impl_current.commands.CurrentSkipNightCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
