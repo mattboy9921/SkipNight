@@ -13,12 +13,45 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
+/**
+ * Configuration-backed message definitions for SkipNight.
+ *
+ * <p>This class represents the full set of user-facing messages used by SkipNight,
+ * organized into logical sections:
+ * {@link Messages.General}, {@link Messages.BeforeVote},
+ * {@link Messages.DuringVote}, and {@link Messages.AfterVote}.</p>
+ *
+ * <p>Each section contains both:</p>
+ * <ul>
+ *     <li>String fields that are serialized/deserialized via Configurate, and</li>
+ *     <li>Convenience methods that convert those strings into Adventure
+ *         {@link Component} instances using MiniMessage placeholders and styling.</li>
+ * </ul>
+ *
+ * <p>The {@code Messages} instance itself is serialized as part of the plugin's
+ * messages configuration, and a {@link MessagesContext} must be provided via
+ * {@link #Initialize(MessagesContext)} before any static helper methods (such as
+ * {@link #voteHeader()} or {@link #hyphenHeader()}) are used.</p>
+ */
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
 @ConfigSerializable
 public class Messages {
 
     private static MessagesContext messagesContext;
 
+    /**
+     * Initializes the static {@link MessagesContext} used by this class.
+     *
+     * <p>This context provides access to configuration values (such as whether
+     * the header is disabled) and to the root {@link Messages} instance for helper
+     * methods like {@link #voteHeader()} and {@link #hyphenHeader()}.</p>
+     *
+     * <p>This method should be called once during plugin startup, after the
+     * messages configuration has been loaded.</p>
+     *
+     * @param messagesContext the context containing the loaded {@link Messages}
+     *                        and additional messaging configuration
+     */
     public static void Initialize(MessagesContext messagesContext) {
         Messages.messagesContext = messagesContext;
     }
@@ -52,6 +85,13 @@ public class Messages {
 
     ================================================================================*/
 
+    /**
+     * Message values that are used throughout the plugin, such as the words for
+     * "day", "night", "yes", "no", and a generic "Vote" label.
+     *
+     * <p>Most of these are returned as raw {@link String} values (often without
+     * color codes) and are used by other sections when constructing messages.</p>
+     */
     @ConfigSerializable
     public static class General {
         @Comment("""
@@ -60,6 +100,9 @@ public class Messages {
                 (Does not accept color codes)""")
         private String voteString = "Vote";
 
+        /**
+         * @return the configured "Vote" label (no color codes)
+         */
         public String voteString() {
             return voteString;
         }
@@ -70,6 +113,9 @@ public class Messages {
                 (Does not accept color codes)""")
         private String dayString = "day";
 
+        /**
+         * @return the configured word for "day" (no color codes)
+         */
         public String dayString() {
             return dayString;
         }
@@ -80,6 +126,9 @@ public class Messages {
                 (Does not accept color codes)""")
         private String nightString = "night";
 
+        /**
+         * @return the configured word for "night" (no color codes)
+         */
         public String nightString() {
             return nightString;
         }
@@ -90,6 +139,9 @@ public class Messages {
                 (Does not accept color codes)""")
         String yesString = "yes";
 
+        /**
+         * @return the configured word for "yes" (no color codes)
+         */
         public String yesString() {
             return yesString;
         }
@@ -100,6 +152,9 @@ public class Messages {
                 (Does not accept color codes)""")
         private String noString = "no";
 
+        /**
+         * @return the configured word for "no" (no color codes)
+         */
         public String noString() {
             return noString;
         }
@@ -108,6 +163,11 @@ public class Messages {
         @Comment("\nAppears if player doesn't have permission to vote.")
         private String noPerm = "<red>You don't have permission to run this!";
 
+        /**
+         * Builds the "no permission" message as a {@link Component}.
+         *
+         * @return a component for the no-permission message
+         */
         public Component noPerm() {
             // <red>You don't have permission to run this!
             return MiniMessage.miniMessage().deserialize(noPerm);
@@ -124,6 +184,11 @@ public class Messages {
             General strings that may be used throughout the plugin.""")
     private General general = new General();
 
+    /**
+     * Returns the {@link General} section of the messages configuration.
+     *
+     * @return the general message configuration section
+     */
     public General general() {
         return general;
     }
@@ -158,6 +223,13 @@ public class Messages {
                 Possible tags: <start_vote> = "Start Vote" button""")
         private String inBedNoVoteInProg = "Start a vote to skip the night? <blue><start_vote>";
 
+        /**
+         * Builds the "no vote in progress" message, including a clickable
+         * "Start Vote" button for the given vote type.
+         *
+         * @param voteType the vote type keyword
+         * @return a {@link Component} with the start-vote button
+         */
         public Component noVoteInProg(String voteType) {
             return MiniMessage.miniMessage().deserialize(noVoteInProg,
                     Placeholder.component("start_vote",
@@ -166,6 +238,11 @@ public class Messages {
                                     .clickEvent(ClickEvent.runCommand("/skip" + voteType))));
         }
 
+        /**
+         * Builds the message shown when a player is in bed but no vote is in progress.
+         *
+         * @return a {@link Component} including the vote header and start-vote button
+         */
         public Component inBedNoVoteInProg() {
             return Messages.voteHeader().append(MiniMessage.miniMessage().deserialize(inBedNoVoteInProg,
                     Placeholder.component("start_vote",
@@ -178,10 +255,20 @@ public class Messages {
         @Comment("\nAppears if player attempts to vote after 3 days without sleep.")
         private String mustSleep = "<red>You must sleep in a bed first!";
 
+        /**
+         * Builds the "must sleep" message, prefixed with the hyphen header.
+         *
+         * @return the {@link Component} message
+         */
         public Component mustSleep() {
             return Messages.hyphenHeader().append(MiniMessage.miniMessage().deserialize(mustSleep));
         }
 
+        /**
+         * Builds the plain "must sleep" message with no header.
+         *
+         * @return the {@link Component} message
+         */
         public Component mustSleepNewVote() {
             return MiniMessage.miniMessage().deserialize(mustSleep);
         }
@@ -253,6 +340,11 @@ public class Messages {
             Strings used in messages appearing before a vote starts.""")
     private BeforeVote beforeVote = new BeforeVote();
 
+    /**
+     * Returns the {@link BeforeVote} section of the messages configuration.
+     *
+     * @return the before-vote message configuration section
+     */
     public BeforeVote beforeVote() {
         return beforeVote;
     }
@@ -263,6 +355,13 @@ public class Messages {
 
     ================================================================================*/
 
+    /**
+     * Message values used while a vote is in progress.
+     *
+     * <p>This includes messages for starting a vote, button prompts, "you voted"
+     * confirmations, idle/away notifications, action bar messages, and boss bar
+     * display text such as current vote tallies.</p>
+     */
     @ConfigSerializable
     public static class DuringVote {
         // Player Started A Vote
@@ -281,6 +380,13 @@ public class Messages {
                 Possible tags: <vote_value> = yes/no""")
         private String clickHereToVote = "<gold><bold>Click here to vote <vote_value>";
 
+        /**
+         * Builds the message shown when a player has started a vote.
+         *
+         * @param name     the player name
+         * @param voteType the vote type display string
+         * @return the {@link Component} message including the vote header
+         */
         public Component voteStarted(String name, String voteType) {
             TagResolver tagResolver = TagResolver.resolver(
                     Placeholder.parsed("player_name", name),
@@ -289,6 +395,12 @@ public class Messages {
             return Messages.voteHeader().append(MiniMessage.miniMessage().deserialize(playerStartedVote, tagResolver).colorIfAbsent(NamedTextColor.WHITE));
         }
 
+        /**
+         * Builds the "Please vote" line followed by Yes/No buttons for the given vote type.
+         *
+         * @param voteType the vote type keyword (e.g. {@code "day"} or {@code "night"})
+         * @return a {@link Component} containing interactive Yes/No buttons
+         */
         public Component voteButtons(String voteType) {
             String yes = lgeneral().yesString().substring(0, 1).toUpperCase() + lgeneral().yesString().substring(1);
             String no = lgeneral().noString().substring(0, 1).toUpperCase() + lgeneral().noString().substring(1);
@@ -427,6 +539,16 @@ public class Messages {
                 (Does not accept color codes)""")
         private String currentVote = "Current Vote:";
 
+        /**
+         * Builds the boss bar text showing the full vote breakdown when player activity
+         * tracking is enabled (yes, no, idle, away).
+         *
+         * @param yes   count of yes votes
+         * @param no    count of no votes
+         * @param idle  count of idle players
+         * @param away  count of away players
+         * @return a {@link Component} representing the current vote breakdown
+         */
         public Component currentVotePA(int yes, int no, int idle, int away) {
             String yesStr = lgeneral().yesString().substring(0, 1).toUpperCase() + lgeneral().yesString().substring(1);
             String noStr = lgeneral().noString().substring(0, 1).toUpperCase() + lgeneral().noString().substring(1);
@@ -441,6 +563,13 @@ public class Messages {
                     .append(Component.text(" - " + away, NamedTextColor.WHITE));
         }
 
+        /**
+         * Builds the boss bar text showing the basic vote breakdown (yes/no only).
+         *
+         * @param yes count of yes votes
+         * @param no  count of no votes
+         * @return a {@link Component} representing the current vote breakdown
+         */
         public Component currentVote(int yes, int no) {
             String yesStr = lgeneral().yesString().substring(0, 1).toUpperCase() + lgeneral().yesString().substring(1);
             String noStr = lgeneral().noString().substring(0, 1).toUpperCase() + lgeneral().noString().substring(1);
@@ -462,6 +591,11 @@ public class Messages {
             Strings used in messages appearing during a vote.""")
     private DuringVote duringVote = new DuringVote();
 
+    /**
+     * Returns the {@link DuringVote} section of the messages configuration.
+     *
+     * @return the during-vote message configuration section
+     */
     public DuringVote duringVote() {
         return duringVote;
     }
@@ -472,6 +606,12 @@ public class Messages {
 
     ================================================================================*/
 
+    /**
+     * Message values used after a vote has completed.
+     *
+     * <p>This includes messages for passed/failed votes, "all players have voted",
+     * and boss bar text for final states and "already day/night" conditions.</p>
+     */
     @ConfigSerializable
     public static class AfterVote {
         // Vote Passed
@@ -560,12 +700,25 @@ public class Messages {
             Strings used in messages appearing after a vote.""")
     private AfterVote afterVote = new AfterVote();
 
+    /**
+     * Returns the {@link AfterVote} section of the messages configuration.
+     *
+     * @return the after-vote message configuration section
+     */
     public AfterVote afterVote() {
         return afterVote;
     }
 
     // Headers
-    // [Vote]
+
+    /**
+     * Builds the standard "[Vote]" header component.
+     *
+     * <p>If the header is disabled in the {@link MessagesContext}, this will return
+     * an empty component instead.</p>
+     *
+     * @return the vote header component, or an empty component if disabled
+     */
     public static Component voteHeader() {
         Component header = Component.text("[", NamedTextColor.GRAY)
                 .append(Component.text(lgeneral().voteString(), NamedTextColor.BLUE))
@@ -573,20 +726,40 @@ public class Messages {
         return messagesContext.isHeaderDisabled() ? Component.text("") : header;
     }
 
-    // -
+    /**
+     * Builds the " - " hyphen prefix used in many messages.
+     *
+     * @return the hyphen header component
+     */
     public static Component hyphenHeader() {
         return Component.text(" - ", NamedTextColor.BLUE)
                 .append(Component.text("", NamedTextColor.WHITE));
     }
 
+    /**
+     * Returns the configured word for "day" from the {@link General} section.
+     *
+     * @return the configured day string
+     */
     public String getDayString() {
         return general().dayString();
     }
 
+    /**
+     * Returns the configured word for "night" from the {@link General} section.
+     *
+     * @return the configured night string
+     */
     public String getNightString() {
         return general().nightString();
     }
 
+    /**
+     * Convenience accessor for the {@link General} section of the globally
+     * initialized {@link Messages} instance.
+     *
+     * @return the {@link General} section from the current {@link MessagesContext}
+     */
     private static General lgeneral() {
         return messagesContext.general();
     }

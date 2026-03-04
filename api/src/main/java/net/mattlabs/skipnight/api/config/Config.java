@@ -7,6 +7,16 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Represents SkipNight's configuration file, saved to the plugin data folder as {@code config.conf} with HOCON
+ * formatting.
+ *
+ * <p>This class is serialized into the config file and deserialized from the config file via Configurate. On plugin
+ * load, either the config is created using the default field values of this file, or they are set using the values
+ * in the existing config file.</p>
+ *
+ * <p>The public methods of this class provide the config values once loaded.</p>
+ */
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
 @ConfigSerializable
 public class Config {
@@ -59,30 +69,52 @@ public class Config {
     @Comment("\nA value for the duration of the vote in seconds.")
     private int voteDuration = 30;
 
+    /**
+     * @return whether the function of skipping the night and {@code /skipnight} commands should be enabled
+     */
     public boolean isSkipNight() {
         return skipNight;
     }
 
+    /**
+     * @return whether the function of skipping the day and {@code /skipday} commands should be enabled
+     */
     public boolean isSkipDay() {
         return skipDay;
     }
 
+    /**
+     * @return whether voting to skip the night should prevent voting for players who haven't slept in 3 days
+     * (if Phantoms will spawn for these players)
+     */
     public boolean isPhantomSupport() {
         return phantomSupport;
     }
 
+    /**
+     * @return a list of world names where voting is disabled
+     */
     public ArrayList<String> getWorldBlacklist() {
         return worldBlacklist;
     }
 
+    /**
+     * @return the cooldown, in seconds, before another vote can begin after a failed vote
+     */
     public int getCooldown() {
         return cooldown;
     }
 
+    /**
+     * @return whether the "[Vote]" message header is disabled
+     */
     public boolean isHeaderDisabled() {
         return disableHeader;
     }
 
+    /**
+     * @return the duration of a vote cycle in seconds
+     */
     public int getVoteDuration() {
         return voteDuration;
     }

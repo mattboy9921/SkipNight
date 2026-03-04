@@ -14,16 +14,59 @@ import net.mattlabs.skipnight.api.util.VoteType;
 
 import java.util.*;
 
+/**
+ * Represents a single active vote to skip the night or day in a specific world.
+ *
+ * <p>A {@code Vote} instance manages the full lifecycle of a vote, including:</p>
+ * <ul>
+ *     <li>Initialization and countdown timer stages</li>
+ *     <li>Tracking player votes and activity states (active, bed, idle, away)</li>
+ *     <li>Displaying progress and results via a {@link BossBar}</li>
+ *     <li>Fast-forwarding the world time when a vote passes</li>
+ *     <li>Handling interruptions, cancellations, and cooldowns</li>
+ * </ul>
+ *
+ * <p>This class is designed to be scheduled periodically via a {@link Scheduler}
+ * using the {@link ScheduledRunnable} abstraction, advancing through internal
+ * {@link Timer} stages to perform its logic.</p>
+ */
 public class Vote extends ScheduledRunnable {
 
+    /**
+     * Internal timer state machine representing the lifecycle phases of a vote.
+     */
     enum Timer {
+        /**
+         * Initial setup state for a new vote.
+         */
         INIT,
+        /**
+         * Normal operation state, counting down the vote timer.
+         */
         OPERATION,
+        /**
+         * State reached when all players have voted before the timer ends.
+         */
         INTERRUPT,
+        /**
+         * State used when the vote is cancelled because the target time has already been reached.
+         */
         CANCEL,
+        /**
+         * Final countdown state (last 10 seconds of the vote).
+         */
         FINAL,
+        /**
+         * State where the vote result is processed and displayed, and time is fast-forwarded if it passed.
+         */
         COMPLETE,
+        /**
+         * Cooldown state preventing new votes for a configured duration.
+         */
         COOLDOWN,
+        /**
+         * Idle state indicating no active vote.
+         */
         OFF
     }
 
@@ -43,6 +86,17 @@ public class Vote extends ScheduledRunnable {
     private final WorldAdapter worldAdapter;
     private final MessagesAdapter messagesAdapter;
 
+    /**
+     * Creates a new {@code Vote} controller.
+     *
+     * @param messages       the message templates used during all stages of the vote
+     * @param playerActivity {@code true} if player activity (idle/away) should be considered in the vote display
+     * @param config         the loaded configuration used for durations, cooldowns, and phantom behavior
+     * @param scheduler      the scheduler used to run this vote and related tasks
+     * @param playerAdapter  abstraction for player-related queries (permissions, world, tags, etc.)
+     * @param worldAdapter   abstraction for world-related queries (time, weather, players, etc.)
+     * @param messagesAdapter abstraction for sending messages, action bars, and boss bars to players
+     */
     public Vote(Messages messages, boolean playerActivity, Config config, Scheduler scheduler, PlayerAdapter playerAdapter, WorldAdapter worldAdapter, MessagesAdapter messagesAdapter) {
         timer = Timer.OFF;
         this.messages = messages;
@@ -54,6 +108,14 @@ public class Vote extends ScheduledRunnable {
         this.messagesAdapter = messagesAdapter;
     }
 
+    /**
+     * Handles a player logoff event during an active vote.
+     *
+     * <p>If a vote is in progress and the player has permission to participate in
+     * the current {@link VoteType}, they are removed from the internal voter map.</p>
+     *
+     * @param playerUUID the UUID of the player who logged off
+     */
     public void onLogOffEvent(UUID playerUUID) {
         if (timer != Timer.OFF)
             if (playerAdapter.hasPermission(playerUUID, "skipnight.vote." + voteTypeCommandString(voteType))) {
@@ -61,6 +123,15 @@ public class Vote extends ScheduledRunnable {
             }
     }
 
+    /**
+     * Handles a player entering a bed when no vote is currently active.
+     *
+     * <p>If the player meets the conditions to start a night vote (has permission,
+     * world has more than one player, it is night or storming, and no vote is active),
+     * they are informed that there is no vote in progress.</p>
+     *
+     * @param playerUUID the UUID of the player who entered a bed
+     */
     public void onBedEnterEvent(UUID playerUUID) {
         UUID worldUUID = playerAdapter.getWorldUUID(playerUUID);
         // Player has permission, isn't the only one in the world, and it is night (or storming)
@@ -72,6 +143,13 @@ public class Vote extends ScheduledRunnable {
         }
     }
 
+    /**
+     * Advances the vote state machine by one step based on the current {@link Timer} value.
+     *
+     * <p>This method is designed to be scheduled periodically via the {@link Scheduler}.
+     * Each call delegates to a private handler method corresponding to the current timer
+     * state and may reschedule itself for future execution.</p>
+     */
     public void run() {
         switch (timer) {
             case INIT -> doInit();
@@ -85,8 +163,13 @@ public class Vote extends ScheduledRunnable {
         }
     }
 
-    /* The first stage of a vote. This is where lists, variables and the boss bar are created. The players are updated
-    *  about the vote that has just started. */
+    /**
+     * The first stage of a vote. Initializes internal state and the boss bar, and
+     * informs all eligible players that a vote has started.
+     *
+     * <p>After initialization, the timer transitions to {@link Timer#OPERATION}
+     * and the next run is scheduled.</p>
+     */
     private void doInit() {
         voters = new HashMap<>();
 
@@ -110,8 +193,13 @@ public class Vote extends ScheduledRunnable {
         scheduler.runTaskLater(this, 20);
     }
 
-    /* The main stage of the vote. Checks for a completed vote or waits until the last 10 seconds to move on.
-    *  Sets the boss bar each second. */
+    /**
+     * The main operation stage of the vote.
+     *
+     * <p>Decrements the countdown, updates the boss bar, checks for early completion
+     * or cancellation, and transitions to {@link Timer#FINAL} when the vote enters
+     * its last 10 seconds.</p>
+     */
     private void doOperation() {
         countDown--;
         if (yes + no + idle + away == playerCount) timer = Timer.INTERRUPT;
@@ -126,7 +214,12 @@ public class Vote extends ScheduledRunnable {
         scheduler.runTaskLater(this, 20);
     }
 
-    /* The stage for when everyone has voted. Sets the boss bar and moves onto the next stage. */
+    /**
+     * Stage reached when all players have voted before the timer expires.
+     *
+     * <p>Sets the boss bar to a final "all players have voted" state and transitions
+     * to {@link Timer#COMPLETE}.</p>
+     */
     private void doInterrupt() {
         countDown = 0;
         bar.progress(1.0f);
@@ -137,7 +230,14 @@ public class Vote extends ScheduledRunnable {
         scheduler.runTaskLater(this, 20);
     }
 
-    /* The last 10 seconds of the vote. Boss bar alternates white and purple and players receive a message. */
+    /**
+     * The final seconds of the vote.
+     *
+     * <p>Handles the last 10 seconds of the countdown, alternating the boss bar color and
+     * sending a notification when only 10 seconds remain. If all players vote or the
+     * vote is cancelled, transitions accordingly. Otherwise, moves to
+     * {@link Timer#COMPLETE} when the timer reaches zero.</p>
+     */
     private void doFinal() {
         countDown--;
         if (yes + no + idle + away == playerCount) timer = Timer.INTERRUPT;
@@ -157,8 +257,13 @@ public class Vote extends ScheduledRunnable {
         scheduler.runTaskLater(this, 10);
     }
 
-    /* The stage of the vote after the timer has run out. Displays vote passed/failed via boss bar and message.
-    *  Initiates a fast-forward to the correct time. */
+    /**
+     * Completion stage that processes the result of the vote, displays the outcome,
+     * and (if passed) initiates a fast-forward of the world time.
+     *
+     * <p>Also manages the boss bar fade-out and eventual transition to either
+     * {@link Timer#OFF} or {@link Timer#COOLDOWN} depending on the vote result.</p>
+     */
     private void doComplete() {
         countDown--;
         if (countDown == -1) {
@@ -222,14 +327,24 @@ public class Vote extends ScheduledRunnable {
         }
     }
 
-    /* Runs after everything is done to prevent a vote from starting again until after a time. */
+    /**
+     * Cooldown stage that prevents a new vote from starting for the configured
+     * cooldown duration after a failed vote.
+     *
+     * <p>Once the cooldown has elapsed, the timer transitions back to {@link Timer#OFF}.</p>
+     */
     private void doCooldown() {
         countDown--;
         if (countDown >= (config.getCooldown() * -1) - 9) scheduler.runTaskLater(this, 20);
         else timer = Timer.OFF;
     }
 
-    /* Runs when it becomes the target time during the vote. Switches to blue boss bar and cancels everything. */
+    /**
+     * Cancellation stage used when the target time is reached during the vote.
+     *
+     * <p>Switches the boss bar to a blue "already day/night" state, then hides and
+     * clears internal state before returning to {@link Timer#OFF}.</p>
+     */
     private void doCancel() {
         if (countDown > 0) countDown = 0;
         if (countDown == 0) {
@@ -253,6 +368,16 @@ public class Vote extends ScheduledRunnable {
         }
     }
 
+    /**
+     * Registers a "yes" vote for the given player, if a vote is active and they are eligible.
+     *
+     * <p>If the player is required to sleep (phantom support) and the vote is for night,
+     * the vote is blocked and the player is informed. Otherwise, their vote is recorded
+     * if they have not already voted.</p>
+     *
+     * @param playerUUID the UUID of the player voting
+     * @param voteType   the type of vote the player attempted to cast (day or night)
+     */
     public void addYes(UUID playerUUID, VoteType voteType) {
         if (timer != Timer.OFF) {
             Voter voter = new Voter(playerUUID);
@@ -275,6 +400,16 @@ public class Vote extends ScheduledRunnable {
         else messagesAdapter.sendMessage(playerUUID, messages.beforeVote().noVoteInProg(voteTypeCommandString(voteType)));
     }
 
+    /**
+     * Registers a "no" vote for the given player, if a vote is active and they are eligible.
+     *
+     * <p>If the player is required to sleep (phantom support) and the vote is for night,
+     * the vote is blocked and the player is informed. Otherwise, their vote is recorded
+     * if they have not already voted.</p>
+     *
+     * @param playerUUID the UUID of the player voting
+     * @param voteType   the type of vote the player attempted to cast (day or night)
+     */
     public void addNo(UUID playerUUID, VoteType voteType) {
         if (timer != Timer.OFF) {
             Voter voter = new Voter(playerUUID);
@@ -297,7 +432,17 @@ public class Vote extends ScheduledRunnable {
         else messagesAdapter.sendMessage(playerUUID, messages.beforeVote().noVoteInProg(voteTypeCommandString(voteType)));
     }
 
-    // Attempts to start a vote if all conditions are met, otherwise informs player why vote can't start
+    /**
+     * Attempts to start a new vote for the given player and {@link VoteType}.
+     *
+     * <p>This method checks all preconditions for starting a vote, including permissions,
+     * world blacklist, dimension, time of day, phantom sleep requirements, and cooldown
+     * state. If any condition fails, the player is informed with an appropriate message.
+     * If all conditions are met, the internal state is initialized and the vote is started.</p>
+     *
+     * @param playerUUID the UUID of the player attempting to start the vote
+     * @param voteType   the type of vote to start (skip night or skip day)
+     */
     public void start(UUID playerUUID, VoteType voteType) {
         UUID worldUUID = playerAdapter.getWorldUUID(playerUUID);
 
@@ -330,9 +475,27 @@ public class Vote extends ScheduledRunnable {
         }
     }
 
+    /**
+     * Updates all eligible players with the current boss bar and any additional message.
+     */
     private void updateAll() {
         updateAll(null);
     }
+
+    /**
+     * Updates all eligible players with the current boss bar and an optional message.
+     *
+     * <p>Responsible for:</p>
+     * <ul>
+     *     <li>Ensuring players with permission and in the Overworld see the boss bar</li>
+     *     <li>Tracking and updating each {@link Voter}'s state (active, bed, idle, away)</li>
+     *     <li>Auto-voting for players when they start the vote or are in bed</li>
+     *     <li>Sending appropriate per-player messages based on their state changes</li>
+     *     <li>Recalculating vote counts and totals</li>
+     * </ul>
+     *
+     * @param message an additional message to send to each eligible player, or {@code null} for none
+     */
     private void updateAll(Component message) {
         for (UUID playerUUID : playerAdapter.getOnlinePlayers()) {
             Voter voter = new Voter(playerUUID);
@@ -419,6 +582,11 @@ public class Vote extends ScheduledRunnable {
         no = (int) voters.values().stream().filter(voter -> voter.getVote() == -1).count();
     }
 
+    /**
+     * Sends an action bar message to all eligible players currently participating in the vote.
+     *
+     * @param message the action bar message to send
+     */
     private void actionBarMessage(Component message) {
         for (UUID playerUUID : playerAdapter.getOnlinePlayers()) {
             Voter voter = new Voter(playerUUID);
@@ -431,15 +599,32 @@ public class Vote extends ScheduledRunnable {
         }
     }
 
+    /**
+     * Determines whether the current vote should be cancelled because the
+     * target time has already been reached in the world.
+     *
+     * @return {@code true} if the vote should be cancelled, {@code false} otherwise
+     */
     private boolean voteCancel() {
         return (voteType == VoteType.NIGHT && (worldAdapter.getTime(world) > 23900 || worldAdapter.getTime(world) < 12516)) && !worldAdapter.hasStorm(world) ||
                 (voteType == VoteType.DAY && worldAdapter.getTime(world) > 12516 && worldAdapter.getTime(world) < 23900);
     }
 
+    /**
+     * Returns the configured display string for the current {@link VoteType}.
+     *
+     * @return the display string for the current vote type (e.g. "day" or "night" text from {@link Messages})
+     */
     public String voteTypeString() {
         return voteTypeString(this.voteType);
     }
 
+    /**
+     * Returns the configured display string for a given {@link VoteType}.
+     *
+     * @param voteType the vote type to convert to a display string
+     * @return the display string for the given vote type
+     */
     public String voteTypeString(VoteType voteType) {
         return switch (voteType) {
             case DAY -> messages.getDayString();
@@ -447,6 +632,14 @@ public class Vote extends ScheduledRunnable {
         };
     }
 
+    /**
+     * Returns the command keyword string for the given {@link VoteType}.
+     *
+     * <p>This is used in permission and command names (e.g. {@code "day"} or {@code "night"}).</p>
+     *
+     * @param voteType the vote type to convert to a command string
+     * @return the command string for the given vote type, such as {@code "day"} or {@code "night"}
+     */
     public String voteTypeCommandString(VoteType voteType) {
         return switch (voteType) {
             case DAY -> "day";
