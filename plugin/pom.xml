@@ -85,10 +85,28 @@
             <version>4.101.0</version>
             <scope>test</scope>
         </dependency>
-        <!-- For impl-current -->
+        <!-- For impl-base -->
         <dependency>
             <groupId>net.mattlabs.skipnight</groupId>
-            <artifactId>skipnight-impl-current</artifactId>
+            <artifactId>skipnight-impl-base</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!-- For impl-spigot_1_8 -->
+        <dependency>
+            <groupId>net.mattlabs.skipnight</groupId>
+            <artifactId>skipnight-impl-spigot_1_8</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!-- For impl-spigot_1_13 -->
+        <dependency>
+            <groupId>net.mattlabs.skipnight</groupId>
+            <artifactId>skipnight-impl-spigot_1_13</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!-- For impl-paper_1_20_6 -->
+        <dependency>
+            <groupId>net.mattlabs.skipnight</groupId>
+            <artifactId>skipnight-impl-paper_1_20_6</artifactId>
             <version>${revision}</version>
         </dependency>
     </dependencies>
@@ -138,8 +156,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>15</source>
-                    <target>15</target>
+                    <release>8</release>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <compilerArgs>
                         <arg>-parameters</arg>

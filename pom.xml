@@ -17,7 +17,9 @@
         <!-- Folder name, not artifactId -->
         <module>plugin</module>
         <module>api</module>
-        <module>impl-current</module>
-        <!-- later we'll add: api, impl-modern, etc. -->
+        <module>impl-base</module>
+        <module>impl-spigot_1_8</module>
+        <module>impl-spigot_1_13</module>
+        <module>impl-paper_1_20_6</module>
     </modules>
 </project>

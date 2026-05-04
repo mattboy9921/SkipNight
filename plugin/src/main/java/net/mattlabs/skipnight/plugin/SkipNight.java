@@ -2,27 +2,23 @@ package net.mattlabs.skipnight.plugin;
 
 import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.mattlabs.skipnight.api.commands.CommandAdapter;
+import net.mattlabs.skipnight.api.SkipNightImplFactory;
 import net.mattlabs.skipnight.api.config.Config;
 import net.mattlabs.skipnight.api.config.LegacyConfigHelper;
 import net.mattlabs.skipnight.api.core.Vote;
 import net.mattlabs.skipnight.api.messaging.Messages;
 import net.mattlabs.skipnight.api.messaging.MessagesAdapter;
-import net.mattlabs.skipnight.api.player.PlayerAdapter;
 import net.mattlabs.skipnight.api.scheduler.Scheduler;
 import net.mattlabs.skipnight.api.util.Versions;
-import net.mattlabs.skipnight.api.world.WorldAdapter;
 import net.mattlabs.skipnight.api.config.ConfigurateManager;
 import net.mattlabs.skipnight.api.util.MessageTransformations;
-import net.mattlabs.skipnight.impl_current.adapters.CurrentCommandAdapter;
-import net.mattlabs.skipnight.impl_current.adapters.CurrentMessagesAdapter;
-import net.mattlabs.skipnight.impl_current.adapters.CurrentPlayerAdapter;
-import net.mattlabs.skipnight.impl_current.adapters.CurrentWorldAdapter;
-import net.mattlabs.skipnight.impl_current.events.CurrentEventListener;
-import net.mattlabs.skipnight.impl_current.scheduler.CurrentScheduler;
+import net.mattlabs.skipnight.impl.paper_1_20_6.Paper1206ImplFactory;
+import net.mattlabs.skipnight.impl.spigot_1_13.Spigot113ImplFactory;
+import net.mattlabs.skipnight.impl.spigot_1_8.Spigot18ImplFactory;
 import net.mattlabs.skipnight.plugin.util.PluginMessagesContext;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -36,10 +32,11 @@ public class SkipNight extends JavaPlugin {
     private BukkitAudiences platform;
     private String version;
     private Scheduler scheduler;
-    private PlayerAdapter playerAdapter;
-    private WorldAdapter worldAdapter;
+    private net.mattlabs.skipnight.api.player.PlayerAdapter playerAdapter;
+    private net.mattlabs.skipnight.api.world.WorldAdapter worldAdapter;
     private MessagesAdapter messagesAdapter;
-    private CommandAdapter commandAdapter;
+    private net.mattlabs.skipnight.api.commands.CommandAdapter commandAdapter;
+    private SkipNightImplFactory impl;
 
     public static boolean testEnabled = false;
 
@@ -47,7 +44,7 @@ public class SkipNight extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        // Determine version
+        // Disable if version below 1.8.0
         if (Versions.versionCompare("1.8.0", Versions.versionSubstring(Bukkit.getVersion())) >= 0) {
             getLogger().severe("You are running MC " + version + ". This plugin requires MC 1.8.0 or higher, disabling plugin...");
             getServer().getPluginManager().disablePlugin(this);
@@ -87,32 +84,52 @@ public class SkipNight extends JavaPlugin {
         // Register Audience (Messages)
         platform = BukkitAudiences.create(this);
 
-        // Create Scheduler Impl
-        scheduler = new CurrentScheduler(this);
+        // Check if we are running modern Paper
+        boolean isPaper = false;
+        try {
+            Class.forName("io.papermc.paper.plugin.configuration.PluginMeta");
+            isPaper = true;
+        }
+        catch (ClassNotFoundException ignored){}
 
-        // Create PlayerAdapter Impl
-        playerAdapter = new CurrentPlayerAdapter(this);
+        // Get version
+        version = Versions.versionSubstring(Bukkit.getVersion());
+        getLogger().info("Detected server version: " + version);
 
-        // Create WorldAdapter Impl
-        worldAdapter = new CurrentWorldAdapter();
+        // Check for Paper 1.20.6+
+        if (Versions.versionCompare("1.20.6", version) <= 0 && isPaper) {
+            getLogger().info("Enabling Paper 1.20.6 features...");
+            impl = new Paper1206ImplFactory(this, platform);
+        }
+        // Check for Spigot/Paper 1.13.0+
+        else if (Versions.versionCompare("1.13.0", version) <= 0) {
+            getLogger().info("Enabling Spigot 1.13.0+ features...");
+            impl = new Spigot113ImplFactory(this, platform);
+        }
+        // Fallback to Spigot/Paper 1.8.0+
+        else {
+            getLogger().info("Enabling Spigot 1.8-1.12 features...");
+            impl = new Spigot18ImplFactory(this, platform);
+        }
 
-        // Create MessagesAdapter Impl
-        messagesAdapter = new CurrentMessagesAdapter(platform);
+        // Create Implementations
+        scheduler = impl.scheduler();
+        playerAdapter = impl.playerAdapter();
+        worldAdapter = impl.worldAdapter();
+        messagesAdapter = impl.messagesAdapter();
 
-        // Register vote
+        // Register Vote
         vote = new Vote(messages, hasPlayerActivity(), config, scheduler, playerAdapter, worldAdapter, messagesAdapter);
 
         // Register Listeners
-        getServer().getPluginManager().registerEvents(new CurrentEventListener(vote), this);
+        getServer().getPluginManager().registerEvents((Listener) impl.eventListener(vote), this);
 
-        // Register Cloud
+        // Commands
         if (!testEnabled) {
-            commandAdapter = new CurrentCommandAdapter(this);
+            commandAdapter = impl.commandAdapter();
             commandAdapter.registerFramework();
-            if (config.isSkipNight() || testEnabled)
-                commandAdapter.registerSkipNightCommand(vote);
-            if (config.isSkipDay() || testEnabled)
-                commandAdapter.registerSkipDayCommand(vote);
+            if (config.isSkipNight() || testEnabled) commandAdapter.registerSkipNightCommand(vote);
+            if (config.isSkipDay() || testEnabled) commandAdapter.registerSkipDayCommand(vote);
         }
 
         // bStats
@@ -152,15 +169,19 @@ public class SkipNight extends JavaPlugin {
         return scheduler;
     }
 
-    public PlayerAdapter getPlayerAdapter() {
+    public net.mattlabs.skipnight.api.player.PlayerAdapter getPlayerAdapter() {
         return playerAdapter;
     }
 
-    public WorldAdapter getWorldAdapter() {
+    public net.mattlabs.skipnight.api.world.WorldAdapter getWorldAdapter() {
         return worldAdapter;
     }
 
     public boolean hasPlayerActivity() {
         return getServer().getPluginManager().getPlugin("PlayerActivity") != null;
+    }
+
+    private void registerVote() {
+        vote = new Vote(messages, hasPlayerActivity(), config, scheduler, playerAdapter, worldAdapter, messagesAdapter);
     }
 }
